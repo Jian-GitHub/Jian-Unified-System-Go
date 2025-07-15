@@ -1,0 +1,78 @@
+syntax = "v1"
+
+info (
+	title:   "Apollo"
+	desc:    "Accounts"
+	author:  "Jian Qi"
+	email:   "e.jianqi@gmail.com"
+	version: "v0.0.1"
+)
+
+type (
+	// 通用响应
+	BaseResponse {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	// 注册-阶段1 请求
+	RegStartReq {
+		UserName    string `json:"user_name" validate:"required"`
+		DisplayName string `json:"display_name"`
+	}
+	Data {
+		OptionsJson string `json:"options_json"` // WebAuthn注册选项
+		SessionID   string `json:"session_id"` // 会话标识
+	}
+	// 注册-阶段1 响应
+	RegStartResp {
+		BaseResponse
+		Data
+	}
+	// 注册-阶段2 请求
+	RegFinishReq {
+		SessionID  string `json:"session_id" validate:"required"`
+		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
+	}
+	// 登录-阶段1 请求
+	LoginStartReq {
+		UserID      int64  `json:"user_id" validate:"required"` // 可改为username/email登录
+		Credentials string `json:"credentials" validate:"required"` // 前端认证数据
+	}
+	// 登录-阶段1 响应
+	LoginStartResp {
+		BaseResponse
+		Data
+	}
+	// 登录-阶段2 请求
+	LoginFinishReq {
+		SessionID string `json:"session_id" validate:"required"`
+		Assertion string `json:"assertion" validate:"required"` // 前端返回的断言数据
+	}
+	// 登录-阶段2 响应
+	LoginFinishResp {
+		BaseResponse
+		Token string
+	}
+)
+
+// 注册路由
+@server (
+	prefix: /v1/passkeys
+	group:  passkeys
+)
+service apollo {
+	// 注册流程
+	@handler RegStart
+	post /registration/start (RegStartReq) returns (RegStartResp)
+
+	@handler RegFinish
+	post /registration/finish (RegFinishReq) returns (BaseResponse)
+
+	// 登录流程
+	@handler LoginStart
+	post /login/start (LoginStartReq) returns (LoginStartResp)
+
+	@handler LoginFinish
+	post /login/finish (LoginFinishReq) returns (LoginFinishResp)
+}
+
