@@ -64,14 +64,7 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq) (resp *types.BaseRes
 	if err != nil {
 		return nil, err
 	}
-	//var credentialBytes []byte
-	//err = json.Unmarshal([]byte(req.Credential), &credentialBytes)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//id := l.svcCtx.Snowflake.Generate()
 
-	fmt.Println("userID:", userID)
 	// 4. 调用gRPC服务完成注册
 	_, err = l.svcCtx.ApolloRpc.FinishRegistration(l.ctx, &apollo.FinishRegistrationReq{
 		UserId:         userID,
@@ -83,14 +76,11 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq) (resp *types.BaseRes
 		return nil, fmt.Errorf("注册验证失败: %v", err)
 	}
 
-	fmt.Println("清理会话数据")
 	// 5. 清理会话数据
 	if _, err := l.svcCtx.Redis.DelCtx(l.ctx, req.SessionID); err != nil {
 		l.Logger.Errorf("删除会话失败: key=%s, err=%v", req.SessionID, err)
 		// 此处不返回错误，因为主流程已成功
 	}
-
-	println("注册成功")
 
 	// 5. 返回成功响应
 	return &types.BaseResponse{
