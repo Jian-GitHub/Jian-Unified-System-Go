@@ -39,6 +39,7 @@ func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.L
 		return nil, fmt.Errorf("会话已过期，请重新登录")
 	}
 
+	fmt.Println("req.Assertion", req.Assertion)
 	// 3. 调用gRPC验证
 	_, err = l.svcCtx.ApolloRpc.FinishLogin(l.ctx, &passkeys.FinishLoginReq{
 		SessionData:    []byte(sessionData),

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"google.golang.org/grpc/codes"
@@ -56,6 +57,8 @@ func (l *StartRegistrationLogic) StartRegistration(in *apollo.StartRegistrationR
 		return nil, status.Error(codes.Internal, "failed to generate challenge")
 	}
 
+	fmt.Println("creation - User ID", creation.Response.User.ID)
+	fmt.Printf("UserID bytes: %x\n", user.WebAuthnID())
 	// 4. 返回CredentialCreation的JSON
 	optionsJson, err := json.Marshal(creation.Response)
 	if err != nil {

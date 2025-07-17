@@ -34,7 +34,7 @@ func (l *StartLoginLogic) StartLogin() (*apollo.StartLoginResp, error) {
 	// 不传用户名，不查用户，直接生成登录选项（无 allowCredentials）
 	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
 		webauthn.WithUserVerification(protocol.VerificationRequired),
-	) // nil 表示不指定用户
+	)
 	if err != nil {
 		l.Logger.Errorf("BeginLogin error: %v", err)
 		return nil, status.Error(codes.Internal, err.Error())
