@@ -13,8 +13,9 @@ type ServiceContext struct {
 	WebAuthn *webauthn.WebAuthn // 新增成员
 
 	UserModel          model.UserModel
-	passkeysModel      model.PasskeysModel
-	authenticatorModel model.AuthenticatorModel
+	PasskeysModel      model.PasskeysModel
+	PasskeyModel       model.PasskeyModel
+	AuthenticatorModel model.AuthenticatorModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -33,7 +34,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:             c,
 		WebAuthn:           wa,
 		UserModel:          model.NewUserModel(sqlConn, c.Cache),
-		passkeysModel:      model.NewPasskeysModel(sqlConn, c.Cache),
-		authenticatorModel: model.NewAuthenticatorModel(sqlConn, c.Cache),
+		PasskeysModel:      model.NewPasskeysModel(sqlConn, c.Cache),
+		PasskeyModel:       model.NewPasskeyModel(sqlConn, c.Cache),
+		AuthenticatorModel: model.NewAuthenticatorModel(sqlConn, c.Cache),
 	}
 }

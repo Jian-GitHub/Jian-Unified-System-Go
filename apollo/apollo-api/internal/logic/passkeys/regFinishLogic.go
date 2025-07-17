@@ -2,8 +2,13 @@ package passkeys
 
 import (
 	"context"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/jus-core/util"
+	"log"
+	"strings"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
@@ -39,21 +44,53 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq) (resp *types.BaseRes
 		return nil, fmt.Errorf("会话已过期或不存在")
 	}
 
-	// 3. 调用gRPC服务完成注册
+	// 从 sessionKey 中解析出 userID
+	parts := strings.Split(req.SessionID, ":")
+	if len(parts) != 3 {
+		log.Fatalf("Invalid session key format")
+	}
+
+	hexStr := parts[2]
+	userIDBytes, err := hex.DecodeString(hexStr)
+	if err != nil {
+		log.Fatalf("Failed to decode hex string: %v", err)
+	}
+
+	userID := util.BytesToInt64(userIDBytes)
+
+	// 3. 反序列化 SessionData（它本质上是一个 JSON 字符串，编码的是 []byte）
+	var sessionBytes []byte
+	err = json.Unmarshal([]byte(sessionData), &sessionBytes)
+	if err != nil {
+		return nil, err
+	}
+	//var credentialBytes []byte
+	//err = json.Unmarshal([]byte(req.Credential), &credentialBytes)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//id := l.svcCtx.Snowflake.Generate()
+
+	fmt.Println("userID:", userID)
+	// 4. 调用gRPC服务完成注册
 	_, err = l.svcCtx.ApolloRpc.FinishRegistration(l.ctx, &apollo.FinishRegistrationReq{
-		SessionData:    []byte(sessionData),
-		CredentialJson: []byte(req.Credential),
+		UserId:         userID,
+		SessionData:    sessionBytes,           //[]byte(sessionData),
+		CredentialJson: []byte(req.Credential), //[]byte(req.Credential),
 	})
 	if err != nil {
 		l.Logger.Errorf("gRPC调用失败: err=%v", err)
 		return nil, fmt.Errorf("注册验证失败: %v", err)
 	}
 
-	// 4. 清理会话数据
+	fmt.Println("清理会话数据")
+	// 5. 清理会话数据
 	if _, err := l.svcCtx.Redis.DelCtx(l.ctx, req.SessionID); err != nil {
 		l.Logger.Errorf("删除会话失败: key=%s, err=%v", req.SessionID, err)
 		// 此处不返回错误，因为主流程已成功
 	}
+
+	println("注册成功")
 
 	// 5. 返回成功响应
 	return &types.BaseResponse{
