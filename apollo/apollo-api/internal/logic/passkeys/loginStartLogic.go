@@ -48,7 +48,7 @@ func (l *LoginStartLogic) LoginStart(req *types.LoginStartReq) (resp *types.Logi
 	}
 
 	// 3. 调用gRPC服务
-	loginResp, err := l.svcCtx.PasskeysRpc.StartLogin(l.ctx, &apollo.StartLoginReq{
+	loginResp, err := l.svcCtx.ApolloRpc.StartLogin(l.ctx, &apollo.StartLoginReq{
 		UserId:          user.Id,
 		CredentialsJson: []byte(req.Credentials),
 	})

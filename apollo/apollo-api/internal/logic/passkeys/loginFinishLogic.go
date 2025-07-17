@@ -40,7 +40,7 @@ func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.L
 	}
 
 	// 3. 调用gRPC验证
-	_, err = l.svcCtx.PasskeysRpc.FinishLogin(l.ctx, &passkeys.FinishLoginReq{
+	_, err = l.svcCtx.ApolloRpc.FinishLogin(l.ctx, &passkeys.FinishLoginReq{
 		SessionData:    []byte(sessionData),
 		CredentialJson: []byte(req.Assertion),
 	})

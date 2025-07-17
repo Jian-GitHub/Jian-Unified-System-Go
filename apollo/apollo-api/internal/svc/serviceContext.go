@@ -11,10 +11,10 @@ import (
 )
 
 type ServiceContext struct {
-	Config      config.Config
-	PasskeysRpc passkeys.Passkeys
-	Redis       *redis.Redis
-	Snowflake   *snowflake.Node // 添加字段
+	Config    config.Config
+	ApolloRpc passkeys.Passkeys
+	Redis     *redis.Redis
+	Snowflake *snowflake.Node // 添加字段
 
 	UserModel          model.UserModel
 	passkeysModel      model.PasskeysModel
@@ -40,7 +40,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	sqlConn := sqlx.NewMysql(c.DB.DataSource)
 	return &ServiceContext{
 		Config:             c,
-		PasskeysRpc:        passkeys.NewPasskeys(client),
+		ApolloRpc:          passkeys.NewPasskeys(client),
 		Redis:              redisClient,
 		Snowflake:          node,
 		UserModel:          model.NewUserModel(sqlConn, c.Cache),

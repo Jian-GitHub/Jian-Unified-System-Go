@@ -40,7 +40,7 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq) (resp *types.BaseRes
 	}
 
 	// 3. 调用gRPC服务完成注册
-	_, err = l.svcCtx.PasskeysRpc.FinishRegistration(l.ctx, &apollo.FinishRegistrationReq{
+	_, err = l.svcCtx.ApolloRpc.FinishRegistration(l.ctx, &apollo.FinishRegistrationReq{
 		SessionData:    []byte(sessionData),
 		CredentialJson: []byte(req.Credential),
 	})

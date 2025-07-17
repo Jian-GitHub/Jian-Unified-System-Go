@@ -34,7 +34,7 @@ func (l *RegStartLogic) RegStart(req *types.RegStartReq) (resp *types.RegStartRe
 	userID := l.svcCtx.Snowflake.Generate().Int64()
 
 	// 2. 调用gRPC服务
-	regResp, err := l.svcCtx.PasskeysRpc.StartRegistration(l.ctx, &apollo.StartRegistrationReq{
+	regResp, err := l.svcCtx.ApolloRpc.StartRegistration(l.ctx, &apollo.StartRegistrationReq{
 		UserId:      userID,
 		UserName:    req.UserName,
 		DisplayName: req.DisplayName,
