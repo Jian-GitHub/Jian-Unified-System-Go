@@ -3,14 +3,13 @@ package logic
 import (
 	"context"
 	"encoding/json"
+	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"jian-unified-system/apollo/apollo-rpc/internal/types"
-	"jian-unified-system/apollo/apollo-rpc/passkeys"
-
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
+	"jian-unified-system/apollo/apollo-rpc/passkeys"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -30,32 +29,15 @@ func NewStartLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StartL
 }
 
 // 登录
-func (l *StartLoginLogic) StartLogin(in *apollo.StartLoginReq) (*apollo.StartLoginResp, error) {
+func (l *StartLoginLogic) StartLogin() (*apollo.StartLoginResp, error) {
 	// todo: add your logic here and delete this line
-	// 1. 参数基础校验
-	if !json.Valid(in.CredentialsJson) {
-		return nil, status.Error(codes.InvalidArgument, "invalid credentials_json format")
-	}
-
-	// 2. 解析凭证列表
-	var credentials []webauthn.Credential
-	if err := json.Unmarshal(in.CredentialsJson, &credentials); err != nil {
-		return nil, status.Error(codes.InvalidArgument, "failed to parse credentials: "+err.Error())
-	}
-
-	// 3. 构建WebAuthn用户结构
-	user := &types.User{
-		ID:          in.UserId,
-		Name:        in.UserName,
-		DisplayName: in.DisplayName,
-		Credentials: credentials, // 使用API传入的凭证
-	}
-
-	// 4. 生成登录选项
-	options, session, err := l.svcCtx.WebAuthn.BeginLogin(user)
+	// 不传用户名，不查用户，直接生成登录选项（无 allowCredentials）
+	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
+		webauthn.WithUserVerification(protocol.VerificationRequired),
+	) // nil 表示不指定用户
 	if err != nil {
-		l.Logger.Errorf("WebAuthn BeginLogin failed: %v", err)
-		return nil, status.Error(codes.Internal, "failed to generate login challenge")
+		l.Logger.Errorf("BeginLogin error: %v", err)
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	// 5. 序列化响应数据

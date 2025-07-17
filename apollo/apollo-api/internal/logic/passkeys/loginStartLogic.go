@@ -28,37 +28,18 @@ func NewLoginStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginS
 	}
 }
 
-func (l *LoginStartLogic) LoginStart(req *types.LoginStartReq) (resp *types.LoginStartResp, err error) {
+func (l *LoginStartLogic) LoginStart() (resp *types.LoginStartResp, err error) {
 	// todo: add your logic here and delete this line
-	// 1. 参数校验
-	//if req.UserID == "" {
-	//	return nil, fmt.Errorf("user_id不能为空")
-	//}
-
-	// 2. 查询用户凭证（示例）
-	//userID, err := strconv.ParseInt(req.UserID, 10, 64)
-	//if err != nil {
-	//	l.Logger.Errorf("userID 转换失败: err=%v", err)
-	//	return nil, err
-	//}
-	user, err := l.svcCtx.UserModel.FindOne(l.ctx, req.UserID)
-	if err != nil {
-		l.Logger.Errorf("查询用户凭证失败: user_id=%s, err=%v", req.UserID, err)
-		return nil, fmt.Errorf("用户凭证获取失败")
-	}
-
 	// 3. 调用gRPC服务
-	loginResp, err := l.svcCtx.ApolloRpc.StartLogin(l.ctx, &apollo.StartLoginReq{
-		UserId:          user.Id,
-		CredentialsJson: []byte(req.Credentials),
-	})
+	loginResp, err := l.svcCtx.ApolloRpc.StartLogin(l.ctx, &apollo.StartLoginReq{})
 	if err != nil {
 		l.Logger.Errorf("gRPC调用失败: err=%v", err)
 		return nil, fmt.Errorf("登录初始化失败")
 	}
 
+	sessionID := l.svcCtx.Snowflake.Generate()
 	// 4. 存储会话数据
-	sessionKey := "webauthn:login:" + hex.EncodeToString([]byte(strconv.FormatInt(user.Id, 10)))
+	sessionKey := "webauthn:login:" + hex.EncodeToString([]byte(strconv.FormatInt(int64(sessionID), 10)))
 	SessionDataJson, err := jsonx.MarshalToString(loginResp.SessionData)
 	if err != nil {
 		l.Logger.Errorf("SessionData 转 JSON 失败: err=%v", err)

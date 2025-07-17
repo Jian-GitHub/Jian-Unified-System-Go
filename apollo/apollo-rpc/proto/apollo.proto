@@ -29,10 +29,10 @@ message FinishRegistrationResp {
 
 // ========== 登录流程 ==========
 message StartLoginReq {
-  int64 user_id = 1;          // API提供
-  string user_name = 2;       // API提供
-  string display_name = 3;    // API提供
-  bytes credentials_json = 4; // API查询的完整凭证列表
+//  int64 user_id = 1;          // API提供
+//  string user_name = 2;       // API提供
+//  string display_name = 3;    // API提供
+//  bytes credentials_json = 4; // API查询的完整凭证列表
 }
 
 message StartLoginResp {

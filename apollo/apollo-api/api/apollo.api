@@ -34,10 +34,7 @@ type (
 		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
 	}
 	// 登录-阶段1 请求
-	LoginStartReq {
-		UserID      int64  `json:"user_id" validate:"required"` // 可改为username/email登录
-		Credentials string `json:"credentials" validate:"required"` // 前端认证数据
-	}
+	LoginStartReq  {}
 	// 登录-阶段1 响应
 	LoginStartResp {
 		BaseResponse
