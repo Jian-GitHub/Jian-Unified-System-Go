@@ -3,8 +3,7 @@ package logic
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/go-webauthn/webauthn/webauthn"
+	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
@@ -33,7 +32,7 @@ func (l *StartLoginLogic) StartLogin() (*apollo.StartLoginResp, error) {
 	// todo: add your logic here and delete this line
 	// 不传用户名，不查用户，直接生成登录选项（无 allowCredentials）
 	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
-		webauthn.WithUserVerification(protocol.VerificationRequired),
+	//webauthn.WithUserVerification(protocol.VerificationRequired),
 	)
 	if err != nil {
 		l.Logger.Errorf("BeginLogin error: %v", err)
@@ -41,12 +40,13 @@ func (l *StartLoginLogic) StartLogin() (*apollo.StartLoginResp, error) {
 	}
 
 	// 5. 序列化响应数据
-	optionsJson, err := json.Marshal(options.Response)
+	optionsJson, err := json.Marshal(options)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to marshal options")
 	}
 
 	sessionData, err := json.Marshal(session)
+	fmt.Println("1 sessionData:", string(sessionData))
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to marshal session")
 	}

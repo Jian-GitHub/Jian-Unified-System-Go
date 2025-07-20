@@ -18,7 +18,7 @@ func LoginStartHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := passkeys.NewLoginStartLogic(r.Context(), svcCtx)
-		resp, err := l.LoginStart()
+		resp, err := l.LoginStart(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

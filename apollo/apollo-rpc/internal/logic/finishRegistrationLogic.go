@@ -96,10 +96,10 @@ func (l *FinishRegistrationLogic) saveCredential(uid int64, credential *webauthn
 	}
 
 	_, err = l.svcCtx.PasskeyModel.Insert(l.ctx, &model.Passkey{
-		CredentialId: base64.URLEncoding.EncodeToString(credential.ID),
+		CredentialId: base64.RawURLEncoding.EncodeToString(credential.ID),
 		UserId:       uid,
 		DisplayName:  "Jian Unified System",
-		PublicKey:    base64.URLEncoding.EncodeToString(credential.PublicKey),
+		PublicKey:    base64.RawURLEncoding.EncodeToString(credential.PublicKey),
 		SignCount:    int64(credential.Authenticator.SignCount),
 		Transports: sql.NullString{
 			String: string(transport),

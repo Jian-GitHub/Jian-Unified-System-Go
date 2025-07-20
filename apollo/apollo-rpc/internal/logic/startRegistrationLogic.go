@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"google.golang.org/grpc/codes"
@@ -46,21 +45,21 @@ func (l *StartRegistrationLogic) StartRegistration(in *apollo.StartRegistrationR
 	// 生成注册选项
 	creation, session, err := l.svcCtx.WebAuthn.BeginRegistration(
 		user,
+		//webauthn.WithAuthenticatorSelection(protocol.AuthenticatorSelection{
+		//	ResidentKey:        protocol.ResidentKeyRequirementRequired,
+		//	RequireResidentKey: protocol.ResidentKeyRequired(), // 如果有这个参数，一定要设上
+		//	UserVerification:   protocol.VerificationRequired,
+		//}),
+		//webauthn.WithConveyancePreference(protocol.PreferNoAttestation),
 		webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired),
-		webauthn.WithAuthenticatorSelection(protocol.AuthenticatorSelection{
-			ResidentKey:      protocol.ResidentKeyRequirementRequired,
-			UserVerification: protocol.VerificationRequired,
-		}),
 	)
 	if err != nil {
 		l.Logger.Error("WebAuthn.BeginRegistration failed: ", err)
 		return nil, status.Error(codes.Internal, "failed to generate challenge")
 	}
 
-	fmt.Println("creation - User ID", creation.Response.User.ID)
-	fmt.Printf("UserID bytes: %x\n", user.WebAuthnID())
 	// 4. 返回CredentialCreation的JSON
-	optionsJson, err := json.Marshal(creation.Response)
+	creationJson, err := json.Marshal(creation)
 	if err != nil {
 		return nil, errors.New("failed to marshal options")
 	}
@@ -72,7 +71,7 @@ func (l *StartRegistrationLogic) StartRegistration(in *apollo.StartRegistrationR
 	}
 
 	return &passkeys.StartRegistrationResp{
-		OptionsJson: optionsJson,
+		OptionsJson: creationJson,
 		SessionData: sessionData,
 	}, nil
 }

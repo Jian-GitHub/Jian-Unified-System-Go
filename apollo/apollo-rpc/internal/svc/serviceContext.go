@@ -24,6 +24,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		RPID:          c.WebAuthn.RPID,
 		RPDisplayName: c.WebAuthn.RPDisplayName,
 		RPOrigins:     c.WebAuthn.RPOrigins,
+		// ⚠️ 启用 discoverable login
+		//AuthenticatorSelection: protocol.AuthenticatorSelection{
+		//	ResidentKey:      protocol.ResidentKeyRequirementRequired,
+		//	UserVerification: protocol.VerificationRequired,
+		//},
 	})
 	if err != nil {
 		panic("初始化WebAuthn失败: " + err.Error())

@@ -3,8 +3,8 @@ package passkeys
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
-	"github.com/zeromicro/go-zero/core/jsonx"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"strconv"
 
@@ -28,7 +28,7 @@ func NewLoginStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginS
 	}
 }
 
-func (l *LoginStartLogic) LoginStart() (resp *types.LoginStartResp, err error) {
+func (l *LoginStartLogic) LoginStart(in *types.LoginStartReq) (resp *types.LoginStartResp, err error) {
 	// todo: add your logic here and delete this line
 	// 3. 调用gRPC服务
 	loginResp, err := l.svcCtx.ApolloRpc.StartLogin(l.ctx, &apollo.StartLoginReq{})
@@ -37,15 +37,16 @@ func (l *LoginStartLogic) LoginStart() (resp *types.LoginStartResp, err error) {
 		return nil, fmt.Errorf("登录初始化失败")
 	}
 
-	sessionID := l.svcCtx.Snowflake.Generate()
+	sessionID := l.svcCtx.Snowflake.Generate().Int64()
 	// 4. 存储会话数据
-	sessionKey := "webauthn:login:" + hex.EncodeToString([]byte(strconv.FormatInt(int64(sessionID), 10)))
-	SessionDataJson, err := jsonx.MarshalToString(loginResp.SessionData)
+	sessionKey := "webauthn:login:" + hex.EncodeToString([]byte(strconv.FormatInt(sessionID, 10)))
+	sessionDataJson, err := json.Marshal(loginResp.SessionData)
+	fmt.Println("SessionDataJson", sessionDataJson)
 	if err != nil {
 		l.Logger.Errorf("SessionData 转 JSON 失败: err=%v", err)
 		return nil, fmt.Errorf("SessionData 转 JSON 失败")
 	}
-	if err := l.svcCtx.Redis.SetexCtx(l.ctx, sessionKey, SessionDataJson, 300); err != nil {
+	if err := l.svcCtx.Redis.SetexCtx(l.ctx, sessionKey, string(sessionDataJson), 300); err != nil {
 		l.Logger.Errorf("Redis存储失败: key=%s, err=%v", sessionKey, err)
 		return nil, fmt.Errorf("系统错误")
 	}
