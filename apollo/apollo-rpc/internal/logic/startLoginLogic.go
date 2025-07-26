@@ -27,9 +27,8 @@ func NewStartLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StartL
 	}
 }
 
-// 登录
+// StartLogin 登录
 func (l *StartLoginLogic) StartLogin() (*apollo.StartLoginResp, error) {
-	// todo: add your logic here and delete this line
 	// 不传用户名，不查用户，直接生成登录选项（无 allowCredentials）
 	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
 	//webauthn.WithUserVerification(protocol.VerificationRequired),
@@ -56,11 +55,3 @@ func (l *StartLoginLogic) StartLogin() (*apollo.StartLoginResp, error) {
 		SessionData: sessionData,
 	}, nil
 }
-
-// 实现webauthn.User接口（精简版）
-//type loginUser struct{}
-//
-//func (u *loginUser) WebAuthnID() []byte                         { return []byte("dummy-id") }
-//func (u *loginUser) WebAuthnName() string                       { return "dummy" }
-//func (u *loginUser) WebAuthnDisplayName() string                { return "Dummy User" }
-//func (u *loginUser) WebAuthnCredentials() []webauthn.Credential { return []webauthn.Credential{} }

@@ -28,8 +28,7 @@ func NewLoginStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginS
 	}
 }
 
-func (l *LoginStartLogic) LoginStart(in *types.LoginStartReq) (resp *types.LoginStartResp, err error) {
-	// todo: add your logic here and delete this line
+func (l *LoginStartLogic) LoginStart() (resp *types.LoginStartResp, err error) {
 	// 3. 调用gRPC服务
 	loginResp, err := l.svcCtx.ApolloRpc.StartLogin(l.ctx, &apollo.StartLoginReq{})
 	if err != nil {
@@ -41,7 +40,6 @@ func (l *LoginStartLogic) LoginStart(in *types.LoginStartReq) (resp *types.Login
 	// 4. 存储会话数据
 	sessionKey := "webauthn:login:" + hex.EncodeToString([]byte(strconv.FormatInt(sessionID, 10)))
 	sessionDataJson, err := json.Marshal(loginResp.SessionData)
-	fmt.Println("SessionDataJson", sessionDataJson)
 	if err != nil {
 		l.Logger.Errorf("SessionData 转 JSON 失败: err=%v", err)
 		return nil, fmt.Errorf("SessionData 转 JSON 失败")

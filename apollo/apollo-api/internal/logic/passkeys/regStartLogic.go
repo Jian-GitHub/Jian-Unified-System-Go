@@ -27,8 +27,7 @@ func NewRegStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegStart
 	}
 }
 
-func (l *RegStartLogic) RegStart(req *types.RegStartReq) (resp *types.RegStartResp, err error) {
-	// todo: add your logic here and delete this line
+func (l *RegStartLogic) RegStart() (resp *types.RegStartResp, err error) {
 	// 1. 生成用户ID（雪花算法）
 	uuid := l.svcCtx.Snowflake.Generate()
 	userID := uuid.Int64()
@@ -45,11 +44,9 @@ func (l *RegStartLogic) RegStart(req *types.RegStartReq) (resp *types.RegStartRe
 
 	// 3. 存储SessionData到Redis（加密）
 	sessionKey := fmt.Sprintf("webauthn:reg:%s", hex.EncodeToString(util.Int64ToBytes(userID)))
-	fmt.Println("regResp.SessionData", string(regResp.SessionData))
 	dataJson, err := json.Marshal(regResp.SessionData)
-	fmt.Println("dataJson", string(dataJson))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SessionData解析失败: %v", err)
 	}
 	if err := l.svcCtx.Redis.SetexCtx(l.ctx, sessionKey, string(dataJson), 300); err != nil {
 		return nil, fmt.Errorf("Redis存储失败: %v", err)

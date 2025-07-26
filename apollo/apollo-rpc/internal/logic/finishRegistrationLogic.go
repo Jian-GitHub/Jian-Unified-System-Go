@@ -38,7 +38,6 @@ func NewFinishRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 
 // FinishRegistration 注册第二步 - 完成
 func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.FinishRegistrationReq) (*apollo.FinishRegistrationResp, error) {
-	// todo: add your logic here and delete this line
 	// 1. 参数校验
 	if len(in.CredentialJson) == 0 || len(in.SessionData) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "missing required fields")
