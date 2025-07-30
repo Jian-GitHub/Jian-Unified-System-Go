@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package apollo;
+
+option go_package = "./apollo";
+
+message Empty {}
+
+// Account
+// ========== 注册流程 ==========
+message RegistrationReq {
+  int64 user_id = 1;
+  string email = 2;
+  string password = 3;
+  string locate = 4;
+  string language = 5;
+}
+
+// ========== 登录流程 ==========
+message LoginReq {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  int64 user_id = 1;
+}
+
+
+// ================= 服务定义 =================
+service Account {
+  // 注册
+  // Registration 注册
+  rpc Registration (RegistrationReq) returns (Empty);
+
+  // 登录
+  // Login 登陆
+  rpc Login (LoginReq) returns (LoginResp);
+}
+
+// Passkeys
+// ========== 注册流程 ==========
+message PasskeysStartRegistrationReq {
+  int64 user_id = 1;          // API生成
+  string user_name = 2;       // API提供
+  string display_name = 3;    // API提供
+}
+
+message PasskeysStartRegistrationResp {
+  bytes options_json = 1;     // WebAuthn标准选项
+  bytes session_data = 2;     // 序列化的SessionData（API需存储）
+}
+
+message PasskeysFinishRegistrationReq {
+  int64 user_id = 1;          // 必须与StartRegistration一致
+  bytes credential_json = 2;  // 前端返回的完整认证数据
+  bytes session_data = 3;     // 新增：StartRegistration返回的session_data
+}
+
+// ========== 登录流程 ==========
+message PasskeysStartLoginResp {
+  bytes options_json = 1;
+  bytes session_data = 2; // 必须返回给API存储
+}
+
+message PasskeysFinishLoginReq {
+  bytes credential_json = 1;  // 前端原始JSON
+  string session_data_json = 2;    // StartLogin返回的session_data
+}
+
+message PasskeysFinishLoginResp {
+  bytes user_id = 1;  // JUS User ID
+}
+
+// ================= 服务定义 =================
+service Passkeys {
+  // 注册
+  // StartRegistration 注册第一步 - 开始
+  rpc StartRegistration (PasskeysStartRegistrationReq) returns (PasskeysStartRegistrationResp);
+  // FinishRegistration 注册第二步 - 完成
+  rpc FinishRegistration (PasskeysFinishRegistrationReq) returns (Empty);
+
+  // 登录
+  // StartLogin 登陆第一步 - 开始
+  rpc StartLogin (Empty) returns (PasskeysStartLoginResp);
+  // FinishLogin 登陆第二步 - 完成 返回用户id
+  rpc FinishLogin (PasskeysFinishLoginReq) returns (PasskeysFinishLoginResp);
+}
+
+
+
+// Third-Party
+// ========== 绑定流程 ==========
+message ThirdPartyBindReq {
+  int64 user_id = 1;          // API生成
+  string raw_data_json = 2;       // API提供
+}
+
+// ========== 继续流程 ==========
+message ThirdPartyContinueReq {
+  string raw_data_json = 1;       // API提供
+}
+
+message ThirdPartyContinueResp {
+  string user_id = 1;       // API提供
+}
+
+// ================= 服务定义 =================
+service ThirdParty {
+  // 绑定
+  // Bind 绑定第三方账号
+  rpc Bind (ThirdPartyBindReq) returns (Empty);
+  // 继续 - 登录或注册
+  // Continue 使用第三方账号继续 - 登录或注册 返回用户id
+  rpc Continue (ThirdPartyBindReq) returns (ThirdPartyContinueResp);
+}

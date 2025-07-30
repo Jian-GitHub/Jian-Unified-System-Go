@@ -9,10 +9,8 @@ type SnowflakeConfig struct {
 	NodeID int64 `json:",optional"` // 可选配置，未配置时自动生成
 }
 
-// 自动初始化雪花节点ID
+// SetupSnowflake 自动初始化雪花节点ID
 func (c *Config) SetupSnowflake() error {
-	println("snowflake")
-	println("c.Snowflake.NodeID", c.Snowflake.NodeID)
 	if c.Snowflake.NodeID == 0 {
 		// 基于Pod IP最后一段自动计算节点ID (0-1023)
 		ip, err := getLastIPSegment()
@@ -20,12 +18,11 @@ func (c *Config) SetupSnowflake() error {
 			return err
 		}
 		c.Snowflake.NodeID = ip % 1024
-		println(c.Snowflake.NodeID)
 	}
 	return nil
 }
 
-// 获取本机IP最后一段作为种子
+// getLocalIPSegment 获取本机IP最后一段作为种子
 func getLocalIPSegment() (int64, error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

@@ -1,54 +1,94 @@
 syntax = "v1"
 
 info (
-	title:   "Apollo"
-	desc:    "Accounts"
+	title:   "Apollo-API"
+	desc:    "Accounts-API"
 	author:  "Jian Qi"
 	email:   "e.jianqi@gmail.com"
 	version: "v0.0.1"
 )
 
 type (
+	// 空
+	Empty  {}
 	// 通用响应
 	BaseResponse {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 	}
+	// Account
+	// 注册
+	RegReq {
+		Email           string `json:"email" validate:"required"`
+		Password        string `json:"password" validate:"required"`
+		ConfirmPassword string `json:"confirm_password" validate:"required"`
+		Language        string `json:"language" validate:"required"`
+	}
+	RegResp {
+		BaseResponse
+		RegRespData {
+			Token string `json:"token"`
+		} `json:"data"`
+	}
+	// 登录
+	LoginReq {
+		Email           string `json:"email" validate:"required"`
+		Password        string `json:"password" validate:"required"`
+		CloudflareToken string `json:"cloudflareToken" validate:"required"`
+	}
+	LoginResp {
+		BaseResponse
+		LoginData {
+			Token string `json:"token"`
+		} `json:"data"`
+	}
+	// Passkeys
 	// 注册-阶段1 请求
 	RegStartReq {
 		UserName    string `json:"user_name" validate:"required"`
 		DisplayName string `json:"display_name"`
 	}
-	Data {
-		OptionsJson string `json:"options_json"` // WebAuthn注册选项
-		SessionID   string `json:"session_id"` // 会话标识
-	}
+	// Data {
+	//  OptionsJson string `json:"options_json"` // WebAuthn注册选项
+	//  SessionID   string `json:"session_id"` // 会话标识
+	// }
 	// 注册-阶段1 响应
-	RegStartResp {
-		BaseResponse
-		Data
-	}
+	// RegStartResp {
+	//  BaseResponse
+	//  Datas {
+	//   Test bool `json:"test"`
+	//  }
+	// }
 	// 注册-阶段2 请求
 	RegFinishReq {
 		SessionID  string `json:"session_id" validate:"required"`
 		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
 	}
 	// 登录-阶段1 请求
-	LoginStartReq  {}
+	// LoginStartReq  {}
 	// 登录-阶段1 响应
-	LoginStartResp {
-		BaseResponse
-		Data
-	}
+	// LoginStartResp {
+	//  BaseResponse
+	//  Data
+	// }
 	// 登录-阶段2 请求
 	LoginFinishReq {
 		SessionID string `json:"session_id" validate:"required"`
 		Assertion string `json:"assertion" validate:"required"` // 前端返回的断言数据
 	}
 	// 登录-阶段2 响应
-	LoginFinishResp {
+	// LoginFinishResp {
+	//  BaseResponse
+	//  Token string
+	// }
+	VerifyTokenReq {
+		Token string `json:"token"`
+	}
+	VerifyTokenResp {
 		BaseResponse
-		Token string
+		Data {
+			Test bool `json:"test"`
+		} `json:"data"`
 	}
 )
 
@@ -57,19 +97,57 @@ type (
 	prefix: /v1/passkeys
 	group:  passkeys
 )
-service apollo {
+service apollo-api {
 	// 注册流程
-	@handler RegStart
-	post /registration/start (RegStartReq) returns (RegStartResp)
+	@handler PasskeysRegStart
+	// 返回:
+	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
+	//   2. 会话标识 - SessionID   string `json:"session_id"`
+	post /registration/start (RegStartReq) returns (BaseResponse)
 
-	@handler RegFinish
+	@handler PasskeysRegFinish
+	// 返回: Token
 	post /registration/finish (RegFinishReq) returns (BaseResponse)
 
 	// 登录流程
-	@handler LoginStart
-	post /login/start (LoginStartReq) returns (LoginStartResp)
+	@handler PasskeysLoginStart
+	// 返回:
+	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
+	//   2. 会话标识 - SessionID   string `json:"session_id"`
+	post /login/start (Empty) returns (BaseResponse)
 
-	@handler LoginFinish
-	post /login/finish (LoginFinishReq) returns (LoginFinishResp)
+	@handler PasskeysLoginFinish
+	// 返回: Token
+	post /login/finish (LoginFinishReq) returns (BaseResponse)
+}
+
+// Account
+@server (
+	prefix: /v1/account
+	group:  account
+)
+service apollo-api {
+	// 注册流程
+	@handler Reg
+	// 返回: Token
+	post /registration (RegReq) returns (RegResp)
+
+	// 登录流程
+	@handler Login
+	// 返回: Token
+	post /login (LoginReq) returns (BaseResponse)
+}
+
+@server (
+	prefix:     /v1/account
+	group:      account
+	jwt:        Auth
+	middleware: JWTVerifyAgentMiddleware
+)
+service apollo-api {
+	// 验证Token
+	@handler VerifyToken
+	// 返回: Token
+	post /VerifyToken (VerifyTokenReq) returns (VerifyTokenResp)
 }
 

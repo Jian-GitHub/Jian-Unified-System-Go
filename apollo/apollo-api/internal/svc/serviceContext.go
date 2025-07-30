@@ -3,26 +3,30 @@ package svc
 import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/zeromicro/go-zero/core/stores/redis"
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/apollo/apollo-api/internal/config"
-	model "jian-unified-system/apollo/apollo-api/internal/model"
-	"jian-unified-system/apollo/apollo-rpc/passkeys"
+	"jian-unified-system/apollo/apollo-api/internal/middleware"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/jus-core/util"
 )
 
 type ServiceContext struct {
 	Config    config.Config
-	ApolloRpc passkeys.Passkeys
 	Redis     *redis.Redis
 	Snowflake *snowflake.Node // 添加字段
+	// Apollo RPC
+	ApolloAccount            apollo.AccountClient
+	ApolloPasskeys           apollo.PasskeysClient
+	ApolloThirdParty         apollo.ThirdPartyClient
+	JWTVerifyAgentMiddleware middleware.JWTVerifyAgentMiddleware
+	// MySQL - Models
+	//UserModel model.UserModel
 
-	UserModel          model.UserModel
-	passkeysModel      model.PasskeysModel
-	authenticatorModel model.AuthenticatorModel
+	GeoService *util.GeoService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	client := zrpc.MustNewClient(c.PasskeysRpc)
+	client := zrpc.MustNewClient(c.ApolloRpc)
 	redisClient, err := redis.NewRedis(c.Redis)
 	if err != nil {
 		panic(err)
@@ -37,14 +41,23 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
-	sqlConn := sqlx.NewMysql(c.DB.DataSource)
+	//sqlConn := sqlx.NewMysql(c.DB.DataSource)
+
+	gs, err := util.NewGeoService()
+	if err != nil {
+		panic("GeoService 加载失败: " + err.Error())
+	}
 	return &ServiceContext{
-		Config:             c,
-		ApolloRpc:          passkeys.NewPasskeys(client),
-		Redis:              redisClient,
-		Snowflake:          node,
-		UserModel:          model.NewUserModel(sqlConn, c.Cache),
-		passkeysModel:      model.NewPasskeysModel(sqlConn, c.Cache),
-		authenticatorModel: model.NewAuthenticatorModel(sqlConn, c.Cache),
+		Config:    c,
+		Redis:     redisClient,
+		Snowflake: node,
+
+		ApolloAccount: apollo.NewAccountClient(client.Conn()),
+		//ApolloPasskeys:   apollo.NewPasskeysClient(client.Conn()),
+		//ApolloThirdParty: apollo.NewThirdPartyClient(client.Conn()),
+
+		//UserModel: model.NewUserModel(sqlConn, c.Cache),
+
+		GeoService: gs,
 	}
 }

@@ -7,7 +7,6 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	//Redis    redis.RedisConf
 	Cache    cache.CacheConf
 	WebAuthn WebAuthnConf `json:",optional"` // 新增配置项
 	DB       struct {

@@ -9,11 +9,15 @@ import (
 
 type Config struct {
 	rest.RestConf
-	PasskeysRpc zrpc.RpcClientConf
-	Redis       redis.RedisConf
-	Snowflake   SnowflakeConfig // 雪花算法配置
-	DB          struct {
+	ApolloRpc zrpc.RpcClientConf
+	Redis     redis.RedisConf
+	Snowflake SnowflakeConfig // 雪花算法配置
+	DB        struct {
 		DataSource string
 	}
 	Cache cache.CacheConf
+	Auth  struct { // JWT 认证需要的密钥和过期时间配置
+		AccessSecret string
+		AccessExpire int64
+	}
 }
