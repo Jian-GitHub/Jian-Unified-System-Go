@@ -28,23 +28,23 @@ func NewRegStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegStart
 	}
 }
 
-func (l *RegStartLogic) RegStart(req *types.RegStartReq) (resp *types.RegStartResp, err error) {
+func (l *RegStartLogic) RegStart() (resp *types.RegStartResp, err error) {
 	// todo: add your logic here and delete this line
-	// 1. 生成用户ID（雪花算法）
+	// 1. user UUID
 	uuid := l.svcCtx.Snowflake.Generate()
 	userID := uuid.Int64()
 
-	// 2. 调用gRPC服务
+	// 2. Call gRPC service
 	regResp, err := l.svcCtx.ApolloPasskeys.StartRegistration(l.ctx, &apollo.PasskeysStartRegistrationReq{
 		UserId:      userID,
-		UserName:    hex.EncodeToString(uuid.Bytes()),
-		DisplayName: "Jian Unified System",
+		UserName:    "Apollo System",
+		DisplayName: "Apollo System",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %v", err)
 	}
 
-	// 3. 存储SessionData到Redis（加密）
+	// 3. save SessionData -> Redis (base64)
 	sessionKey := fmt.Sprintf("webauthn:reg:%s", hex.EncodeToString(util.Int64ToBytes(userID)))
 	dataJson, err := json.Marshal(regResp.SessionData)
 	if err != nil {

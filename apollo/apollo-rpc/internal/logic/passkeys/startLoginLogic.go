@@ -27,10 +27,8 @@ func NewStartLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StartL
 	}
 }
 
-// 登录
-func (l *StartLoginLogic) StartLogin(in *apollo.Empty) (*apollo.PasskeysStartLoginResp, error) {
+func (l *StartLoginLogic) StartLogin() (*apollo.PasskeysStartLoginResp, error) {
 	// todo: add your logic here and delete this line
-	// 不传用户名，不查用户，直接生成登录选项（无 allowCredentials）
 	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
 	//webauthn.WithUserVerification(protocol.VerificationRequired),
 	)
@@ -39,7 +37,7 @@ func (l *StartLoginLogic) StartLogin(in *apollo.Empty) (*apollo.PasskeysStartLog
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// 5. 序列化响应数据
+	// 5. Deserialize response data
 	optionsJson, err := json.Marshal(options)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to marshal options")

@@ -1,7 +1,6 @@
 package passkeyslogic
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"encoding/base64"
@@ -10,13 +9,11 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
-	"jian-unified-system/apollo/apollo-rpc/internal/types"
-	"net/http"
-	"net/http/httptest"
-
 	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/apollo/apollo-rpc/internal/model"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
+	"jian-unified-system/apollo/apollo-rpc/internal/types"
+	passkeyUtil "jian-unified-system/apollo/apollo-rpc/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -35,54 +32,58 @@ func NewFinishRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 	}
 }
 
-// FinishRegistration 注册第二步 - 完成
+// FinishRegistration Passkeys Registration - Step 2
 func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRegistrationReq) (*apollo.Empty, error) {
-	// todo: add your logic here and delete this line
-	// 1. 参数校验
+	// 1. Check params
 	if len(in.CredentialJson) == 0 || len(in.SessionData) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "missing required fields")
 	}
-	// 2. 反序列化SessionData
+	// 2. Deserialize SessionData
 	var session webauthn.SessionData
 	if err := json.Unmarshal(in.SessionData, &session); err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid session data: "+err.Error())
 	}
 
-	// 3. 创建模拟HTTP请求
-	req, err := createCredentialRequest(in.CredentialJson)
+	// 3. create HTTP request
+	req, err := passkeyUtil.CreateCredentialRequest(in.CredentialJson)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid credential format")
 	}
 
-	user := &types.User{ID: in.UserId}
+	webauthnUser := &types.WebauthnUser{ID: in.UserId}
 
-	// 4. 验证凭证
+	// 4. Check credential
 	credential, err := l.svcCtx.WebAuthn.FinishRegistration(
-		user,
+		webauthnUser,
 		session,
 		req,
 	)
 	if err != nil {
-		fmt.Println("验证凭证报错: %v", err)
+		fmt.Println("verify fail: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "webauthn verification failed: "+err.Error())
 	}
 
-	err = l.saveCredential(user.ID, credential)
+	_, err = l.svcCtx.UserModel.Insert(
+		l.ctx,
+		&model.User{
+			Id:       in.UserId,
+			Locate:   in.Locate,
+			Language: in.Language,
+		},
+	)
 	if err != nil {
-		fmt.Println("saveCredential报错: %v", err)
+		return nil, err
+	}
+
+	err = l.saveCredential(webauthnUser.ID, credential)
+	if err != nil {
+		_ = l.svcCtx.UserModel.Delete(l.ctx, in.UserId)
+		fmt.Println("save Credential fail: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "webauthn verification failed: "+err.Error())
 	}
 	return &apollo.Empty{}, nil
 }
 
-// 辅助函数：将JSON转换为http.Request
-func createCredentialRequest(jsonData []byte) (*http.Request, error) {
-	req := httptest.NewRequest("POST", "/", bytes.NewReader(jsonData))
-	req.Header.Set("Content-Type", "application/json")
-	return req, nil
-}
-
-// 保存凭证
 func (l *FinishRegistrationLogic) saveCredential(uid int64, credential *webauthn.Credential) error {
 	transport, err := json.Marshal(credential.Transport)
 	if err != nil {
@@ -92,7 +93,7 @@ func (l *FinishRegistrationLogic) saveCredential(uid int64, credential *webauthn
 	_, err = l.svcCtx.PasskeyModel.Insert(l.ctx, &model.Passkey{
 		CredentialId: base64.RawURLEncoding.EncodeToString(credential.ID),
 		UserId:       uid,
-		DisplayName:  "Jian Unified System",
+		DisplayName:  "Apollo System",
 		PublicKey:    base64.RawURLEncoding.EncodeToString(credential.PublicKey),
 		SignCount:    int64(credential.Authenticator.SignCount),
 		Transports: sql.NullString{

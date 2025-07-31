@@ -28,16 +28,16 @@ func NewLoginStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginS
 	}
 }
 
-func (l *LoginStartLogic) LoginStart(req *types.Empty) (resp *types.LoginStartResp, err error) {
+func (l *LoginStartLogic) LoginStart() (resp *types.LoginStartResp, err error) {
 	// todo: add your logic here and delete this line
-	// 1. 调用gRPC服务
+	// 1. gRPC
 	loginResp, err := l.svcCtx.ApolloPasskeys.StartLogin(l.ctx, &apollo.Empty{})
 	if err != nil {
 		l.Logger.Errorf("gRPC调用失败: err=%v", err)
 		return nil, fmt.Errorf("登录初始化失败")
 	}
 
-	// 4. 存储会话数据
+	// 4. save session
 	sessionID := l.svcCtx.Snowflake.Generate().Int64()
 	sessionKey := "webauthn:login:" + hex.EncodeToString([]byte(strconv.FormatInt(sessionID, 10)))
 	sessionDataJson, err := json.Marshal(loginResp.SessionData)

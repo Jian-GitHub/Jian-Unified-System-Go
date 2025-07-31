@@ -55,6 +55,8 @@ message PasskeysFinishRegistrationReq {
   int64 user_id = 1;          // 必须与StartRegistration一致
   bytes credential_json = 2;  // 前端返回的完整认证数据
   bytes session_data = 3;     // 新增：StartRegistration返回的session_data
+  string Locate = 4;
+  string Language = 5;
 }
 
 // ========== 登录流程 ==========

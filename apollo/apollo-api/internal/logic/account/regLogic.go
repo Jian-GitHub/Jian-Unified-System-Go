@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
+	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/util"
-	"net"
 	"net/http"
 	"strings"
 
@@ -80,13 +80,13 @@ func (l *RegLogic) Reg(req *types.RegReq, r *http.Request) (resp *types.RegResp,
 	// Check Finished
 
 	// Get Locate
-	//fmt.Println("r.RemoteAddr: ", r.RemoteAddr)
-	ip := getRealIP(r)
-	locate := "CN"
-	info, err := l.svcCtx.GeoService.Lookup(ip)
-	if err == nil && info != nil {
-		locate = info.IsoCode
-	}
+	//ip := apolloUtil.GetRealIP(r)
+	//locate := "CN"
+	//info, err := l.svcCtx.GeoService.Lookup(ip)
+	//if err == nil && info != nil {
+	//	locate = info.IsoCode
+	//}
+	locate := apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup)
 
 	// Generate a new User -> rpc saves new user
 	id := l.svcCtx.Snowflake.Generate().Int64()
@@ -105,7 +105,6 @@ func (l *RegLogic) Reg(req *types.RegReq, r *http.Request) (resp *types.RegResp,
 
 	// All done -> Generate JWT
 	args := make(map[string]interface{})
-	args["test"] = true
 	args["id"] = id
 	token, err := util.GenToken(l.svcCtx.Config.Auth.AccessSecret, l.svcCtx.Config.Auth.AccessExpire, args)
 	if err != nil {
@@ -129,25 +128,4 @@ func (l *RegLogic) Reg(req *types.RegReq, r *http.Request) (resp *types.RegResp,
 			Token string `json:"token"`
 		}{Token: token},
 	}, nil
-}
-
-func getRealIP(r *http.Request) string {
-	// 尝试从 X-Forwarded-For
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		// 可能多个 IP 用逗号分隔，取第一个
-		ips := strings.Split(xff, ",")
-		return strings.TrimSpace(ips[0])
-	}
-
-	// 尝试从 X-Real-IP
-	if xrip := r.Header.Get("X-Real-IP"); xrip != "" {
-		return xrip
-	}
-
-	// 否则 fallback 到 RemoteAddr
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		return r.RemoteAddr
-	}
-	return ip
 }

@@ -31,20 +31,20 @@ func NewStartRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 	}
 }
 
-// StartRegistration 注册
+// StartRegistration Passkeys Registration (RPC) - Step 1
 func (l *StartRegistrationLogic) StartRegistration(in *apollo.PasskeysStartRegistrationReq) (*apollo.PasskeysStartRegistrationResp, error) {
 	// todo: add your logic here and delete this line
-	// 1. 创建WebAuthn用户结构
-	user := &types.User{
+	// 1. new WebAuthn webauthnUser
+	webauthnUser := &types.WebauthnUser{
 		ID:          in.UserId,
 		Name:        in.UserName,
 		DisplayName: in.DisplayName,
-		Credentials: []webauthn.Credential{}, // 新用户无凭证
+		Credentials: []webauthn.Credential{},
 	}
 
-	// 2. 生成注册选项
+	// 2. Generate creation
 	creation, session, err := l.svcCtx.WebAuthn.BeginRegistration(
-		user,
+		webauthnUser,
 		webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired),
 	)
 	if err != nil {
@@ -52,13 +52,13 @@ func (l *StartRegistrationLogic) StartRegistration(in *apollo.PasskeysStartRegis
 		return nil, status.Error(codes.Internal, "failed to generate challenge")
 	}
 
-	// 3. 返回CredentialCreation的JSON
+	// 3. CredentialCreation JSON
 	creationJson, err := json.Marshal(creation)
 	if err != nil {
 		return nil, errorx.Wrap(errors.New("Can not Marshal creation JSON"), "failed to marshal options")
 	}
 
-	// 序列化SessionData（API需存储此数据）
+	// Serialize SessionData
 	sessionData, err := json.Marshal(session)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to marshal session")

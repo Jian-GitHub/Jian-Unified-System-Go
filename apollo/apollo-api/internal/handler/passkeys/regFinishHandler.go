@@ -18,7 +18,7 @@ func RegFinishHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := passkeys.NewRegFinishLogic(r.Context(), svcCtx)
-		resp, err := l.RegFinish(&req)
+		resp, err := l.RegFinish(&req, r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

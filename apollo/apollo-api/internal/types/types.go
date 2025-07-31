@@ -47,6 +47,7 @@ type LoginStartResp struct {
 type RegFinishReq struct {
 	SessionID  string `json:"session_id" validate:"required"`
 	Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
+	Language   string `json:"language" validate:"required"`
 }
 
 type RegFinishResp struct {

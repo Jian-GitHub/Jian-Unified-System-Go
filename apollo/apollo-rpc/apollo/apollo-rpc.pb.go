@@ -351,6 +351,8 @@ type PasskeysFinishRegistrationReq struct {
 	UserId         int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                        // 必须与StartRegistration一致
 	CredentialJson []byte                 `protobuf:"bytes,2,opt,name=credential_json,json=credentialJson,proto3" json:"credential_json,omitempty"` // 前端返回的完整认证数据
 	SessionData    []byte                 `protobuf:"bytes,3,opt,name=session_data,json=sessionData,proto3" json:"session_data,omitempty"`          // 新增：StartRegistration返回的session_data
+	Locate         string                 `protobuf:"bytes,4,opt,name=Locate,proto3" json:"Locate,omitempty"`
+	Language       string                 `protobuf:"bytes,5,opt,name=Language,proto3" json:"Language,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -404,6 +406,20 @@ func (x *PasskeysFinishRegistrationReq) GetSessionData() []byte {
 		return x.SessionData
 	}
 	return nil
+}
+
+func (x *PasskeysFinishRegistrationReq) GetLocate() string {
+	if x != nil {
+		return x.Locate
+	}
+	return ""
+}
+
+func (x *PasskeysFinishRegistrationReq) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
 }
 
 // ========== 登录流程 ==========
@@ -721,11 +737,13 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\"e\n" +
 	"\x1dPasskeysStartRegistrationResp\x12!\n" +
 	"\foptions_json\x18\x01 \x01(\fR\voptionsJson\x12!\n" +
-	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"\x84\x01\n" +
+	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"\xb8\x01\n" +
 	"\x1dPasskeysFinishRegistrationReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12'\n" +
 	"\x0fcredential_json\x18\x02 \x01(\fR\x0ecredentialJson\x12!\n" +
-	"\fsession_data\x18\x03 \x01(\fR\vsessionData\"^\n" +
+	"\fsession_data\x18\x03 \x01(\fR\vsessionData\x12\x16\n" +
+	"\x06Locate\x18\x04 \x01(\tR\x06Locate\x12\x1a\n" +
+	"\bLanguage\x18\x05 \x01(\tR\bLanguage\"^\n" +
 	"\x16PasskeysStartLoginResp\x12!\n" +
 	"\foptions_json\x18\x01 \x01(\fR\voptionsJson\x12!\n" +
 	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"m\n" +

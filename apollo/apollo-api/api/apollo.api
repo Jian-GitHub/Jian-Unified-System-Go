@@ -64,6 +64,7 @@ type (
 	RegFinishReq {
 		SessionID  string `json:"session_id" validate:"required"`
 		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
+		Language   string `json:"language" validate:"required"`
 	}
 	// 注册-阶段2 响应
 	RegFinishResp {

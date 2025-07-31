@@ -18,7 +18,7 @@ func RegStartHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := passkeys.NewRegStartLogic(r.Context(), svcCtx)
-		resp, err := l.RegStart(&req)
+		resp, err := l.RegStart()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

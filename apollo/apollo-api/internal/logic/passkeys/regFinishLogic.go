@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/zeromicro/go-zero/core/errorx"
+	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/util"
 	"log"
+	"net/http"
 	"strings"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
@@ -31,21 +33,21 @@ func NewRegFinishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegFini
 	}
 }
 
-func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq) (resp *types.RegFinishResp, err error) {
+func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq, r *http.Request) (resp *types.RegFinishResp, err error) {
 	// todo: add your logic here and delete this line
-	// 1. 参数校验
+	// 1. Check params
 	if len(req.SessionID) == 0 || len(req.Credential) == 0 {
 		return nil, errorx.Wrap(errors.New("session_id or credential is null"), "params error")
 	}
 
-	// 2. 从Redis获取SessionData
+	// 2. Redis -> SessionData
 	sessionData, err := l.svcCtx.Redis.GetCtx(l.ctx, req.SessionID)
 	if err != nil {
 		l.Logger.Errorf("获取会话失败: key=%s, err=%v", req.SessionID, err)
 		return nil, errorx.Wrap(errors.New("not found"), "session error")
 	}
 
-	// 从 sessionKey 中解析出 userID
+	// sessionKey -> userID
 	parts := strings.Split(req.SessionID, ":")
 	if len(parts) != 3 {
 		log.Fatalf("Invalid session key format")
@@ -57,33 +59,34 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq) (resp *types.RegFini
 	}
 	userID := util.BytesToInt64(userIDBytes)
 
-	// 3. 反序列化 SessionData（它本质上是一个 JSON 字符串，编码的是 []byte）
+	// 3. Deserialize SessionData
 	var sessionBytes []byte
 	err = json.Unmarshal([]byte(sessionData), &sessionBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	// 4. 调用gRPC服务完成注册
+	// 4. gRPC -> finish
 	_, err = l.svcCtx.ApolloPasskeys.FinishRegistration(l.ctx, &apollo.PasskeysFinishRegistrationReq{
 		UserId:         userID,
 		SessionData:    sessionBytes,
 		CredentialJson: []byte(req.Credential),
+		Locate:         apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup),
+		Language:       req.Language,
 	})
 	if err != nil {
-		l.Logger.Errorf("gRPC调用失败: err=%v", err)
+		l.Logger.Errorf("gRPC fail: err=%v", err)
 		return nil, errorx.Wrap(errors.New("verify fail: %v"), "reg error")
 	}
 
 	// 5. 清理会话数据
 	if _, err := l.svcCtx.Redis.DelCtx(l.ctx, req.SessionID); err != nil {
-		l.Logger.Errorf("删除会话失败: key=%s, err=%v", req.SessionID, err)
-		// 此处不返回错误，因为主流程已成功
+		l.Logger.Errorf("remove session fail: key=%s, err=%v", req.SessionID, err)
+		// ignore unnecessary err
 	}
 
 	// 6. All done -> Generate JWT
 	args := make(map[string]interface{})
-	args["test"] = true
 	args["id"] = userID
 	token, err := util.GenToken(l.svcCtx.Config.Auth.AccessSecret, l.svcCtx.Config.Auth.AccessExpire, args)
 	if err != nil {
