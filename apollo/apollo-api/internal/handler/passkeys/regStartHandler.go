@@ -9,16 +9,16 @@ import (
 	"jian-unified-system/apollo/apollo-api/internal/types"
 )
 
-func PasskeysLoginStartHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func RegStartHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.Empty
+		var req types.RegStartReq
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := passkeys.NewPasskeysLoginStartLogic(r.Context(), svcCtx)
-		resp, err := l.PasskeysLoginStart(&req)
+		l := passkeys.NewRegStartLogic(r.Context(), svcCtx)
+		resp, err := l.RegStart(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

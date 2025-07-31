@@ -9,21 +9,21 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type PasskeysRegFinishLogic struct {
+type LoginFinishLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewPasskeysRegFinishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PasskeysRegFinishLogic {
-	return &PasskeysRegFinishLogic{
+func NewLoginFinishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginFinishLogic {
+	return &LoginFinishLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *PasskeysRegFinishLogic) PasskeysRegFinish(req *types.RegFinishReq) (resp *types.BaseResponse, err error) {
+func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.BaseResponse, err error) {
 	// todo: add your logic here and delete this line
 
 	return

@@ -52,8 +52,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Redis:     redisClient,
 		Snowflake: node,
 
-		ApolloAccount: apollo.NewAccountClient(client.Conn()),
-		//ApolloPasskeys:   apollo.NewPasskeysClient(client.Conn()),
+		ApolloAccount:  apollo.NewAccountClient(client.Conn()),
+		ApolloPasskeys: apollo.NewPasskeysClient(client.Conn()),
 		//ApolloThirdParty: apollo.NewThirdPartyClient(client.Conn()),
 
 		//UserModel: model.NewUserModel(sqlConn, c.Cache),

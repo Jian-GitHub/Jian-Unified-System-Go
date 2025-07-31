@@ -53,16 +53,24 @@ type (
 	//  SessionID   string `json:"session_id"` // 会话标识
 	// }
 	// 注册-阶段1 响应
-	// RegStartResp {
-	//  BaseResponse
-	//  Datas {
-	//   Test bool `json:"test"`
-	//  }
-	// }
+	RegStartResp {
+		BaseResponse
+		RegStartRespData {
+			OptionsJson string `json:"options_json"` // WebAuthn注册选项
+			SessionID   string `json:"session_id"` // 会话标识
+		} `json:"data"`
+	}
 	// 注册-阶段2 请求
 	RegFinishReq {
 		SessionID  string `json:"session_id" validate:"required"`
 		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
+	}
+	// 注册-阶段2 响应
+	RegFinishResp {
+		BaseResponse
+		RegFinishRespData {
+			Token string `json:"token"`
+		} `json:"data"`
 	}
 	// 登录-阶段1 请求
 	// LoginStartReq  {}
@@ -99,24 +107,24 @@ type (
 )
 service apollo-api {
 	// 注册流程
-	@handler PasskeysRegStart
+	@handler RegStart
 	// 返回:
 	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
 	//   2. 会话标识 - SessionID   string `json:"session_id"`
-	post /registration/start (RegStartReq) returns (BaseResponse)
+	post /registration/start (RegStartReq) returns (RegStartResp)
 
-	@handler PasskeysRegFinish
+	@handler RegFinish
 	// 返回: Token
-	post /registration/finish (RegFinishReq) returns (BaseResponse)
+	post /registration/finish (RegFinishReq) returns (RegFinishResp)
 
 	// 登录流程
-	@handler PasskeysLoginStart
+	@handler LoginStart
 	// 返回:
 	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
 	//   2. 会话标识 - SessionID   string `json:"session_id"`
 	post /login/start (Empty) returns (BaseResponse)
 
-	@handler PasskeysLoginFinish
+	@handler LoginFinish
 	// 返回: Token
 	post /login/finish (LoginFinishReq) returns (BaseResponse)
 }

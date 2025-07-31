@@ -2,7 +2,7 @@
 // versions:
 //  goctl version: 1.8.5
 
-package genModel
+package model
 
 import (
 	"context"

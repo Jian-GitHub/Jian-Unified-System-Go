@@ -32,7 +32,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 
 	server.AddRoutes(
 		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.JWTVerifyAgentMiddleware.Handle},
+			[]rest.Middleware{serverCtx.JWTVerifyAgentMiddleware},
 			[]rest.Route{
 				{
 					Method:  http.MethodPost,
@@ -50,22 +50,22 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/login/finish",
-				Handler: passkeys.PasskeysLoginFinishHandler(serverCtx),
+				Handler: passkeys.LoginFinishHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/login/start",
-				Handler: passkeys.PasskeysLoginStartHandler(serverCtx),
+				Handler: passkeys.LoginStartHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/registration/finish",
-				Handler: passkeys.PasskeysRegFinishHandler(serverCtx),
+				Handler: passkeys.RegFinishHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/registration/start",
-				Handler: passkeys.PasskeysRegStartHandler(serverCtx),
+				Handler: passkeys.RegStartHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/v1/passkeys"),

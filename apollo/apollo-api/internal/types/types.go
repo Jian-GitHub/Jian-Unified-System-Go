@@ -34,6 +34,13 @@ type RegFinishReq struct {
 	Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
 }
 
+type RegFinishResp struct {
+	BaseResponse
+	RegFinishRespData struct {
+		Token string `json:"token"`
+	} `json:"data"`
+}
+
 type RegReq struct {
 	Email           string `json:"email" validate:"required"`
 	Password        string `json:"password" validate:"required"`
@@ -51,6 +58,14 @@ type RegResp struct {
 type RegStartReq struct {
 	UserName    string `json:"user_name" validate:"required"`
 	DisplayName string `json:"display_name"`
+}
+
+type RegStartResp struct {
+	BaseResponse
+	RegStartRespData struct {
+		OptionsJson string `json:"options_json"` // WebAuthn注册选项
+		SessionID   string `json:"session_id"`   // 会话标识
+	} `json:"data"`
 }
 
 type VerifyTokenReq struct {

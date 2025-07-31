@@ -9,7 +9,7 @@ import (
 	"jian-unified-system/apollo/apollo-api/internal/types"
 )
 
-func PasskeysRegFinishHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func RegFinishHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.RegFinishReq
 		if err := httpx.Parse(r, &req); err != nil {
@@ -17,8 +17,8 @@ func PasskeysRegFinishHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		l := passkeys.NewPasskeysRegFinishLogic(r.Context(), svcCtx)
-		resp, err := l.PasskeysRegFinish(&req)
+		l := passkeys.NewRegFinishLogic(r.Context(), svcCtx)
+		resp, err := l.RegFinish(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
