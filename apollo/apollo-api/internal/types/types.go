@@ -16,6 +16,13 @@ type LoginFinishReq struct {
 	Assertion string `json:"assertion" validate:"required"` // 前端返回的断言数据
 }
 
+type LoginFinishResp struct {
+	BaseResponse
+	LoginFinishRespData struct {
+		Token string `json:"token"`
+	} `json:"data"`
+}
+
 type LoginReq struct {
 	Email           string `json:"email" validate:"required"`
 	Password        string `json:"password" validate:"required"`
@@ -26,6 +33,14 @@ type LoginResp struct {
 	BaseResponse
 	LoginData struct {
 		Token string `json:"token"`
+	} `json:"data"`
+}
+
+type LoginStartResp struct {
+	BaseResponse
+	LoginStartRespData struct {
+		OptionsJson string `json:"options_json"` // WebAuthn注册选项
+		SessionID   string `json:"session_id"`   // 会话标识
 	} `json:"data"`
 }
 

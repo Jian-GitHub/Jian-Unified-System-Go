@@ -2,6 +2,10 @@ package passkeyslogic
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -26,6 +30,29 @@ func NewStartLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StartL
 // 登录
 func (l *StartLoginLogic) StartLogin(in *apollo.Empty) (*apollo.PasskeysStartLoginResp, error) {
 	// todo: add your logic here and delete this line
+	// 不传用户名，不查用户，直接生成登录选项（无 allowCredentials）
+	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
+	//webauthn.WithUserVerification(protocol.VerificationRequired),
+	)
+	if err != nil {
+		l.Logger.Errorf("BeginLogin error: %v", err)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
-	return &apollo.PasskeysStartLoginResp{}, nil
+	// 5. 序列化响应数据
+	optionsJson, err := json.Marshal(options)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to marshal options")
+	}
+
+	sessionData, err := json.Marshal(session)
+	fmt.Println("1 sessionData:", string(sessionData))
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to marshal session")
+	}
+
+	return &apollo.PasskeysStartLoginResp{
+		OptionsJson: optionsJson,
+		SessionData: sessionData,
+	}, nil
 }

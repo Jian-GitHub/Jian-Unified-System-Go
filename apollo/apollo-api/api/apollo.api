@@ -75,20 +75,25 @@ type (
 	// 登录-阶段1 请求
 	// LoginStartReq  {}
 	// 登录-阶段1 响应
-	// LoginStartResp {
-	//  BaseResponse
-	//  Data
-	// }
+	LoginStartResp {
+		BaseResponse
+		LoginStartRespData {
+			OptionsJson string `json:"options_json"` // WebAuthn注册选项
+			SessionID   string `json:"session_id"` // 会话标识
+		} `json:"data"`
+	}
 	// 登录-阶段2 请求
 	LoginFinishReq {
 		SessionID string `json:"session_id" validate:"required"`
 		Assertion string `json:"assertion" validate:"required"` // 前端返回的断言数据
 	}
 	// 登录-阶段2 响应
-	// LoginFinishResp {
-	//  BaseResponse
-	//  Token string
-	// }
+	LoginFinishResp {
+		BaseResponse
+		LoginFinishRespData {
+			Token string `json:"token"`
+		} `json:"data"`
+	}
 	VerifyTokenReq {
 		Token string `json:"token"`
 	}
@@ -122,11 +127,11 @@ service apollo-api {
 	// 返回:
 	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
 	//   2. 会话标识 - SessionID   string `json:"session_id"`
-	post /login/start (Empty) returns (BaseResponse)
+	post /login/start (Empty) returns (LoginStartResp)
 
 	@handler LoginFinish
 	// 返回: Token
-	post /login/finish (LoginFinishReq) returns (BaseResponse)
+	post /login/finish (LoginFinishReq) returns (LoginFinishResp)
 }
 
 // Account

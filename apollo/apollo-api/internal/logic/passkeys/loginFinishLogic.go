@@ -23,7 +23,7 @@ func NewLoginFinishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Login
 	}
 }
 
-func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.BaseResponse, err error) {
+func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.LoginFinishResp, err error) {
 	// todo: add your logic here and delete this line
 
 	return
