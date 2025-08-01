@@ -14,6 +14,7 @@ import (
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
 	"jian-unified-system/apollo/apollo-rpc/internal/types"
 	passkeyUtil "jian-unified-system/apollo/apollo-rpc/util"
+	"strings"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -38,7 +39,7 @@ func (l *FinishLoginLogic) FinishLogin(in *apollo.PasskeysFinishLoginReq) (*apol
 	// todo: add your logic here and delete this line
 	// 1. 先Base64解码
 	//s := strings.Trim(string(in.SessionData), "\"")
-	decoded, err := base64.URLEncoding.DecodeString(in.SessionDataJson)
+	decoded, err := base64.URLEncoding.DecodeString(strings.Trim(string(in.SessionDataJson), "\""))
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "base64 decode session data failed: "+err.Error())
 	}

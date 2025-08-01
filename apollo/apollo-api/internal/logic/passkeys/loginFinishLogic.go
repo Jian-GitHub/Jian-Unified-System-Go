@@ -59,6 +59,7 @@ func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.L
 		l.Logger.Errorf("获取会话失败: key=%s, err=%v", req.SessionID, err)
 		return nil, fmt.Errorf("会话已过期，请重新登录")
 	}
+	fmt.Println(sessionData)
 
 	// 3. call gRPC
 	response, err := l.svcCtx.ApolloPasskeys.FinishLogin(l.ctx, &apollo.PasskeysFinishLoginReq{
