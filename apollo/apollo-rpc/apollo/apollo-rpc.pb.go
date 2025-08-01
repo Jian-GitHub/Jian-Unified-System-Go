@@ -477,7 +477,7 @@ func (x *PasskeysStartLoginResp) GetSessionData() []byte {
 
 type PasskeysFinishLoginReq struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	CredentialJson  []byte                 `protobuf:"bytes,1,opt,name=credential_json,json=credentialJson,proto3" json:"credential_json,omitempty"`      // 前端原始JSON
+	CredentialJson  string                 `protobuf:"bytes,1,opt,name=credential_json,json=credentialJson,proto3" json:"credential_json,omitempty"`      // 前端原始JSON
 	SessionDataJson string                 `protobuf:"bytes,2,opt,name=session_data_json,json=sessionDataJson,proto3" json:"session_data_json,omitempty"` // StartLogin返回的session_data
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -513,11 +513,11 @@ func (*PasskeysFinishLoginReq) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *PasskeysFinishLoginReq) GetCredentialJson() []byte {
+func (x *PasskeysFinishLoginReq) GetCredentialJson() string {
 	if x != nil {
 		return x.CredentialJson
 	}
-	return nil
+	return ""
 }
 
 func (x *PasskeysFinishLoginReq) GetSessionDataJson() string {
@@ -529,7 +529,7 @@ func (x *PasskeysFinishLoginReq) GetSessionDataJson() string {
 
 type PasskeysFinishLoginResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        []byte                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // JUS User ID
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // JUS User ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -564,11 +564,11 @@ func (*PasskeysFinishLoginResp) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *PasskeysFinishLoginResp) GetUserId() []byte {
+func (x *PasskeysFinishLoginResp) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
-	return nil
+	return 0
 }
 
 // Third-Party
@@ -748,10 +748,10 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\foptions_json\x18\x01 \x01(\fR\voptionsJson\x12!\n" +
 	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"m\n" +
 	"\x16PasskeysFinishLoginReq\x12'\n" +
-	"\x0fcredential_json\x18\x01 \x01(\fR\x0ecredentialJson\x12*\n" +
+	"\x0fcredential_json\x18\x01 \x01(\tR\x0ecredentialJson\x12*\n" +
 	"\x11session_data_json\x18\x02 \x01(\tR\x0fsessionDataJson\"2\n" +
 	"\x17PasskeysFinishLoginResp\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\fR\x06userId\"P\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"P\n" +
 	"\x11ThirdPartyBindReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\"\n" +
 	"\rraw_data_json\x18\x02 \x01(\tR\vrawDataJson\";\n" +

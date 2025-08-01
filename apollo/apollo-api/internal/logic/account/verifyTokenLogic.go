@@ -27,7 +27,7 @@ func NewVerifyTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Verif
 func (l *VerifyTokenLogic) VerifyToken(req *types.VerifyTokenReq) (resp *types.VerifyTokenResp, err error) {
 	// todo: add your logic here and delete this line
 	returns := make(map[string]any)
-	returns["test"] = l.ctx.Value("test")
+	returns["id"] = l.ctx.Value("id")
 
 	dataJson, err := jsonx.MarshalToString(returns)
 	if err != nil {
@@ -42,7 +42,7 @@ func (l *VerifyTokenLogic) VerifyToken(req *types.VerifyTokenReq) (resp *types.V
 		Data: struct {
 			Test bool `json:"test"`
 		}{
-			Test: returns["test"].(bool),
+			Test: true,
 		},
 	}, nil
 	//return &types.BaseResponse{

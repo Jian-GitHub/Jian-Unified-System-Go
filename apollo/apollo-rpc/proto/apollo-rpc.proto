@@ -66,12 +66,12 @@ message PasskeysStartLoginResp {
 }
 
 message PasskeysFinishLoginReq {
-  bytes credential_json = 1;  // 前端原始JSON
+  string credential_json = 1;  // 前端原始JSON
   string session_data_json = 2;    // StartLogin返回的session_data
 }
 
 message PasskeysFinishLoginResp {
-  bytes user_id = 1;  // JUS User ID
+  int64 user_id = 1;  // JUS User ID
 }
 
 // ================= 服务定义 =================

@@ -3,6 +3,7 @@ package accountlogic
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/jsonx"
 	"jian-unified-system/apollo/apollo-rpc/internal/model"
@@ -32,6 +33,13 @@ func NewRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Regi
 func (l *RegistrationLogic) Registration(in *apollo.RegistrationReq) (*apollo.Empty, error) {
 	// todo: add your logic here and delete this line
 	//fmt.Println("enter Reg RPC")
+	email := util.HashSHA512(in.Email, in.Email)
+	// Check if the email exists
+	_, err := l.svcCtx.UserModel.FindOneByEmail(l.ctx, email)
+	if err == nil {
+		return nil, errors.New("user exists")
+	}
+
 	// All params are validated
 	// Generate new user
 	pwd, err := util.HashPasswordBcrypt(in.Password)
@@ -52,8 +60,6 @@ func (l *RegistrationLogic) Registration(in *apollo.RegistrationReq) (*apollo.Em
 	//	return nil, err
 	//}
 	//fmt.Println(decryptedEmail)
-
-	email := util.HashSHA512(in.Email, in.Email)
 
 	NotificationEmail, err := l.svcCtx.MLKEMKeyManager.EncryptMessage(in.Email)
 	if err != nil {
