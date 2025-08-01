@@ -1,6 +1,6 @@
 apollo/apollo-api/genModel.sh
 apollo/apollo-rpc/genModel.sh
-apollo/apollo-api/etc/apollo.yaml
-apollo/apollo-rpc/etc/apollo.yaml
+apollo/apollo-api/etc/apollo-api.yaml
+apollo/apollo-rpc/etc/apollorpc.yaml
 *.yaml
 /apollo/apollo-api/genModel/

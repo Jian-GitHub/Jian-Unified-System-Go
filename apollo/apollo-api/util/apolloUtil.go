@@ -1,6 +1,7 @@
 package apolloUtil
 
 import (
+	"fmt"
 	"jian-unified-system/jus-core/util"
 	"net"
 	"net/http"
@@ -11,10 +12,13 @@ import (
 // eg. CN
 func GetLocate(r *http.Request, f func(string) (*util.GeoResult, error)) string {
 	ip := GetRealIP(r)
+	fmt.Println("ip", ip)
 	locate := "CN"
 	info, err := f(ip)
 	if err == nil && info != nil {
-		locate = info.IsoCode
+		if len(info.IsoCode) != 0 {
+			locate = info.IsoCode
+		}
 	}
 	return locate
 }

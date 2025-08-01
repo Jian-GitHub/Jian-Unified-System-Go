@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
 	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
@@ -67,11 +68,13 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq, r *http.Request) (re
 	}
 
 	// 4. gRPC -> finish
+	locate := apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup)
+	fmt.Println("locate", locate)
 	_, err = l.svcCtx.ApolloPasskeys.FinishRegistration(l.ctx, &apollo.PasskeysFinishRegistrationReq{
 		UserId:         userID,
 		SessionData:    sessionBytes,
 		CredentialJson: []byte(req.Credential),
-		Locate:         apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup),
+		Locate:         locate,
 		Language:       req.Language,
 	})
 	if err != nil {
