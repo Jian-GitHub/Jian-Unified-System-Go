@@ -220,7 +220,7 @@ service apollo-api {
 	// CallBack
 	@handler Callback
 	// Return: Token
-	post /Callback/:provider (CallbackReq) returns (CallbackResp)
+	get /Callback/:provider (CallbackReq) returns (CallbackResp)
 }
 
 @server (
