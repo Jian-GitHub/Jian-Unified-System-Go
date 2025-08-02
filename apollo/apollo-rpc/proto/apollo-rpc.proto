@@ -94,17 +94,20 @@ service Passkeys {
 // Third-Party
 // ========== 绑定流程 ==========
 message ThirdPartyBindReq {
-  int64 user_id = 1;          // API生成
-  string raw_data_json = 2;       // API提供
+//  int64 user_id = 1;          // API生成
+  bytes token = 1;
+//  string raw_data_json = 2;       // API提供
 }
 
 // ========== 继续流程 ==========
 message ThirdPartyContinueReq {
-  string raw_data_json = 1;       // API提供
+  int64 id = 1;
+  string provider = 2;
+  bytes token = 3;
 }
 
 message ThirdPartyContinueResp {
-  string user_id = 1;       // API提供
+  int64 user_id = 1;       // API提供
 }
 
 // ================= 服务定义 =================
@@ -114,5 +117,8 @@ service ThirdParty {
   rpc Bind (ThirdPartyBindReq) returns (Empty);
   // 继续 - 登录或注册
   // Continue 使用第三方账号继续 - 登录或注册 返回用户id
-  rpc Continue (ThirdPartyBindReq) returns (ThirdPartyContinueResp);
+  rpc Continue (ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
+
+  // HandleCallback 处理第三方回调数据
+  rpc HandleCallback (ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
 }

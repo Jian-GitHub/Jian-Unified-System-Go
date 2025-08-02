@@ -30,7 +30,13 @@ func (s *ThirdPartyServer) Bind(ctx context.Context, in *apollo.ThirdPartyBindRe
 }
 
 // 继续 - 登录或注册
-func (s *ThirdPartyServer) Continue(ctx context.Context, in *apollo.ThirdPartyBindReq) (*apollo.ThirdPartyContinueResp, error) {
+func (s *ThirdPartyServer) Continue(ctx context.Context, in *apollo.ThirdPartyContinueReq) (*apollo.ThirdPartyContinueResp, error) {
 	l := thirdpartylogic.NewContinueLogic(ctx, s.svcCtx)
 	return l.Continue(in)
+}
+
+// HandleCallback 处理第三方回调数据
+func (s *ThirdPartyServer) HandleCallback(ctx context.Context, in *apollo.ThirdPartyContinueReq) (*apollo.ThirdPartyContinueResp, error) {
+	l := thirdpartylogic.NewHandleCallbackLogic(ctx, s.svcCtx)
+	return l.HandleCallback(in)
 }

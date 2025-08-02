@@ -8,6 +8,7 @@ import (
 
 	account "jian-unified-system/apollo/apollo-api/internal/handler/account"
 	passkeys "jian-unified-system/apollo/apollo-api/internal/handler/passkeys"
+	thirdParty "jian-unified-system/apollo/apollo-api/internal/handler/thirdParty"
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -31,16 +32,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.JWTVerifyAgentMiddleware.Handle},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/VerifyToken",
-					Handler: account.VerifyTokenHandler(serverCtx),
-				},
-			}...,
-		),
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/VerifyToken",
+				Handler: account.VerifyTokenHandler(serverCtx),
+			},
+		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/v1/account"),
 	)
@@ -69,5 +67,33 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		},
 		rest.WithPrefix("/v1/passkeys"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/Callback/:provider",
+				Handler: thirdParty.CallbackHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/ContinueReq",
+				Handler: thirdParty.ContinueHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/v1/thirdParty"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/BindReq",
+				Handler: thirdParty.BindHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/v1/thirdParty"),
 	)
 }

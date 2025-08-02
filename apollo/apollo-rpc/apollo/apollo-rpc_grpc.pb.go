@@ -403,8 +403,9 @@ var Passkeys_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ThirdParty_Bind_FullMethodName     = "/apollo.ThirdParty/Bind"
-	ThirdParty_Continue_FullMethodName = "/apollo.ThirdParty/Continue"
+	ThirdParty_Bind_FullMethodName           = "/apollo.ThirdParty/Bind"
+	ThirdParty_Continue_FullMethodName       = "/apollo.ThirdParty/Continue"
+	ThirdParty_HandleCallback_FullMethodName = "/apollo.ThirdParty/HandleCallback"
 )
 
 // ThirdPartyClient is the client API for ThirdParty service.
@@ -418,7 +419,9 @@ type ThirdPartyClient interface {
 	Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
 	// 继续 - 登录或注册
 	// Continue 使用第三方账号继续 - 登录或注册 返回用户id
-	Continue(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+	Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+	// HandleCallback 处理第三方回调数据
+	HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
 }
 
 type thirdPartyClient struct {
@@ -439,10 +442,20 @@ func (c *thirdPartyClient) Bind(ctx context.Context, in *ThirdPartyBindReq, opts
 	return out, nil
 }
 
-func (c *thirdPartyClient) Continue(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
+func (c *thirdPartyClient) Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ThirdPartyContinueResp)
 	err := c.cc.Invoke(ctx, ThirdParty_Continue_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thirdPartyClient) HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ThirdPartyContinueResp)
+	err := c.cc.Invoke(ctx, ThirdParty_HandleCallback_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -460,7 +473,9 @@ type ThirdPartyServer interface {
 	Bind(context.Context, *ThirdPartyBindReq) (*Empty, error)
 	// 继续 - 登录或注册
 	// Continue 使用第三方账号继续 - 登录或注册 返回用户id
-	Continue(context.Context, *ThirdPartyBindReq) (*ThirdPartyContinueResp, error)
+	Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
+	// HandleCallback 处理第三方回调数据
+	HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
 	mustEmbedUnimplementedThirdPartyServer()
 }
 
@@ -474,8 +489,11 @@ type UnimplementedThirdPartyServer struct{}
 func (UnimplementedThirdPartyServer) Bind(context.Context, *ThirdPartyBindReq) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
 }
-func (UnimplementedThirdPartyServer) Continue(context.Context, *ThirdPartyBindReq) (*ThirdPartyContinueResp, error) {
+func (UnimplementedThirdPartyServer) Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Continue not implemented")
+}
+func (UnimplementedThirdPartyServer) HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HandleCallback not implemented")
 }
 func (UnimplementedThirdPartyServer) mustEmbedUnimplementedThirdPartyServer() {}
 func (UnimplementedThirdPartyServer) testEmbeddedByValue()                    {}
@@ -517,7 +535,7 @@ func _ThirdParty_Bind_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _ThirdParty_Continue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThirdPartyBindReq)
+	in := new(ThirdPartyContinueReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -529,7 +547,25 @@ func _ThirdParty_Continue_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: ThirdParty_Continue_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThirdPartyServer).Continue(ctx, req.(*ThirdPartyBindReq))
+		return srv.(ThirdPartyServer).Continue(ctx, req.(*ThirdPartyContinueReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThirdParty_HandleCallback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyContinueReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).HandleCallback(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_HandleCallback_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).HandleCallback(ctx, req.(*ThirdPartyContinueReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -548,6 +584,10 @@ var ThirdParty_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Continue",
 			Handler:    _ThirdParty_Continue_Handler,
+		},
+		{
+			MethodName: "HandleCallback",
+			Handler:    _ThirdParty_HandleCallback_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

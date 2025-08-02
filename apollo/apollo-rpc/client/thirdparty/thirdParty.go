@@ -32,7 +32,9 @@ type (
 		// 绑定
 		Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
 		// 继续 - 登录或注册
-		Continue(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+		Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+		// HandleCallback 处理第三方回调数据
+		HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
 	}
 
 	defaultThirdParty struct {
@@ -53,7 +55,13 @@ func (m *defaultThirdParty) Bind(ctx context.Context, in *ThirdPartyBindReq, opt
 }
 
 // 继续 - 登录或注册
-func (m *defaultThirdParty) Continue(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
+func (m *defaultThirdParty) Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
 	client := apollo.NewThirdPartyClient(m.cli.Conn())
 	return client.Continue(ctx, in, opts...)
+}
+
+// HandleCallback 处理第三方回调数据
+func (m *defaultThirdParty) HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
+	client := apollo.NewThirdPartyClient(m.cli.Conn())
+	return client.HandleCallback(ctx, in, opts...)
 }

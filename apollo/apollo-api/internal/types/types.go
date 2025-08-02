@@ -8,6 +8,41 @@ type BaseResponse struct {
 	Message string `json:"message"`
 }
 
+type BindReq struct {
+	Provider string `json:"provider" validate:"required"`
+}
+
+type BindResp struct {
+	BaseResponse
+	BindRespData struct {
+		Url string `json:"url"`
+	} `json:"data"`
+}
+
+type CallbackReq struct {
+	Provider string `path:"provider" validate:"required"`
+	State    string `form:"state" validate:"required"`
+	Code     string `form:"code" validate:"required"`
+}
+
+type CallbackResp struct {
+	BaseResponse
+	CallbackRespData struct {
+		Token string `json:"token"`
+	} `json:"data"`
+}
+
+type ContinueReq struct {
+	Provider string `json:"provider" validate:"required"`
+}
+
+type ContinueResp struct {
+	BaseResponse
+	ContinueRespData struct {
+		Url string `json:"url"`
+	} `json:"data"`
+}
+
 type Empty struct {
 }
 

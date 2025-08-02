@@ -24,15 +24,13 @@ var (
 	userRowsExpectAutoSet   = strings.Join(stringx.Remove(userFieldNames, "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	userRowsWithPlaceHolder = strings.Join(stringx.Remove(userFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cacheApolloUserIdPrefix    = "cache:apollo:user:id:"
-	cacheApolloUserEmailPrefix = "cache:apollo:user:email:"
+	cacheApolloUserIdPrefix = "cache:apollo:user:id:"
 )
 
 type (
 	userModel interface {
 		Insert(ctx context.Context, data *User) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*User, error)
-		FindOneByEmail(ctx context.Context, email string) (*User, error)
 		Update(ctx context.Context, data *User) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -44,14 +42,16 @@ type (
 
 	User struct {
 		Id                int64          `db:"id"`             // 雪花算法用户ID
-		FirstName         string         `db:"first_name"`     // 名字
+		GivenName         string         `db:"given_name"`     // 名字
 		MiddleName        string         `db:"middle_name"`    // 中间名
-		LastName          string         `db:"last_name"`      // 姓氏
+		FamilyName        string         `db:"family_name"`    // 姓氏
 		Email             string         `db:"email"`          // 电子邮件 (登录凭证)
 		Password          string         `db:"password"`       // SHA-512加密密码
 		EmailVerified     int64          `db:"email_verified"` // false - 0true - 1
 		Avatar            sql.NullString `db:"avatar"`         // 头像URL
-		Birthday          sql.NullTime   `db:"birthday"`
+		BirthdayYear      sql.NullInt64  `db:"birthday_year"`
+		BirthdayMonth     sql.NullInt64  `db:"birthday_month"`
+		BirthdayDay       sql.NullInt64  `db:"birthday_day"`
 		NotificationEmail sql.NullString `db:"notification_email"`
 		Locate            string         `db:"locate"`
 		Language          string         `db:"language"`
@@ -95,25 +95,11 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error)
 	}
 }
 
-func (m *defaultUserModel) FindOneByEmail(ctx context.Context, email string) (*User, error) {
-	var resp User
-	query := fmt.Sprintf("select %s from %s where `email` = ? limit 1", userRows, m.table)
-	err := m.CachedConn.QueryRowNoCacheCtx(ctx, &resp, query, email)
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
 func (m *defaultUserModel) Insert(ctx context.Context, data *User) (sql.Result, error) {
 	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, data.Id)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Id, data.FirstName, data.MiddleName, data.LastName, data.Email, data.Password, data.EmailVerified, data.Avatar, data.Birthday, data.NotificationEmail, data.Locate, data.Language, data.LastLoginTime, data.Mark)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Id, data.GivenName, data.MiddleName, data.FamilyName, data.Email, data.Password, data.EmailVerified, data.Avatar, data.BirthdayYear, data.BirthdayMonth, data.BirthdayDay, data.NotificationEmail, data.Locate, data.Language, data.LastLoginTime, data.Mark)
 	}, apolloUserIdKey)
 	return ret, err
 }
@@ -122,7 +108,7 @@ func (m *defaultUserModel) Update(ctx context.Context, data *User) error {
 	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, data.Id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.FirstName, data.MiddleName, data.LastName, data.Email, data.Password, data.EmailVerified, data.Avatar, data.Birthday, data.NotificationEmail, data.Locate, data.Language, data.LastLoginTime, data.Mark, data.Id)
+		return conn.ExecCtx(ctx, query, data.GivenName, data.MiddleName, data.FamilyName, data.Email, data.Password, data.EmailVerified, data.Avatar, data.BirthdayYear, data.BirthdayMonth, data.BirthdayDay, data.NotificationEmail, data.Locate, data.Language, data.LastLoginTime, data.Mark, data.Id)
 	}, apolloUserIdKey)
 	return err
 }

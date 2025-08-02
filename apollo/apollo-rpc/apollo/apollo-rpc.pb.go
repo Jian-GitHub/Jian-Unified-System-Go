@@ -574,9 +574,9 @@ func (x *PasskeysFinishLoginResp) GetUserId() int64 {
 // Third-Party
 // ========== 绑定流程 ==========
 type ThirdPartyBindReq struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                 // API生成
-	RawDataJson   string                 `protobuf:"bytes,2,opt,name=raw_data_json,json=rawDataJson,proto3" json:"raw_data_json,omitempty"` // API提供
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// int64 user_id = 1;          // API生成
+	Token         []byte `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"` //  string raw_data_json = 2;       // API提供
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -611,24 +611,19 @@ func (*ThirdPartyBindReq) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *ThirdPartyBindReq) GetUserId() int64 {
+func (x *ThirdPartyBindReq) GetToken() []byte {
 	if x != nil {
-		return x.UserId
+		return x.Token
 	}
-	return 0
-}
-
-func (x *ThirdPartyBindReq) GetRawDataJson() string {
-	if x != nil {
-		return x.RawDataJson
-	}
-	return ""
+	return nil
 }
 
 // ========== 继续流程 ==========
 type ThirdPartyContinueReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RawDataJson   string                 `protobuf:"bytes,1,opt,name=raw_data_json,json=rawDataJson,proto3" json:"raw_data_json,omitempty"` // API提供
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Provider      string                 `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
+	Token         []byte                 `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -663,16 +658,30 @@ func (*ThirdPartyContinueReq) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *ThirdPartyContinueReq) GetRawDataJson() string {
+func (x *ThirdPartyContinueReq) GetId() int64 {
 	if x != nil {
-		return x.RawDataJson
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ThirdPartyContinueReq) GetProvider() string {
+	if x != nil {
+		return x.Provider
 	}
 	return ""
 }
 
+func (x *ThirdPartyContinueReq) GetToken() []byte {
+	if x != nil {
+		return x.Token
+	}
+	return nil
+}
+
 type ThirdPartyContinueResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // API提供
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // API提供
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -707,11 +716,11 @@ func (*ThirdPartyContinueResp) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *ThirdPartyContinueResp) GetUserId() string {
+func (x *ThirdPartyContinueResp) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
-	return ""
+	return 0
 }
 
 var File_apollo_rpc_proto protoreflect.FileDescriptor
@@ -751,14 +760,15 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\x0fcredential_json\x18\x01 \x01(\tR\x0ecredentialJson\x12*\n" +
 	"\x11session_data_json\x18\x02 \x01(\tR\x0fsessionDataJson\"2\n" +
 	"\x17PasskeysFinishLoginResp\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"P\n" +
-	"\x11ThirdPartyBindReq\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\"\n" +
-	"\rraw_data_json\x18\x02 \x01(\tR\vrawDataJson\";\n" +
-	"\x15ThirdPartyContinueReq\x12\"\n" +
-	"\rraw_data_json\x18\x01 \x01(\tR\vrawDataJson\"1\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\")\n" +
+	"\x11ThirdPartyBindReq\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\fR\x05token\"Y\n" +
+	"\x15ThirdPartyContinueReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
+	"\bprovider\x18\x02 \x01(\tR\bprovider\x12\x14\n" +
+	"\x05token\x18\x03 \x01(\fR\x05token\"1\n" +
 	"\x16ThirdPartyContinueResp\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId2o\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId2o\n" +
 	"\aAccount\x126\n" +
 	"\fRegistration\x12\x17.apollo.RegistrationReq\x1a\r.apollo.Empty\x12,\n" +
 	"\x05Login\x12\x10.apollo.LoginReq\x1a\x11.apollo.LoginResp2\xc5\x02\n" +
@@ -767,11 +777,12 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\x12FinishRegistration\x12%.apollo.PasskeysFinishRegistrationReq\x1a\r.apollo.Empty\x12;\n" +
 	"\n" +
 	"StartLogin\x12\r.apollo.Empty\x1a\x1e.apollo.PasskeysStartLoginResp\x12N\n" +
-	"\vFinishLogin\x12\x1e.apollo.PasskeysFinishLoginReq\x1a\x1f.apollo.PasskeysFinishLoginResp2\x85\x01\n" +
+	"\vFinishLogin\x12\x1e.apollo.PasskeysFinishLoginReq\x1a\x1f.apollo.PasskeysFinishLoginResp2\xda\x01\n" +
 	"\n" +
 	"ThirdParty\x120\n" +
-	"\x04Bind\x12\x19.apollo.ThirdPartyBindReq\x1a\r.apollo.Empty\x12E\n" +
-	"\bContinue\x12\x19.apollo.ThirdPartyBindReq\x1a\x1e.apollo.ThirdPartyContinueRespB\n" +
+	"\x04Bind\x12\x19.apollo.ThirdPartyBindReq\x1a\r.apollo.Empty\x12I\n" +
+	"\bContinue\x12\x1d.apollo.ThirdPartyContinueReq\x1a\x1e.apollo.ThirdPartyContinueResp\x12O\n" +
+	"\x0eHandleCallback\x12\x1d.apollo.ThirdPartyContinueReq\x1a\x1e.apollo.ThirdPartyContinueRespB\n" +
 	"Z\b./apollob\x06proto3"
 
 var (
@@ -810,17 +821,19 @@ var file_apollo_rpc_proto_depIdxs = []int32{
 	0,  // 4: apollo.Passkeys.StartLogin:input_type -> apollo.Empty
 	8,  // 5: apollo.Passkeys.FinishLogin:input_type -> apollo.PasskeysFinishLoginReq
 	10, // 6: apollo.ThirdParty.Bind:input_type -> apollo.ThirdPartyBindReq
-	10, // 7: apollo.ThirdParty.Continue:input_type -> apollo.ThirdPartyBindReq
-	0,  // 8: apollo.Account.Registration:output_type -> apollo.Empty
-	3,  // 9: apollo.Account.Login:output_type -> apollo.LoginResp
-	5,  // 10: apollo.Passkeys.StartRegistration:output_type -> apollo.PasskeysStartRegistrationResp
-	0,  // 11: apollo.Passkeys.FinishRegistration:output_type -> apollo.Empty
-	7,  // 12: apollo.Passkeys.StartLogin:output_type -> apollo.PasskeysStartLoginResp
-	9,  // 13: apollo.Passkeys.FinishLogin:output_type -> apollo.PasskeysFinishLoginResp
-	0,  // 14: apollo.ThirdParty.Bind:output_type -> apollo.Empty
-	12, // 15: apollo.ThirdParty.Continue:output_type -> apollo.ThirdPartyContinueResp
-	8,  // [8:16] is the sub-list for method output_type
-	0,  // [0:8] is the sub-list for method input_type
+	11, // 7: apollo.ThirdParty.Continue:input_type -> apollo.ThirdPartyContinueReq
+	11, // 8: apollo.ThirdParty.HandleCallback:input_type -> apollo.ThirdPartyContinueReq
+	0,  // 9: apollo.Account.Registration:output_type -> apollo.Empty
+	3,  // 10: apollo.Account.Login:output_type -> apollo.LoginResp
+	5,  // 11: apollo.Passkeys.StartRegistration:output_type -> apollo.PasskeysStartRegistrationResp
+	0,  // 12: apollo.Passkeys.FinishRegistration:output_type -> apollo.Empty
+	7,  // 13: apollo.Passkeys.StartLogin:output_type -> apollo.PasskeysStartLoginResp
+	9,  // 14: apollo.Passkeys.FinishLogin:output_type -> apollo.PasskeysFinishLoginResp
+	0,  // 15: apollo.ThirdParty.Bind:output_type -> apollo.Empty
+	12, // 16: apollo.ThirdParty.Continue:output_type -> apollo.ThirdPartyContinueResp
+	12, // 17: apollo.ThirdParty.HandleCallback:output_type -> apollo.ThirdPartyContinueResp
+	9,  // [9:18] is the sub-list for method output_type
+	0,  // [0:9] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

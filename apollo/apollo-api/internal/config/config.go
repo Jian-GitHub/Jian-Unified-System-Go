@@ -5,6 +5,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
+	"jian-unified-system/jus-core/types/oauth2"
 )
 
 type Config struct {
@@ -20,4 +21,5 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
+	OAuth oauth2.OAuthProviders
 }

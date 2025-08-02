@@ -7,6 +7,7 @@ import (
 	"jian-unified-system/apollo/apollo-api/internal/config"
 	"jian-unified-system/apollo/apollo-api/internal/middleware"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/jus-core/types/oauth2"
 	"jian-unified-system/jus-core/util"
 )
 
@@ -23,6 +24,8 @@ type ServiceContext struct {
 	//UserModel model.UserModel
 
 	GeoService *util.GeoService
+
+	OauthProviders map[string]*oauth2.OAuthConfig
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -47,17 +50,20 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	if err != nil {
 		panic("GeoService 加载失败: " + err.Error())
 	}
+
+	OauthProviders := config.InitOAuthProviders(c)
 	return &ServiceContext{
 		Config:    c,
 		Redis:     redisClient,
 		Snowflake: node,
 
-		ApolloAccount:  apollo.NewAccountClient(client.Conn()),
-		ApolloPasskeys: apollo.NewPasskeysClient(client.Conn()),
-		//ApolloThirdParty: apollo.NewThirdPartyClient(client.Conn()),
+		ApolloAccount:    apollo.NewAccountClient(client.Conn()),
+		ApolloPasskeys:   apollo.NewPasskeysClient(client.Conn()),
+		ApolloThirdParty: apollo.NewThirdPartyClient(client.Conn()),
 
 		//UserModel: model.NewUserModel(sqlConn, c.Cache),
 
-		GeoService: gs,
+		GeoService:     gs,
+		OauthProviders: OauthProviders,
 	}
 }

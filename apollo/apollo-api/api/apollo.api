@@ -16,7 +16,10 @@ type (
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 	}
-	// Account
+)
+
+// Account
+type (
 	// 注册
 	RegReq {
 		Email           string `json:"email" validate:"required"`
@@ -42,7 +45,27 @@ type (
 			Token string `json:"token"`
 		} `json:"data"`
 	}
-	// Passkeys
+)
+
+// Account
+@server (
+	prefix: /v1/account
+	group:  account
+)
+service apollo-api {
+	// 注册流程
+	@handler Reg
+	// 返回: Token
+	post /registration (RegReq) returns (RegResp)
+
+	// 登录流程
+	@handler Login
+	// 返回: Token
+	post /login (LoginReq) returns (BaseResponse)
+}
+
+// Passkeys
+type (
 	// 注册-阶段1 请求
 	RegStartReq {
 		UserName    string `json:"user_name" validate:"required"`
@@ -95,15 +118,6 @@ type (
 			Token string `json:"token"`
 		} `json:"data"`
 	}
-	VerifyTokenReq {
-		Token string `json:"token"`
-	}
-	VerifyTokenResp {
-		BaseResponse
-		Data {
-			Test bool `json:"test"`
-		} `json:"data"`
-	}
 )
 
 // 注册路由
@@ -135,33 +149,88 @@ service apollo-api {
 	post /login/finish (LoginFinishReq) returns (LoginFinishResp)
 }
 
-// Account
+type (
+	VerifyTokenReq {
+		Token string `json:"token"`
+	}
+	VerifyTokenResp {
+		BaseResponse
+		Data {
+			Test bool `json:"test"`
+		} `json:"data"`
+	}
+)
+
 @server (
 	prefix: /v1/account
 	group:  account
-)
-service apollo-api {
-	// 注册流程
-	@handler Reg
-	// 返回: Token
-	post /registration (RegReq) returns (RegResp)
-
-	// 登录流程
-	@handler Login
-	// 返回: Token
-	post /login (LoginReq) returns (BaseResponse)
-}
-
-@server (
-	prefix:     /v1/account
-	group:      account
-	jwt:        Auth
-	middleware: JWTVerifyAgentMiddleware
+	jwt:    Auth
+// middleware: JWTVerifyAgentMiddleware
 )
 service apollo-api {
 	// 验证Token
 	@handler VerifyToken
 	// 返回: Token
 	post /VerifyToken (VerifyTokenReq) returns (VerifyTokenResp)
+}
+
+// Third Party
+type (
+	ContinueReq {
+		Provider string `json:"provider" validate:"required"`
+	}
+	ContinueResp {
+		BaseResponse
+		ContinueRespData {
+			Url string `json:"url"`
+		} `json:"data"`
+	}
+	BindReq {
+		Provider string `json:"provider" validate:"required"`
+	}
+	BindResp {
+		BaseResponse
+		BindRespData {
+			Url string `json:"url"`
+		} `json:"data"`
+	}
+	CallbackReq {
+		Provider string `path:"provider" validate:"required"`
+		State    string `form:"state" validate:"required"`
+		Code     string `form:"code" validate:"required"`
+	}
+	CallbackResp {
+		BaseResponse
+		CallbackRespData {
+			Token string `json:"token"`
+		} `json:"data"`
+	}
+)
+
+@server (
+	prefix: /v1/thirdParty
+	group:  thirdParty
+)
+service apollo-api {
+	// Request Continue via Third-Party
+	@handler Continue
+	// Return: Redirect URL
+	post /ContinueReq (ContinueReq) returns (ContinueResp)
+
+	// CallBack
+	@handler Callback
+	// Return: Token
+	post /Callback/:provider (CallbackReq) returns (CallbackResp)
+}
+
+@server (
+	prefix: /v1/thirdParty
+	group:  thirdParty
+	jwt:    Auth
+)
+service apollo-api {
+	@handler Bind
+	// Return: Redirect URL
+	post /BindReq (BindReq) returns (BindResp)
 }
 
