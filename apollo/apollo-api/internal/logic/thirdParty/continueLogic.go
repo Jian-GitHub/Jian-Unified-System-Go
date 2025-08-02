@@ -55,8 +55,8 @@ func (l *ContinueLogic) Continue(req *types.ContinueReq, w http.ResponseWriter, 
 
 	return &types.ContinueResp{
 		BaseResponse: types.BaseResponse{
-			Code:    -1,
-			Message: "no provider",
+			Code:    200,
+			Message: "success",
 		},
 		ContinueRespData: struct {
 			Url string `json:"url"`

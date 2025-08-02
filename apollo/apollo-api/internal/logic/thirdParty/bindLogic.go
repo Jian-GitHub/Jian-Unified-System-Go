@@ -55,7 +55,7 @@ func (l *BindLogic) Bind(req *types.BindReq, w http.ResponseWriter, r *http.Requ
 		return nil, err
 	}
 
-	err = apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key, w, r)
+	_, err = apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key)
 	if err != nil {
 		return nil, err
 	}
