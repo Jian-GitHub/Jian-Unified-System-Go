@@ -48,10 +48,20 @@ func (l *ContinueLogic) Continue(req *types.ContinueReq, w http.ResponseWriter, 
 		return nil, err
 	}
 
-	err = apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key, w, r)
+	url, err := apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key)
 	if err != nil {
 		return nil, err
 	}
 
-	return
+	return &types.ContinueResp{
+		BaseResponse: types.BaseResponse{
+			Code:    -1,
+			Message: "no provider",
+		},
+		ContinueRespData: struct {
+			Url string `json:"url"`
+		}{
+			Url: url,
+		},
+	}, nil
 }

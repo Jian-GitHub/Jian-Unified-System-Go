@@ -215,7 +215,7 @@ service apollo-api {
 	// Request Continue via Third-Party
 	@handler Continue
 	// Return: Redirect URL
-	post /ContinueReq (ContinueReq) returns (ContinueResp)
+	post /Continue (ContinueReq) returns (ContinueResp)
 
 	// CallBack
 	@handler Callback

@@ -78,7 +78,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/ContinueReq",
+				Path:    "/Continue",
 				Handler: thirdParty.ContinueHandler(serverCtx),
 			},
 		},
