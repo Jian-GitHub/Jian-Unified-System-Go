@@ -31,6 +31,7 @@ type (
 	userModel interface {
 		Insert(ctx context.Context, data *User) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*User, error)
+		FindOneByEmail(ctx context.Context, email string) (*User, error)
 		Update(ctx context.Context, data *User) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -84,6 +85,23 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error)
 	err := m.QueryRowCtx(ctx, &resp, apolloUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUserModel) FindOneByEmail(ctx context.Context, email string) (*User, error) {
+	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, email)
+	var resp User
+	err := m.QueryRowCtx(ctx, &resp, apolloUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `email` = ? limit 1", userRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, email)
 	})
 	switch err {
 	case nil:
