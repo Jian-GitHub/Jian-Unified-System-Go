@@ -9,16 +9,14 @@ import (
 	"github.com/zeromicro/go-zero/core/errorx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/github"
-	"golang.org/x/oauth2/google"
 	"io"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
-	githubUtil "jian-unified-system/apollo/apollo-rpc/util/oauth2/github"
-	googleUtil "jian-unified-system/apollo/apollo-rpc/util/oauth2/google"
-	ot "jian-unified-system/jus-core/types/oauth2"
-
 	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/apollo/apollo-rpc/internal/model"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
+	o2 "jian-unified-system/apollo/apollo-rpc/util/oauth2"
+	o2util "jian-unified-system/jus-core/util/oauth2"
+	redisUtil "jian-unified-system/jus-core/util/oauth2/redis"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -39,28 +37,37 @@ func NewHandleCallbackLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ha
 
 // HandleCallback 处理第三方回调数据
 func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (*apollo.ThirdPartyContinueResp, error) {
-	// todo: add your logic here and delete this line
-	// 1. Parse Token
+	// 1. Check Redis Cache
+	// Parse Redis Data
+	// redis data string -> RedisData
+	fmt.Println(in.RedisDataJson)
+	var redisData *redisUtil.RedisData
+	err := json.Unmarshal([]byte(in.RedisDataJson), &redisData)
+	if err != nil {
+		return nil, errorx.Wrap(errors.New("redis state fail"), "ThirdParty Continue Err")
+	}
+
+	// 2. Check Token
+	// Parse Token
 	var token *oauth2.Token
-	err := json.Unmarshal(in.Token, &token)
+	err = json.Unmarshal(in.Token, &token)
 	if err != nil {
 		return nil, errors.New("token no validated")
 	}
 
-	// 2. Check Provider
+	// 3. Check Provider
 	config, ok := l.svcCtx.OauthProviders[in.Provider]
 	if !ok {
 		return nil, errorx.Wrap(errors.New("no provider"), "ThirdParty Continue Err")
 	}
-	// 3. OAuth2 --Token--> Response
+
+	// 4. OAuth2 --Token--> Response
 	client := config.Client(context.Background(), token)
 	resp, err := client.Get(config.UserInfoURL)
 	if err != nil {
 		return nil, err
 	}
-	//defer func(Body io.ReadCloser) {
-	//	_ = Body.Close()
-	//}(resp.Body)
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -68,120 +75,142 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 	}
 	_ = resp.Body.Close()
 
-	user := &model.User{}
-	var contacts []*model.Contact
-	thirdParty := &model.ThirdParty{
-		RawData: sql.NullString{
-			String: string(body),
-			Valid:  true,
-		},
-	}
-	// 4. Response -> User Info
-	switch config.Endpoint {
-	case github.Endpoint:
-		var userInfo *ot.GitHubUserInfo
-		err = json.Unmarshal(body, &userInfo)
-		if err != nil {
-			return nil, err
-		}
-		//var userProfile *ot.GitHubUserProfile
-		//err = json.Unmarshal(body, &userProfile)
-		//if err != nil {
-		//	return nil, err
-		//}
-
-		thirdParty.ThirdId = userInfo.ID
-
-		thirdParty.Name = userInfo.Login
-		if in.Id != 0 {
-			user, contacts, err = githubUtil.ParseGitHubUserInfo(userInfo)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-	case google.Endpoint:
-		var userProfile *ot.GoogleUserProfile
-		//err = json.NewDecoder(resp.Body).Decode(&userProfile)
-		err = json.Unmarshal(body, &userProfile)
-		err = userProfile.SetGoogleID()
-		if err != nil {
-			return nil, err
-		}
-
-		thirdParty.ThirdId = userProfile.ID
-
-		// Update Google Account Name
-		for _, name := range userProfile.Names {
-			if name.Metadata.Primary {
-				thirdParty.Name = name.DisplayName
-			}
-		}
-		if in.Id != 0 {
-			user, contacts, err = googleUtil.ParseUserProfile(userProfile)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		//fmt.Println(firstName, lastName)
+	thirdPartyUser, err := o2util.ParseThirdPartyUser(config.Endpoint, body)
+	if err != nil {
+		return nil, err
 	}
 
-	// Check ID
-	switch in.Id {
-	// Login
-	case 0:
-		// Find User
-		tp, err := l.svcCtx.ThirdPartyModel.FindOneByThirdID(l.ctx, thirdParty.ThirdId)
-		if errors.Is(err, sqlx.ErrNotFound) {
-			return nil, errorx.Wrap(errors.New("No account"), "ThirdParty Continue Err")
-		} else if err != nil {
-			return nil, errorx.Wrap(errors.New("Databse err"), "ThirdParty Continue Err")
-		}
-		user.Id = tp.UserId
-
-		// Update Third-Party Account Info
-		tp.Name = thirdParty.Name
-		tp.RawData = thirdParty.RawData
-		_ = l.svcCtx.ThirdPartyModel.Update(l.ctx, tp)
-
-	// Reg / Bind
+	// set tp exist flag
+	thirdPartyIsExist := false
+	// find tp from database
+	existedThirdParty, err := l.svcCtx.ThirdPartyModel.FindOneByThirdID(l.ctx, thirdPartyUser.GetID())
+	switch {
+	// tp exists
+	case err == nil:
+		thirdPartyIsExist = true
+	// tp does not exist
+	case errors.Is(err, sqlx.ErrNotFound):
+		thirdPartyIsExist = false
+	// database err
 	default:
-		if user == nil {
-			return nil, errorx.Wrap(errors.New("callback data no validated: user"), "ThirdParty Continue Err")
-		}
-		if thirdParty.Id == 0 {
-			return nil, errorx.Wrap(errors.New("callback data no validated: thirdParty"), "ThirdParty Continue Err")
-		}
-		//if contacts == nil || len(contacts) == 0 {
-		//	return nil, errorx.Wrap(errors.New("callback data no validated: contacts"), "ThirdParty Continue Err")
-		//}
-
-		user.Id = in.Id
-		thirdParty.UserId = user.Id
-		// 插入 新用户
-		_, err = l.svcCtx.UserModel.Insert(l.ctx, user)
-		if err != nil {
-			return nil, errorx.Wrap(err, "ThirdParty Continue Err - insert new user fail")
-		}
-
-		// 插入 第三方账户
-		_, err = l.svcCtx.ThirdPartyModel.Insert(l.ctx, thirdParty)
-		if err != nil {
-			return nil, errorx.Wrap(err, "ThirdParty Continue Err - insert new ThirdParty fail")
-		}
-
-		// 插入 经过验证的 电子邮件 -> contact 表
-		if contacts != nil && len(contacts) > 0 {
-			_, err = l.svcCtx.ContactModel.InsertBatch(l.ctx, contacts)
-			if err != nil {
-				return nil, errorx.Wrap(err, "ThirdParty Continue Err - insert new Contact fail")
-			}
-		}
-
+		return nil, err
 	}
 
-	return &apollo.ThirdPartyContinueResp{
-		UserId: user.Id,
-	}, nil
+	// 需要查 user 的情况
+	// thirdParty exists: 		 p,		continue:	 q
+	// thirdParty no existing:	¬p,		Bind:		¬q
+	// 		1. p ∧ q
+	// 		2. ¬p ∧ ¬q
+	var user *model.User
+	var defaultUserId int64
+	if thirdPartyIsExist {
+		defaultUserId = existedThirdParty.UserId
+	} else {
+		defaultUserId, err = strconv.ParseInt(redisData.Id, 10, 64)
+		if err != nil {
+			return nil, errorx.Wrap(err, "ThirdParty Continue Err")
+		}
+	}
+
+	switch {
+	// (第三方存在 && Continue) 或 (第三方不存在 && Bind): 需要查 user
+	case (thirdPartyIsExist && redisData.Flag == redisUtil.ContinueFlag) ||
+		(!thirdPartyIsExist && redisData.Flag == redisUtil.BindFlag):
+		// 查 user
+		user, err = l.svcCtx.UserModel.FindOne(l.ctx, defaultUserId)
+		switch {
+		// user does not exist
+		case errors.Is(err, sqlx.ErrNotFound):
+			return nil, err
+		// database err
+		case err != nil:
+			return nil, err
+		}
+
+		// 分情况讨论: 流程类型
+		switch redisData.Flag {
+		case redisUtil.ContinueFlag:
+			// 处理 登录 - 返回 user defaultUserId
+			// 更新第三方数据
+			existedThirdParty.Name = thirdPartyUser.GetDisplayName()
+			existedThirdParty.RawData = sql.NullString{
+				String: string(body),
+				Valid:  true,
+			}
+			_ = l.svcCtx.ThirdPartyModel.Update(l.ctx, existedThirdParty)
+			return &apollo.ThirdPartyContinueResp{
+				UserId: user.Id,
+			}, nil
+		case redisUtil.BindFlag:
+			// 处理 绑定 - 存新 third_party
+			newThirdParty := &model.ThirdParty{
+				RawData: sql.NullString{
+					String: string(body),
+					Valid:  true,
+				},
+			}
+			// 生成 third_party
+			err = o2.ParseUserAndContacts(&thirdPartyUser, user, []*model.Contact{}, newThirdParty)
+			if err != nil {
+				return nil, err
+			}
+			// 存入 third_party
+			err = l.svcCtx.ThirdPartyModel.Update(l.ctx, newThirdParty)
+			if err != nil {
+				return nil, err
+			}
+			// 返回用户 id
+			return &apollo.ThirdPartyContinueResp{
+				UserId: user.Id,
+			}, nil
+		}
+	// 第三方不存在 && Continue: 注册流程
+	case !thirdPartyIsExist && redisData.Flag == redisUtil.ContinueFlag:
+		// 处理注册
+		// 创建 新 user, 新 contacts, 新 third_party
+		newUser := &model.User{
+			Id: defaultUserId,
+		}
+		var newContacts []*model.Contact
+		newThirdParty := &model.ThirdParty{
+			RawData: sql.NullString{
+				String: string(body),
+				Valid:  true,
+			},
+		}
+
+		err = o2.ParseUserAndContacts(&thirdPartyUser, newUser, newContacts, newThirdParty)
+		if err != nil {
+			return nil, err
+		}
+
+		// 存入数据库
+		// user
+		_, err = l.svcCtx.UserModel.Insert(l.ctx, newUser)
+		if err != nil {
+			return nil, err
+		}
+		// contacts
+		_, err = l.svcCtx.ContactModel.InsertBatch(l.ctx, newContacts)
+		if err != nil {
+			return nil, err
+		}
+		// thirdParty
+		_, err = l.svcCtx.ThirdPartyModel.Insert(l.ctx, newThirdParty)
+		if err != nil {
+			return nil, err
+		}
+
+		// 注册完成 - 返回用户 defaultUserId
+		return &apollo.ThirdPartyContinueResp{
+			UserId: newUser.Id,
+		}, nil
+
+	// 第三方存在 && Bind: Error
+	case thirdPartyIsExist && redisData.Flag == redisUtil.BindFlag:
+		//  第三方已经被绑定 - 异常
+		return nil, errorx.Wrap(errors.New("already bound"), "ThirdParty Bind Err")
+	}
+
+	return nil, errorx.Wrap(errors.New("unknown flag"), "ThirdParty Continue Err")
 }

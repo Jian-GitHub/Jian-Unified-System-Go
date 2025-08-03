@@ -47,7 +47,7 @@ func (l *BindLogic) Bind(req *types.BindReq, w http.ResponseWriter, r *http.Requ
 	fmt.Println(id)
 
 	idStr := strconv.FormatInt(id, 10)
-	redis := redisUtil.NewBindRedis(&idStr)
+	redis := redisUtil.NewBindRedis(idStr)
 	//redisKey := "apollo:thirdParty:bind:" + hex.EncodeToString([]byte(strconv.FormatInt(id, 10)))
 
 	err = l.svcCtx.Redis.SetexCtx(l.ctx, redis.Key, redis.Data.String(), 300)

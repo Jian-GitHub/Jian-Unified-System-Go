@@ -24,7 +24,8 @@ var (
 	contactRowsExpectAutoSet   = strings.Join(stringx.Remove(contactFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	contactRowsWithPlaceHolder = strings.Join(stringx.Remove(contactFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cacheApolloContactIdPrefix = "cache:apollo:contact:id:"
+	cacheApolloContactIdPrefix   = "cache:apollo:contact:id:"
+	cacheApolloContactUserPrefix = "cache:apollo:contact:user:"
 )
 
 type (
@@ -32,6 +33,7 @@ type (
 		Insert(ctx context.Context, data *Contact) (sql.Result, error)
 		InsertBatch(ctx context.Context, data []*Contact) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*Contact, error)
+		FindByUserID(ctx context.Context, userID int64) ([]*Contact, error)
 		Update(ctx context.Context, data *Contact) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -79,6 +81,26 @@ func (m *defaultContactModel) FindOne(ctx context.Context, id int64) (*Contact, 
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultContactModel) FindByUserID(ctx context.Context, userID int64) ([]*Contact, error) {
+	// 使用集合缓存键
+	cacheKey := fmt.Sprintf("%s%v", cacheApolloContactUserPrefix, userID)
+
+	var resp []*Contact
+	err := m.QueryRowCtx(ctx, &resp, cacheKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `user_id` = ?", contactRows, m.table)
+		return conn.QueryRowsCtx(ctx, v, query, userID)
+	})
+
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlx.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err

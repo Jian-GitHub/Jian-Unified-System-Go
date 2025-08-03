@@ -77,7 +77,7 @@ func parseContact(userProfile *oauth2.GoogleUserProfile, user *model.User, conta
 				}
 			}
 			contacts = append(contacts, &model.Contact{
-				UserId: userProfile.ID,
+				UserId: (*user).Id,
 				Value:  email.Value,
 				Type:   sqlType.ContactType.Email,
 			})

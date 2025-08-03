@@ -620,10 +620,11 @@ func (x *ThirdPartyBindReq) GetToken() []byte {
 
 // ========== 继续流程 ==========
 type ThirdPartyContinueReq struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Provider      string                 `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
-	Token         []byte                 `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// int64 id = 1;
+	Provider      string `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
+	Token         []byte `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	RedisDataJson string `protobuf:"bytes,3,opt,name=redis_data_json,json=redisDataJson,proto3" json:"redis_data_json,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -658,13 +659,6 @@ func (*ThirdPartyContinueReq) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *ThirdPartyContinueReq) GetId() int64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
 func (x *ThirdPartyContinueReq) GetProvider() string {
 	if x != nil {
 		return x.Provider
@@ -677,6 +671,13 @@ func (x *ThirdPartyContinueReq) GetToken() []byte {
 		return x.Token
 	}
 	return nil
+}
+
+func (x *ThirdPartyContinueReq) GetRedisDataJson() string {
+	if x != nil {
+		return x.RedisDataJson
+	}
+	return ""
 }
 
 type ThirdPartyContinueResp struct {
@@ -762,11 +763,11 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\x17PasskeysFinishLoginResp\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\")\n" +
 	"\x11ThirdPartyBindReq\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\fR\x05token\"Y\n" +
-	"\x15ThirdPartyContinueReq\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
-	"\bprovider\x18\x02 \x01(\tR\bprovider\x12\x14\n" +
-	"\x05token\x18\x03 \x01(\fR\x05token\"1\n" +
+	"\x05token\x18\x01 \x01(\fR\x05token\"q\n" +
+	"\x15ThirdPartyContinueReq\x12\x1a\n" +
+	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\fR\x05token\x12&\n" +
+	"\x0fredis_data_json\x18\x03 \x01(\tR\rredisDataJson\"1\n" +
 	"\x16ThirdPartyContinueResp\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId2o\n" +
 	"\aAccount\x126\n" +

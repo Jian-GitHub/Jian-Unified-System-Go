@@ -1,7 +1,7 @@
 package oauth2
 
 import (
-	"errors"
+	"database/sql"
 	"strconv"
 	"strings"
 )
@@ -92,17 +92,128 @@ type GoogleUserProfile struct {
 	} `json:"metadata,omitempty"`
 }
 
-func (g GoogleUserProfile) SetGoogleID() error {
-	// 1. Check Google ID
+type GoogleAdapter struct {
+	*GoogleUserProfile
+}
+
+//func (g GoogleAdapter) SetGoogleID() error {
+//	// 1. Check Google ID
+//	parts := strings.Split(g.ResourceName, "/")
+//	if len(parts) < 2 {
+//		return errors.New("not enough parts")
+//	}
+//	// 2. Set Google ID -> GoogleUserProfile
+//	id, err := strconv.ParseInt(parts[1], 10, 64)
+//	if err != nil {
+//		return err
+//	}
+//	g.ID = id
+//	return nil
+//}
+
+func (g GoogleAdapter) GetID() int64 {
 	parts := strings.Split(g.ResourceName, "/")
 	if len(parts) < 2 {
-		return errors.New("not enough parts")
+		return 0
 	}
-	// 2. Set Google ID -> GoogleUserProfile
 	id, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
-		return err
+		return 0
 	}
-	g.ID = id
-	return nil
+	return id
+}
+func (g GoogleAdapter) GetGivenName() string {
+	for _, name := range g.Names {
+		if name.Metadata.Primary {
+			return name.GivenName
+		}
+	}
+	return ""
+}
+func (g GoogleAdapter) GetMiddleName() string {
+	return ""
+}
+func (g GoogleAdapter) GetFamilyName() string {
+	for _, name := range g.Names {
+		if name.Metadata.Primary {
+			return name.FamilyName
+		}
+	}
+	return ""
+}
+func (g GoogleAdapter) GetEmail() string {
+	for _, email := range g.EmailAddresses {
+		if email.Metadata.Verified {
+			if email.Metadata.Primary {
+				return email.Value
+			}
+		}
+	}
+	return ""
+}
+func (g GoogleAdapter) GetNotificationEmail() sql.NullString {
+	for _, email := range g.EmailAddresses {
+		if email.Metadata.Verified {
+			if email.Metadata.Primary {
+				return sql.NullString{
+					String: email.Value,
+					Valid:  true,
+				}
+			}
+		}
+	}
+	return sql.NullString{Valid: false}
+}
+func (g GoogleAdapter) GetBirthdayYear() sql.NullInt64 {
+	for _, birthday := range g.Birthdays {
+		if birthday.Metadata.Primary {
+			return sql.NullInt64{
+				Int64: birthday.Date.Year,
+				Valid: true,
+			}
+		}
+	}
+	return sql.NullInt64{Valid: false}
+}
+func (g GoogleAdapter) GetBirthdayMonth() sql.NullInt64 {
+	for _, birthday := range g.Birthdays {
+		if birthday.Metadata.Primary {
+			return sql.NullInt64{
+				Int64: birthday.Date.Month,
+				Valid: true,
+			}
+		}
+	}
+	return sql.NullInt64{Valid: false}
+}
+func (g GoogleAdapter) GetBirthdayDay() sql.NullInt64 {
+	for _, birthday := range g.Birthdays {
+		if birthday.Metadata.Primary {
+			return sql.NullInt64{
+				Int64: birthday.Date.Day,
+				Valid: true,
+			}
+		}
+	}
+	return sql.NullInt64{Valid: false}
+}
+func (g GoogleAdapter) GetAvatar() sql.NullString {
+	for _, photo := range g.Photos {
+		if photo.Metadata.Primary {
+			return sql.NullString{
+				String: photo.URL,
+				Valid:  true,
+			}
+		}
+	}
+
+	return sql.NullString{Valid: false}
+}
+func (g GoogleAdapter) GetDisplayName() string {
+	for _, name := range g.Names {
+		if name.Metadata.Primary {
+			return name.DisplayName
+		}
+	}
+	return "Google"
 }

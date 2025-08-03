@@ -101,9 +101,10 @@ message ThirdPartyBindReq {
 
 // ========== 继续流程 ==========
 message ThirdPartyContinueReq {
-  int64 id = 1;
-  string provider = 2;
-  bytes token = 3;
+//  int64 id = 1;
+  string provider = 1;
+  bytes token = 2;
+  string redis_data_json = 3;
 }
 
 message ThirdPartyContinueResp {

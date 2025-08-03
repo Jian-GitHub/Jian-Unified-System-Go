@@ -1,6 +1,10 @@
 package oauth2
 
-import "time"
+import (
+	"database/sql"
+	"strings"
+	"time"
+)
 
 type GitHubUserInfo struct {
 	ID                int64   `json:"id"`
@@ -9,6 +13,99 @@ type GitHubUserInfo struct {
 	AvatarURL         string  `json:"avatar_url"`
 	Email             *string `json:"email"` // 指针处理 null
 	NotificationEmail *string `json:"notification_email"`
+}
+
+type GitHubAdapter struct {
+	*GitHubUserInfo
+}
+
+func (g GitHubAdapter) GetID() int64 {
+	return g.ID
+}
+
+func (g GitHubAdapter) GetGivenName() string {
+	if g.Name == nil || *g.Name == "" {
+		return g.Login
+	} else {
+		parts := strings.Split(*g.Name, " ")
+		switch len(parts) > 0 {
+		case true:
+			return parts[0]
+		case false:
+			return g.Login
+		default:
+			return parts[0]
+		}
+	}
+}
+
+func (g GitHubAdapter) GetMiddleName() string {
+	if g.Name == nil || *g.Name == "" {
+		return ""
+	} else {
+		parts := strings.Split(*g.Name, " ")
+		switch len(parts) > 2 {
+		case true:
+			middleName := ""
+			for i := 1; i < len(parts)-1; i++ {
+				middleName += parts[i]
+			}
+			return middleName
+		case false:
+			return ""
+		default:
+			return ""
+		}
+	}
+}
+
+func (g GitHubAdapter) GetFamilyName() string {
+	if g.Name == nil || *g.Name == "" {
+		return ""
+	} else {
+		parts := strings.Split(*g.Name, " ")
+		switch len(parts) > 1 {
+		case true:
+			return parts[len(parts)-1]
+		case false:
+			return ""
+		default:
+			return ""
+		}
+	}
+}
+
+func (g GitHubAdapter) GetEmail() string {
+	if g.Email != nil {
+		return *g.Email
+	} else {
+		return ""
+	}
+}
+
+func (g GitHubAdapter) GetNotificationEmail() sql.NullString {
+	if g.NotificationEmail != nil {
+		return sql.NullString{
+			String: *g.NotificationEmail,
+			Valid:  true,
+		}
+	} else {
+		return sql.NullString{Valid: false}
+	}
+}
+
+func (g GitHubAdapter) GetAvatar() sql.NullString {
+	return sql.NullString{
+		String: g.AvatarURL,
+		Valid:  true,
+	}
+}
+
+func (g GitHubAdapter) GetBirthdayYear() sql.NullInt64  { return sql.NullInt64{Valid: false} }
+func (g GitHubAdapter) GetBirthdayMonth() sql.NullInt64 { return sql.NullInt64{Valid: false} }
+func (g GitHubAdapter) GetBirthdayDay() sql.NullInt64   { return sql.NullInt64{Valid: false} }
+func (g GitHubAdapter) GetDisplayName() string {
+	return g.Login
 }
 
 type GitHubUserProfile struct {

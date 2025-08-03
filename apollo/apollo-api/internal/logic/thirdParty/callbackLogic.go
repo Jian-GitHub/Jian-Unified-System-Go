@@ -8,8 +8,6 @@ import (
 	"github.com/zeromicro/go-zero/core/errorx"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/util"
-	redisUtil "jian-unified-system/jus-core/util/oauth2/redis"
-	"strconv"
 	"strings"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
@@ -43,21 +41,21 @@ func (l *CallbackLogic) Callback(req *types.CallbackReq) (resp *types.CallbackRe
 		return nil, err
 	}
 	// redis data string -> RedisData
-	fmt.Println(redisDataJson)
-	var redisData *redisUtil.RedisData
-	err = json.Unmarshal([]byte(redisDataJson), &redisData)
-	if err != nil {
-		return nil, errorx.Wrap(errors.New("redis state fail"), "ThirdParty Err")
-	}
-	var id int64 = 0
-	switch redisData.Flag {
-	case redisUtil.BindFlag:
-		id, err = strconv.ParseInt(*redisData.Id, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		//case redisUtil.ContinueFlag:
-	}
+	//fmt.Println(redisDataJson)
+	//var redisData *redisUtil.RedisData
+	//err = json.Unmarshal([]byte(redisDataJson), &redisData)
+	//if err != nil {
+	//	return nil, errorx.Wrap(errors.New("redis state fail"), "ThirdParty Err")
+	//}
+	//var id int64 = 0
+	//switch redisData.Flag {
+	//case redisUtil.BindFlag:
+	//	id, err = strconv.ParseInt(*redisData.Id, 10, 64)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	//case redisUtil.ContinueFlag:
+	//}
 	// id string -> id int64
 	//id, err := strconv.ParseInt(idStr, 10, 64)
 	//if err != nil {
@@ -93,9 +91,10 @@ func (l *CallbackLogic) Callback(req *types.CallbackReq) (resp *types.CallbackRe
 
 	// grpc
 	result, err := l.svcCtx.ApolloThirdParty.HandleCallback(l.ctx, &apollo.ThirdPartyContinueReq{
-		Id:       id,
-		Provider: req.Provider,
-		Token:    tokenBytes,
+		//Id:            id,
+		Provider:      req.Provider,
+		Token:         tokenBytes,
+		RedisDataJson: redisDataJson,
 	})
 	if err != nil {
 		return nil, err
