@@ -5,3 +5,4 @@ apollo/apollo-rpc/etc/apollorpc.yaml
 *.yaml
 /apollo/apollo-api/genModel/
 jus-core/util/encrypteUtil.go
+jus-core/data/GeoLite2-City.mmdb
