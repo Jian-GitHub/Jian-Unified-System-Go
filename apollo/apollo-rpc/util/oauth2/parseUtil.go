@@ -18,12 +18,17 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 	user.MiddleName = (*thirdPartyUser).GetMiddleName()
 	user.FamilyName = (*thirdPartyUser).GetFamilyName()
 	user.Email = (*thirdPartyUser).GetEmail()
-	user.EmailVerified = 1
 	user.Avatar = (*thirdPartyUser).GetAvatar()
 	user.BirthdayYear = (*thirdPartyUser).GetBirthdayYear()
 	user.BirthdayMonth = (*thirdPartyUser).GetBirthdayMonth()
 	user.BirthdayDay = (*thirdPartyUser).GetBirthdayDay()
 	user.NotificationEmail = (*thirdPartyUser).GetNotificationEmail()
+
+	if user.Email != "" {
+		user.EmailVerified = 1
+	} else {
+		user.EmailVerified = 0
+	}
 
 	// set thirdParty fields
 	thirdParty.ThirdId = (*thirdPartyUser).GetID()
@@ -35,16 +40,18 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 	case *oauth2.GitHubAdapter:
 		if v.Email != nil && *v.Email != "" {
 			contacts = append(contacts, &model.Contact{
-				UserId: user.Id,
-				Value:  *v.Email,
-				Type:   sqlType.ContactType.Email,
+				UserId:    user.Id,
+				Value:     *v.Email,
+				Type:      sqlType.ContactType.Email,
+				IsEnabled: 1,
 			})
 		}
 		if v.NotificationEmail != nil && *v.NotificationEmail != "" && *v.NotificationEmail != *v.Email {
 			contacts = append(contacts, &model.Contact{
-				UserId: user.Id,
-				Value:  *v.NotificationEmail,
-				Type:   sqlType.ContactType.Email,
+				UserId:    user.Id,
+				Value:     *v.NotificationEmail,
+				Type:      sqlType.ContactType.Email,
+				IsEnabled: 1,
 			})
 		}
 

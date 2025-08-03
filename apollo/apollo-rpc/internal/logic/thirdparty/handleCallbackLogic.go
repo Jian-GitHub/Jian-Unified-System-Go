@@ -191,9 +191,11 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 			return nil, err
 		}
 		// contacts
-		_, err = l.svcCtx.ContactModel.InsertBatch(l.ctx, newContacts)
-		if err != nil {
-			return nil, err
+		if len(newContacts) > 0 {
+			_, err = l.svcCtx.ContactModel.InsertBatch(l.ctx, newContacts)
+			if err != nil {
+				return nil, err
+			}
 		}
 		// thirdParty
 		_, err = l.svcCtx.ThirdPartyModel.Insert(l.ctx, newThirdParty)
