@@ -15,5 +15,5 @@ type ThirdPartyUser interface {
 	GetBirthdayMonth() sql.NullInt64
 	GetBirthdayDay() sql.NullInt64
 	GetDisplayName() string
-	GenerateEmailContacts() *[][3]interface{}
+	GenerateEmailContacts() *[][2]interface{}
 }

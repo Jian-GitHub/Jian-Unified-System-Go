@@ -30,7 +30,7 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 			UserId:    user.Id,
 			Value:     data[0].(string),
 			Type:      data[1].(int64),
-			IsEnabled: data[2].(int64),
+			IsEnabled: 1,
 		})
 	}
 

@@ -111,8 +111,8 @@ type GoogleAdapter struct {
 //	return nil
 //}
 
-func (g GoogleAdapter) GenerateEmailContacts() *[][3]interface{} {
-	contacts := make([][3]interface{}, 0)
+func (g GoogleAdapter) GenerateEmailContacts() *[][2]interface{} {
+	contacts := make([][2]interface{}, 0)
 	//notificationEmail := sql.NullString{
 	//	String: "",
 	//	Valid:  false,
@@ -130,7 +130,7 @@ func (g GoogleAdapter) GenerateEmailContacts() *[][3]interface{} {
 			//	Valid:  true,
 			//}
 			//}
-			contacts = append(contacts, [3]interface{}{email.Value, sqlType.ContactType.Email, 1})
+			contacts = append(contacts, [2]interface{}{email.Value, sqlType.ContactType.Email})
 		}
 	}
 	return &contacts //, notificationEmail
