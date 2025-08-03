@@ -26,7 +26,7 @@ func InitOAuthProviders(c Config) map[string]*oc.OAuthConfig {
 			Scopes:       c.OAuth.Google.Scopes,
 			Endpoint:     google.Endpoint,
 		},
-		UserInfoURL: c.OAuth.Github.UserInfoURL,
+		UserInfoURL: c.OAuth.Google.UserInfoURL,
 	}
 
 	return map[string]*oc.OAuthConfig{

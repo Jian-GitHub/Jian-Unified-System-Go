@@ -2,12 +2,11 @@ package oauth2
 
 import (
 	"database/sql"
-	"strconv"
 	"strings"
 )
 
 type GoogleUserProfile struct {
-	ID           int64
+	ID           string
 	ResourceName string `json:"resourceName"`
 	Etag         string `json:"etag"`
 	Names        []struct {
@@ -111,16 +110,12 @@ type GoogleAdapter struct {
 //	return nil
 //}
 
-func (g GoogleAdapter) GetID() int64 {
+func (g GoogleAdapter) GetID() string {
 	parts := strings.Split(g.ResourceName, "/")
 	if len(parts) < 2 {
-		return 0
+		return ""
 	}
-	id, err := strconv.ParseInt(parts[1], 10, 64)
-	if err != nil {
-		return 0
-	}
-	return id
+	return parts[1]
 }
 func (g GoogleAdapter) GetGivenName() string {
 	for _, name := range g.Names {

@@ -54,7 +54,6 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 	if err != nil {
 		return nil, errors.New("token no validated")
 	}
-
 	// 3. Check Provider
 	config, ok := l.svcCtx.OauthProviders[in.Provider]
 	if !ok {
@@ -191,6 +190,8 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 			return nil, err
 		}
 		// contacts
+		fmt.Println(newContacts == nil)
+		fmt.Println(len(newContacts))
 		if len(newContacts) > 0 {
 			_, err = l.svcCtx.ContactModel.InsertBatch(l.ctx, newContacts)
 			if err != nil {
