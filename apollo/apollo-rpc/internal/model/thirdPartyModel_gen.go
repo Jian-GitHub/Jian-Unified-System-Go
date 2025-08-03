@@ -24,7 +24,8 @@ var (
 	thirdPartyRowsExpectAutoSet   = strings.Join(stringx.Remove(thirdPartyFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	thirdPartyRowsWithPlaceHolder = strings.Join(stringx.Remove(thirdPartyFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cacheApolloThirdPartyIdPrefix = "cache:apollo:thirdParty:id:"
+	cacheApolloThirdPartyIdPrefix      = "cache:apollo:thirdParty:id:"
+	cacheApolloThirdPartyThirdIdPrefix = "cache:apollo:thirdParty:thirdId:"
 )
 
 type (
@@ -43,7 +44,7 @@ type (
 
 	ThirdParty struct {
 		Id         int64          `db:"id"` // Third Party Account ID
-		ThirdId    int64          `db:"third_id"`
+		ThirdId    string         `db:"third_id"`
 		UserId     int64          `db:"user_id"` // Apollo User ID
 		Name       string         `db:"name"`
 		CreateTime time.Time      `db:"create_time"`
@@ -86,7 +87,7 @@ func (m *defaultThirdPartyModel) FindOne(ctx context.Context, id int64) (*ThirdP
 }
 
 func (m *defaultThirdPartyModel) FindOneByThirdID(ctx context.Context, id int64) (*ThirdParty, error) {
-	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyIdPrefix, id)
+	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyThirdIdPrefix, id)
 	var resp ThirdParty
 	err := m.QueryRowCtx(ctx, &resp, apolloThirdPartyIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `third_id` = ? limit 1", thirdPartyRows, m.table)
