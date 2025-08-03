@@ -27,6 +27,7 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 
 	// set thirdParty fields
 	thirdParty.ThirdId = (*thirdPartyUser).GetID()
+	fmt.Println(thirdParty.ThirdId)
 	thirdParty.UserId = user.Id
 	thirdParty.Name = (*thirdPartyUser).GetDisplayName()
 
@@ -63,6 +64,7 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 					Value:  email.Value,
 					Type:   sqlType.ContactType.Email,
 				})
+				fmt.Println(email.Value)
 			}
 		}
 	default:

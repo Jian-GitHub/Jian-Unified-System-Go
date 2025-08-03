@@ -2,6 +2,7 @@ package oauth2
 
 import (
 	"database/sql"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,8 +20,8 @@ type GitHubAdapter struct {
 	*GitHubUserInfo
 }
 
-func (g GitHubAdapter) GetID() int64 {
-	return g.ID
+func (g GitHubAdapter) GetID() string {
+	return strconv.FormatInt(g.ID, 10)
 }
 
 func (g GitHubAdapter) GetGivenName() string {
