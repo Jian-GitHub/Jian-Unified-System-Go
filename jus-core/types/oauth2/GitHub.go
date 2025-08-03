@@ -2,6 +2,7 @@ package oauth2
 
 import (
 	"database/sql"
+	sqlType "jian-unified-system/jus-core/types/sql"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +23,27 @@ type GitHubAdapter struct {
 
 func (g GitHubAdapter) GetID() string {
 	return strconv.FormatInt(g.ID, 10)
+}
+func (g GitHubAdapter) GenerateEmailContacts() *[][3]interface{} {
+	contacts := make([][3]interface{}, 0)
+	//notificationEmail := sql.NullString{
+	//	String: "",
+	//	Valid:  false,
+	//}
+
+	if g.Email != nil && *g.Email != "" {
+		//notificationEmail.String = *g.Email
+		//notificationEmail.Valid = true
+		contacts = append(contacts, [3]interface{}{*g.Email, sqlType.ContactType.Email, 1})
+	}
+	if g.NotificationEmail != nil && *g.NotificationEmail != "" && *g.NotificationEmail != *g.Email {
+		//if !notificationEmail.Valid {
+		//	notificationEmail.String = *g.NotificationEmail
+		//	notificationEmail.Valid = true
+		//}
+		contacts = append(contacts, [3]interface{}{*g.NotificationEmail, sqlType.ContactType.Email, 1})
+	}
+	return &contacts //, notificationEmail
 }
 
 func (g GitHubAdapter) GetGivenName() string {

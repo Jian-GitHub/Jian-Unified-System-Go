@@ -2,6 +2,7 @@ package oauth2
 
 import (
 	"database/sql"
+	sqlType "jian-unified-system/jus-core/types/sql"
 	"strings"
 )
 
@@ -110,6 +111,30 @@ type GoogleAdapter struct {
 //	return nil
 //}
 
+func (g GoogleAdapter) GenerateEmailContacts() *[][3]interface{} {
+	contacts := make([][3]interface{}, 0)
+	//notificationEmail := sql.NullString{
+	//	String: "",
+	//	Valid:  false,
+	//}
+
+	for _, email := range g.EmailAddresses {
+		if email.Metadata.Verified {
+			//if email.Metadata.Primary {
+			//notificationEmail.String = email.Value
+			//notificationEmail.Valid = true
+
+			//(*user).Email = email.Value
+			//(*user).NotificationEmail = sql.NullString{
+			//	String: email.Value,
+			//	Valid:  true,
+			//}
+			//}
+			contacts = append(contacts, [3]interface{}{email.Value, sqlType.ContactType.Email, 1})
+		}
+	}
+	return &contacts //, notificationEmail
+}
 func (g GoogleAdapter) GetID() string {
 	parts := strings.Split(g.ResourceName, "/")
 	if len(parts) < 2 {

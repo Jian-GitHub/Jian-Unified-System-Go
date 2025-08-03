@@ -1,11 +1,8 @@
 package oauth2
 
 import (
-	"database/sql"
-	"fmt"
 	"jian-unified-system/apollo/apollo-rpc/internal/model"
 	"jian-unified-system/jus-core/types/oauth2"
-	sqlType "jian-unified-system/jus-core/types/sql"
 )
 
 func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.User, contacts *[]*model.Contact, thirdParty *model.ThirdParty) (err error) {
@@ -26,45 +23,15 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 	thirdParty.UserId = user.Id
 	thirdParty.Name = (*thirdPartyUser).GetDisplayName()
 
-	// 准备 contacts
-	switch v := (*thirdPartyUser).(type) {
-	case *oauth2.GitHubAdapter:
-		if v.Email != nil && *v.Email != "" {
-			*contacts = append(*contacts, &model.Contact{
-				UserId: user.Id,
-				Value:  *v.Email,
-				Type:   sqlType.ContactType.Email,
-			})
-		}
-		if v.NotificationEmail != nil && *v.NotificationEmail != "" && *v.NotificationEmail != *v.Email {
-			*contacts = append(*contacts, &model.Contact{
-				UserId: user.Id,
-				Value:  *v.NotificationEmail,
-				Type:   sqlType.ContactType.Email,
-			})
-		}
-
-	case *oauth2.GoogleAdapter:
-		for _, email := range v.EmailAddresses {
-			if email.Metadata.Verified {
-				if email.Metadata.Primary {
-					(*user).Email = email.Value
-					(*user).NotificationEmail = sql.NullString{
-						String: email.Value,
-						Valid:  true,
-					}
-				}
-				*contacts = append(*contacts, &model.Contact{
-					UserId:    user.Id,
-					Value:     email.Value,
-					Type:      sqlType.ContactType.Email,
-					IsEnabled: 1,
-				})
-			}
-		}
-	default:
-		fmt.Println("未知类型")
-		return
+	// generate contacts
+	contactsData := (*thirdPartyUser).GenerateEmailContacts()
+	for _, data := range *contactsData {
+		*contacts = append(*contacts, &model.Contact{
+			UserId:    user.Id,
+			Value:     data[0].(string),
+			Type:      data[1].(int64),
+			IsEnabled: data[2].(int64),
+		})
 	}
 
 	return nil
