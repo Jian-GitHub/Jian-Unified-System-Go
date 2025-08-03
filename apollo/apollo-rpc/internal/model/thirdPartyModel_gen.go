@@ -32,7 +32,7 @@ type (
 	thirdPartyModel interface {
 		Insert(ctx context.Context, data *ThirdParty) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*ThirdParty, error)
-		FindOneByThirdID(ctx context.Context, id int64) (*ThirdParty, error)
+		FindOneByThirdID(ctx context.Context, id string) (*ThirdParty, error)
 		Update(ctx context.Context, data *ThirdParty) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -86,7 +86,7 @@ func (m *defaultThirdPartyModel) FindOne(ctx context.Context, id int64) (*ThirdP
 	}
 }
 
-func (m *defaultThirdPartyModel) FindOneByThirdID(ctx context.Context, id int64) (*ThirdParty, error) {
+func (m *defaultThirdPartyModel) FindOneByThirdID(ctx context.Context, id string) (*ThirdParty, error) {
 	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyThirdIdPrefix, id)
 	var resp ThirdParty
 	err := m.QueryRowCtx(ctx, &resp, apolloThirdPartyIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {

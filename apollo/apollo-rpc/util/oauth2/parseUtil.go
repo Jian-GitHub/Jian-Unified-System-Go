@@ -8,11 +8,7 @@ import (
 	sqlType "jian-unified-system/jus-core/types/sql"
 )
 
-type Parser interface {
-	ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser) (user *model.User, contacts []*model.Contact, err error)
-}
-
-func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.User, contacts []*model.Contact, thirdParty *model.ThirdParty) (err error) {
+func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.User, contacts *[]*model.Contact, thirdParty *model.ThirdParty) (err error) {
 	// set user fields
 	user.GivenName = (*thirdPartyUser).GetGivenName()
 	user.MiddleName = (*thirdPartyUser).GetMiddleName()
@@ -27,7 +23,6 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 
 	// set thirdParty fields
 	thirdParty.ThirdId = (*thirdPartyUser).GetID()
-	fmt.Println(thirdParty.ThirdId)
 	thirdParty.UserId = user.Id
 	thirdParty.Name = (*thirdPartyUser).GetDisplayName()
 
@@ -35,14 +30,14 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 	switch v := (*thirdPartyUser).(type) {
 	case *oauth2.GitHubAdapter:
 		if v.Email != nil && *v.Email != "" {
-			contacts = append(contacts, &model.Contact{
+			*contacts = append(*contacts, &model.Contact{
 				UserId: user.Id,
 				Value:  *v.Email,
 				Type:   sqlType.ContactType.Email,
 			})
 		}
 		if v.NotificationEmail != nil && *v.NotificationEmail != "" && *v.NotificationEmail != *v.Email {
-			contacts = append(contacts, &model.Contact{
+			*contacts = append(*contacts, &model.Contact{
 				UserId: user.Id,
 				Value:  *v.NotificationEmail,
 				Type:   sqlType.ContactType.Email,
@@ -59,12 +54,12 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *model.Use
 						Valid:  true,
 					}
 				}
-				contacts = append(contacts, &model.Contact{
-					UserId: user.Id,
-					Value:  email.Value,
-					Type:   sqlType.ContactType.Email,
+				*contacts = append(*contacts, &model.Contact{
+					UserId:    user.Id,
+					Value:     email.Value,
+					Type:      sqlType.ContactType.Email,
+					IsEnabled: 1,
 				})
-				fmt.Println(email.Value)
 			}
 		}
 	default:

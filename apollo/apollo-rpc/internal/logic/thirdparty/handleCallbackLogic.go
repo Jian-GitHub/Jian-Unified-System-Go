@@ -95,6 +95,8 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		return nil, err
 	}
 
+	fmt.Println("thirdPartyIsExist", thirdPartyIsExist)
+
 	// 需要查 user 的情况
 	// thirdParty exists: 		 p,		continue:	 q
 	// thirdParty no existing:	¬p,		Bind:		¬q
@@ -129,6 +131,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		// 分情况讨论: 流程类型
 		switch redisData.Flag {
 		case redisUtil.ContinueFlag:
+			fmt.Println("进入登录")
 			// 处理 登录 - 返回 user defaultUserId
 			// 更新第三方数据
 			existedThirdParty.Name = thirdPartyUser.GetDisplayName()
@@ -141,6 +144,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 				UserId: user.Id,
 			}, nil
 		case redisUtil.BindFlag:
+			fmt.Println("进入绑定")
 			// 处理 绑定 - 存新 third_party
 			newThirdParty := &model.ThirdParty{
 				RawData: sql.NullString{
@@ -149,7 +153,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 				},
 			}
 			// 生成 third_party
-			err = o2.ParseUserAndContacts(&thirdPartyUser, user, []*model.Contact{}, newThirdParty)
+			err = o2.ParseUserAndContacts(&thirdPartyUser, user, nil, newThirdParty)
 			if err != nil {
 				return nil, err
 			}
@@ -165,12 +169,13 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		}
 	// 第三方不存在 && Continue: 注册流程
 	case !thirdPartyIsExist && redisData.Flag == redisUtil.ContinueFlag:
+		fmt.Println("进入注册")
 		// 处理注册
 		// 创建 新 user, 新 contacts, 新 third_party
 		newUser := &model.User{
 			Id: defaultUserId,
 		}
-		var newContacts []*model.Contact
+		newContacts := make([]*model.Contact, 0)
 		newThirdParty := &model.ThirdParty{
 			RawData: sql.NullString{
 				String: string(body),
@@ -178,7 +183,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 			},
 		}
 
-		err = o2.ParseUserAndContacts(&thirdPartyUser, newUser, newContacts, newThirdParty)
+		err = o2.ParseUserAndContacts(&thirdPartyUser, newUser, &newContacts, newThirdParty)
 		if err != nil {
 			return nil, err
 		}
@@ -190,6 +195,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 			return nil, err
 		}
 		// contacts
+		fmt.Println("检查 contacts")
 		fmt.Println(newContacts == nil)
 		fmt.Println(len(newContacts))
 		if len(newContacts) > 0 {
