@@ -1,0 +1,104 @@
+package rabbitMQ
+
+import (
+	"github.com/streadway/amqp"
+	"log"
+)
+
+type Producer struct {
+	conn     *amqp.Connection
+	channel  *amqp.Channel
+	rabbitMQ RabbitMQ
+}
+
+func NewProducer(r RabbitMQ) *Producer {
+	conn, err := amqp.Dial(r.URL)
+	if err != nil {
+		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+	}
+
+	channel, err := conn.Channel()
+	if err != nil {
+		log.Fatalf("Failed to open a channel: %v", err)
+	}
+
+	// 声明交换机
+	err = channel.ExchangeDeclare(
+		r.Exchange, // name
+		"direct",   // type
+		true,       // durable
+		false,      // auto-deleted
+		false,      // internal
+		false,      // no-wait
+		nil,        // arguments
+	)
+	if err != nil {
+		log.Fatalf("Failed to declare an exchange: %v", err)
+	}
+
+	// 声明队列
+	_, err = channel.QueueDeclare(
+		r.Queue, // name
+		true,    // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
+	)
+	if err != nil {
+		log.Fatalf("Failed to declare a queue: %v", err)
+	}
+
+	// 绑定队列到交换机
+	err = channel.QueueBind(
+		r.Queue,      // queue name
+		r.RoutingKey, // routing key
+		r.Exchange,   // exchange
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("Failed to bind a queue: %v", err)
+	}
+
+	return &Producer{
+		conn:     conn,
+		channel:  channel,
+		rabbitMQ: r,
+	}
+}
+
+func (p *Producer) Publish(message []byte) error {
+	return p.channel.Publish(
+		p.rabbitMQ.Exchange,   // exchange
+		p.rabbitMQ.RoutingKey, // routing key
+		false,                 // mandatory
+		false,                 // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        message,
+		})
+}
+
+func (p *Producer) PublishWithHeaders(message []byte, headers *amqp.Table) error {
+	return p.channel.Publish(
+		p.rabbitMQ.Exchange,   // exchange
+		p.rabbitMQ.RoutingKey, // routing key
+		false,                 // mandatory
+		false,                 // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        message,
+			Headers:     *headers,
+			//MessageId:     "msg-001",
+			//CorrelationId: "corr-001",
+			//DeliveryMode:  2,               // 持久化
+			//Timestamp:     time.Now(),
+			AppId: "Jian Unified System - Hermes - Go",
+		})
+}
+
+func (p *Producer) Close() {
+	p.channel.Close()
+	p.conn.Close()
+}

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package apollo;
+
+option go_package = "./jquantum";
+
+message Empty {}
+
+// Job
+// ========== 任务流程 ==========
+//message RegistrationReq {
+//  int64 user_id = 1;
+//  string email = 2;
+//  string password = 3;
+//  string locate = 4;
+//  string language = 5;
+//}
+//
+//// ========== 登录流程 ==========
+//message LoginReq {
+//  string email = 1;
+//  string password = 2;
+//}
+//
+//message LoginResp {
+//  int64 user_id = 1;
+//}
+
+
+// ================= 服务定义 =================
+service Job {
+  // 注册
+  // Registration 注册
+  rpc Submit (Empty) returns (Empty);
+
+}

@@ -1,0 +1,45 @@
+syntax = "v1"
+
+info (
+	title:   "JQuantum-API"
+	desc:    "JQuantum-API"
+	author:  "Jian Qi"
+	email:   "e.jianqi@gmail.com"
+	version: "v0.0.1"
+)
+
+type (
+	// 空
+	Empty  {}
+	// 通用响应
+	BaseResponse {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+)
+
+// Account
+type (
+	// 注册
+	SubmitReq  {}
+	SubmitResp {
+		Email           string `json:"email" validate:"required"`
+		Password        string `json:"password" validate:"required"`
+		ConfirmPassword string `json:"confirm_password" validate:"required"`
+		Language        string `json:"language" validate:"required"`
+	}
+)
+
+// Account
+@server (
+	prefix: /v1/job
+	group:  job
+	jwt:    Auth
+)
+service jquantum-api {
+	// 注册流程
+	@handler Submit
+	// 返回: Token
+	post /submit returns (BaseResponse)
+}
+

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.19.4
-// source: apollo-rpc.proto
+// source: jquantum-rpc.proto
 
 package apollo
 
@@ -167,7 +167,7 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "apollo-rpc.proto",
+	Metadata: "jquantum-rpc.proto",
 }
 
 const (
@@ -399,7 +399,7 @@ var Passkeys_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "apollo-rpc.proto",
+	Metadata: "jquantum-rpc.proto",
 }
 
 const (
@@ -591,5 +591,5 @@ var ThirdParty_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "apollo-rpc.proto",
+	Metadata: "jquantum-rpc.proto",
 }
