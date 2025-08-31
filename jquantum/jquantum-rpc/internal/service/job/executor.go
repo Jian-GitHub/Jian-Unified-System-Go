@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 type Executor struct {
@@ -169,16 +170,16 @@ func (e *Executor) Run() error {
 		stdoutStr := stdoutBuf.String()
 		stderrStr := stderrBuf.String()
 		fmt.Println("MPIRUN job exited with error:", err)
-		fmt.Println(stdoutStr)
-		fmt.Println(stderrStr)
+		fmt.Println(strings.TrimSpace(stdoutStr))
+		fmt.Println(strings.TrimSpace(stderrStr))
 		fmt.Println("===================")
 		return errorx.Wrap(err, "MPIRUN job exited with error")
 	} else {
 		stdoutStr := stdoutBuf.String()
-		stderrStr := stderrBuf.String()
+		//stderrStr := stderrBuf.String()
 		fmt.Println("MPIRUN job completed.")
-		fmt.Println(stdoutStr)
-		fmt.Println(stderrStr)
+		fmt.Println(strings.TrimSpace(stdoutStr))
+		//fmt.Println(strings.TrimSpace(stderrStr))
 		fmt.Println("===================")
 	}
 	return nil

@@ -203,11 +203,12 @@ func (c *Converter) generateSequenceCode(sequenceData []jquantum.Element, patter
 
 // CircuitToQuestJSON 将量子电路转换为QuEST C++模拟代码
 func (c *Converter) CircuitToQuestJSON(result jquantum.ResultJSON) (string, error) {
+	shots := result.Shots
 	numQubits := result.NumQubits
 	patterns := result.Patterns
 
 	// 创建代码模板
-	code := CodeTemplateBeginning
+	code := TemplateBeginning
 
 	// 添加模式代码（即使为空也会处理）
 	patternCode, err := c.generatePatternsCode(patterns)
@@ -218,7 +219,7 @@ func (c *Converter) CircuitToQuestJSON(result jquantum.ResultJSON) (string, erro
 	code += patternCode
 
 	// 主函数
-	code += MainCodeTemplateBeginning(numQubits, c.jobDir)
+	code += MainCodeTemplateBeginning(numQubits, shots, c.jobDir)
 
 	// 添加序列代码
 	sequenceCode, err := c.generateSequenceCode(result.Sequence, patterns)
@@ -228,7 +229,7 @@ func (c *Converter) CircuitToQuestJSON(result jquantum.ResultJSON) (string, erro
 
 	code += sequenceCode
 
-	code += MainCodeTemplateEnding(numQubits)
+	code += MainCodeTemplateEnding()
 
 	return code, nil
 }

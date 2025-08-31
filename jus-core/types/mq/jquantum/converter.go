@@ -10,6 +10,7 @@ type PatternContent struct {
 }
 
 type ResultJSON struct {
+	Shots     int                       `json:"shots"`
 	NumQubits int                       `json:"num_qubits"`
 	Patterns  map[string]PatternContent `json:"patterns,omitempty"` // 添加omitempty
 	Sequence  []Element                 `json:"sequence"`
