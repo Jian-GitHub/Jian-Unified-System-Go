@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"strconv"
 	"sync"
 	"time"
 
@@ -15,14 +16,17 @@ import (
 )
 
 type Consumer struct {
-	conn     *amqp.Connection
-	channel  *amqp.Channel
-	rabbitMQ RabbitMQ
-	redis    *redis.Redis
-	ctx      context.Context
-	done     chan bool
-	wg       sync.WaitGroup
-	f        func(body []byte)
+	conn           *amqp.Connection
+	channel        *amqp.Channel
+	rabbitMQ       RabbitMQ
+	redis          *redis.Redis
+	ctx            context.Context
+	done           chan bool
+	wg             sync.WaitGroup
+	lockRenewalCh  chan struct{} // 用于停止续期
+	renewalRunning bool          // 续期 goroutine 运行状态
+	renewalMutex   sync.Mutex    // 保护续期状态
+	f              func(body []byte)
 }
 
 func NewConsumer(r RabbitMQ, redisClient *redis.Redis, f func(body []byte)) *Consumer {
@@ -108,11 +112,12 @@ func (c *Consumer) StartConsuming() {
 				}
 
 				// 使用更健壮的分布式锁
-				lockKey := "global:job_queue_lock"
+				lockKey := "jquantum:job_queue_lock"
 				lockValue := c.generateLockValue() // 生成唯一的锁值
 
 				// 尝试获取分布式锁
-				acquired, err := c.tryAcquireLockWithRetry(lockKey, lockValue, 30*time.Second, 5)
+				ttl := 30 * time.Second
+				acquired, err := c.tryAcquireLockWithRetry(lockKey, lockValue, ttl)
 				if err != nil {
 					log.Printf("获取分布式锁失败: %v", err)
 					// 拒绝消息并重新入队
@@ -125,6 +130,8 @@ func (c *Consumer) StartConsuming() {
 
 				if acquired {
 					log.Printf("进程获取到全局锁，开始处理消息: %s", string(msg.Body))
+					// 启动锁续期
+					c.startLockRenewal(lockKey, lockValue, ttl)
 
 					// 处理消息
 					c.processMessage(msg.Body)
@@ -137,7 +144,7 @@ func (c *Consumer) StartConsuming() {
 					}
 
 					// 释放锁
-					if err := c.releaseLock(lockKey, lockValue); err != nil {
+					if err := c.releaseLockWithRenewal(lockKey, lockValue); err != nil {
 						log.Printf("释放锁失败: %v", err)
 					}
 				} else {
@@ -173,9 +180,91 @@ func (c *Consumer) generateLockValue() string {
 	return hex.EncodeToString(b)
 }
 
+// 启动锁续期
+func (c *Consumer) startLockRenewal(lockKey, lockValue string, ttl time.Duration) {
+	c.renewalMutex.Lock()
+	defer c.renewalMutex.Unlock()
+
+	if c.renewalRunning {
+		return
+	}
+
+	c.lockRenewalCh = make(chan struct{})
+	c.renewalRunning = true
+
+	go c.renewLockPeriodically(lockKey, lockValue, ttl)
+}
+
+// 定期续期锁
+func (c *Consumer) renewLockPeriodically(lockKey, lockValue string, ttl time.Duration) {
+	ticker := time.NewTicker(ttl / 2) // 每过半段时间续期一次
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			success, err := c.renewLock(lockKey, lockValue, ttl)
+			if err != nil || !success {
+				log.Printf("锁续期失败: %v", err)
+				// 续期失败，停止续期
+				c.stopLockRenewal()
+				return
+			}
+			log.Printf("锁续期成功")
+		case <-c.lockRenewalCh:
+			// 收到停止信号
+			return
+		case <-c.ctx.Done():
+			// 上下文取消
+			return
+		}
+	}
+}
+
+// 续期锁
+func (c *Consumer) renewLock(lockKey, lockValue string, ttl time.Duration) (bool, error) {
+	luaScript := `
+        if redis.call("get", KEYS[1]) == ARGV[1] then
+            return redis.call("expire", KEYS[1], ARGV[2])
+        else
+            return 0
+        end
+    `
+
+	result, err := c.redis.EvalCtx(c.ctx, luaScript,
+		[]string{lockKey},
+		[]string{lockValue, strconv.Itoa(int(ttl.Seconds()))})
+	if err != nil {
+		return false, err
+	}
+
+	return result.(int64) == 1, nil
+}
+
+// 停止锁续期
+func (c *Consumer) stopLockRenewal() {
+	c.renewalMutex.Lock()
+	defer c.renewalMutex.Unlock()
+
+	if c.renewalRunning && c.lockRenewalCh != nil {
+		close(c.lockRenewalCh)
+		c.renewalRunning = false
+	}
+}
+
+// 释放锁（包含停止续期）
+func (c *Consumer) releaseLockWithRenewal(lockKey, lockValue string) error {
+	// 先停止续期
+	c.stopLockRenewal()
+
+	// 然后释放锁
+	return c.releaseLock(lockKey, lockValue)
+}
+
 // 尝试获取锁，带有重试机制
-func (c *Consumer) tryAcquireLockWithRetry(lockKey, lockValue string, ttl time.Duration, maxRetries int) (bool, error) {
-	for i := 0; i < maxRetries; i++ {
+func (c *Consumer) tryAcquireLockWithRetry(lockKey, lockValue string, ttl time.Duration) (bool, error) {
+	i := 0
+	for {
 		acquired, err := c.tryAcquireLock(lockKey, lockValue, ttl)
 		if err != nil {
 			return false, err
@@ -190,8 +279,8 @@ func (c *Consumer) tryAcquireLockWithRetry(lockKey, lockValue string, ttl time.D
 			sleepTime = time.Second
 		}
 		time.Sleep(sleepTime)
+		i++
 	}
-	return false, nil
 }
 
 // 尝试获取分布式锁
