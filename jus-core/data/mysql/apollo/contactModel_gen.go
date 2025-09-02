@@ -2,12 +2,13 @@
 // versions:
 //  goctl version: 1.8.5
 
-package model
+package apollo
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	"jian-unified-system/jus-core/data/mysql/model"
 	"strings"
 	"time"
 
@@ -81,7 +82,7 @@ func (m *defaultContactModel) FindOne(ctx context.Context, id int64) (*Contact, 
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, model.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -101,7 +102,7 @@ func (m *defaultContactModel) FindByUserID(ctx context.Context, userID int64) ([
 	case nil:
 		return resp, nil
 	case sqlx.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, model.ErrNotFound
 	default:
 		return nil, err
 	}

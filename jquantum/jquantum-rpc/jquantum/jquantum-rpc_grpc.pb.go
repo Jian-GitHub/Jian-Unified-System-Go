@@ -19,109 +19,107 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Job_Submit_FullMethodName = "/apollo.Job/Submit"
+	JQuantum_Submit_FullMethodName = "/apollo.JQuantum/Submit"
 )
 
-// JobClient is the client API for Job service.
+// JQuantumClient is the client API for JQuantum service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// ================= 服务定义 =================
-type JobClient interface {
-	// 注册
-	// Registration 注册
-	Submit(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+// ================= 计算任务定义 =================
+type JQuantumClient interface {
+	// Submit 提交任务
+	Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error)
 }
 
-type jobClient struct {
+type jQuantumClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewJobClient(cc grpc.ClientConnInterface) JobClient {
-	return &jobClient{cc}
+func NewJQuantumClient(cc grpc.ClientConnInterface) JQuantumClient {
+	return &jQuantumClient{cc}
 }
 
-func (c *jobClient) Submit(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+func (c *jQuantumClient) Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, Job_Submit_FullMethodName, in, out, cOpts...)
+	out := new(SubmitResp)
+	err := c.cc.Invoke(ctx, JQuantum_Submit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// JobServer is the server API for Job service.
-// All implementations must embed UnimplementedJobServer
+// JQuantumServer is the server API for JQuantum service.
+// All implementations must embed UnimplementedJQuantumServer
 // for forward compatibility.
 //
-// ================= 服务定义 =================
-type JobServer interface {
-	// 注册
-	// Registration 注册
-	Submit(context.Context, *Empty) (*Empty, error)
-	mustEmbedUnimplementedJobServer()
+// ================= 计算任务定义 =================
+type JQuantumServer interface {
+	// Submit 提交任务
+	Submit(context.Context, *SubmitReq) (*SubmitResp, error)
+	mustEmbedUnimplementedJQuantumServer()
 }
 
-// UnimplementedJobServer must be embedded to have
+// UnimplementedJQuantumServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedJobServer struct{}
+type UnimplementedJQuantumServer struct{}
 
-func (UnimplementedJobServer) Submit(context.Context, *Empty) (*Empty, error) {
+func (UnimplementedJQuantumServer) Submit(context.Context, *SubmitReq) (*SubmitResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
 }
-func (UnimplementedJobServer) mustEmbedUnimplementedJobServer() {}
-func (UnimplementedJobServer) testEmbeddedByValue()             {}
+func (UnimplementedJQuantumServer) mustEmbedUnimplementedJQuantumServer() {}
+func (UnimplementedJQuantumServer) testEmbeddedByValue()                  {}
 
-// UnsafeJobServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to JobServer will
+// UnsafeJQuantumServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to JQuantumServer will
 // result in compilation errors.
-type UnsafeJobServer interface {
-	mustEmbedUnimplementedJobServer()
+type UnsafeJQuantumServer interface {
+	mustEmbedUnimplementedJQuantumServer()
 }
 
-func RegisterJobServer(s grpc.ServiceRegistrar, srv JobServer) {
-	// If the following call pancis, it indicates UnimplementedJobServer was
+func RegisterJQuantumServer(s grpc.ServiceRegistrar, srv JQuantumServer) {
+	// If the following call pancis, it indicates UnimplementedJQuantumServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Job_ServiceDesc, srv)
+	s.RegisterService(&JQuantum_ServiceDesc, srv)
 }
 
-func _Job_Submit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+func _JQuantum_Submit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(JobServer).Submit(ctx, in)
+		return srv.(JQuantumServer).Submit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Job_Submit_FullMethodName,
+		FullMethod: JQuantum_Submit_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JobServer).Submit(ctx, req.(*Empty))
+		return srv.(JQuantumServer).Submit(ctx, req.(*SubmitReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Job_ServiceDesc is the grpc.ServiceDesc for Job service.
+// JQuantum_ServiceDesc is the grpc.ServiceDesc for JQuantum service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Job_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "apollo.Job",
-	HandlerType: (*JobServer)(nil),
+var JQuantum_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "apollo.JQuantum",
+	HandlerType: (*JQuantumServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Submit",
-			Handler:    _Job_Submit_Handler,
+			Handler:    _JQuantum_Submit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

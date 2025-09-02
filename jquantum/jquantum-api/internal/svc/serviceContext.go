@@ -3,18 +3,23 @@ package svc
 import (
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
+	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/jquantum/jquantum-api/internal/config"
+	"jian-unified-system/jquantum/jquantum-rpc/jquantum"
 	"jian-unified-system/jus-hermes/mq/rabbitMQ"
 	"time"
 )
 
 type ServiceContext struct {
-	Config      config.Config
-	KafkaWriter *kafka.Writer
-	Producer    *rabbitMQ.Producer
+	Config         config.Config
+	KafkaWriter    *kafka.Writer
+	Producer       *rabbitMQ.Producer
+	JQuantumClient jquantum.JQuantumClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	client := zrpc.MustNewClient(c.JQuantumRpc)
+
 	// SASL/PLAIN 机制
 	mechanism := plain.Mechanism{
 		Username: c.Kafka.Username,
@@ -43,8 +48,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	producer := rabbitMQ.NewProducer(c.RabbitMQ)
 	return &ServiceContext{
-		Config:      c,
-		KafkaWriter: writer,
-		Producer:    producer,
+		Config:         c,
+		JQuantumClient: jquantum.NewJQuantumClient(client.Conn()),
+		KafkaWriter:    writer,
+		Producer:       producer,
 	}
 }

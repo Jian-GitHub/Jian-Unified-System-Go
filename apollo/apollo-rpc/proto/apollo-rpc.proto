@@ -26,6 +26,15 @@ message LoginResp {
   int64 user_id = 1;
 }
 
+// ========== 用户信息 ==========
+message NotificationInfoReq {
+  int64 user_id = 1;
+}
+
+message NotificationInfoResp {
+  bytes user_bytes = 1;
+}
+
 
 // ================= 服务定义 =================
 service Account {
@@ -36,6 +45,10 @@ service Account {
   // 登录
   // Login 登陆
   rpc Login (LoginReq) returns (LoginResp);
+
+  // 用户信息
+  // NotificationInfo 查询用户通知联系方式
+  rpc NotificationInfo (NotificationInfoReq) returns (NotificationInfoResp);
 }
 
 // Passkeys

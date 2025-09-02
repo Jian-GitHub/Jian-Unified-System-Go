@@ -3,19 +3,23 @@ syntax = "proto3";
 package apollo;
 
 option go_package = "./jquantum";
-
-message Empty {}
+import "google/protobuf/empty.proto";
 
 // Job
 // ========== 任务流程 ==========
-//message RegistrationReq {
+message SubmitReq {
+  int64 user_id = 1;
+  bytes thread = 2;
+}
+
+message SubmitResp {
 //  int64 user_id = 1;
-//  string email = 2;
+  string job_id = 1;
 //  string password = 3;
 //  string locate = 4;
 //  string language = 5;
-//}
-//
+}
+
 //// ========== 登录流程 ==========
 //message LoginReq {
 //  string email = 1;
@@ -27,10 +31,9 @@ message Empty {}
 //}
 
 
-// ================= 服务定义 =================
-service Job {
-  // 注册
-  // Registration 注册
-  rpc Submit (Empty) returns (Empty);
+// ================= 计算任务定义 =================
+service JQuantum {
+  // Submit 提交任务
+  rpc Submit (SubmitReq) returns (SubmitResp);
 
 }

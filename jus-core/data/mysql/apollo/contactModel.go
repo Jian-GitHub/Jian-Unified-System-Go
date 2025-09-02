@@ -1,4 +1,4 @@
-package model
+package apollo
 
 import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -19,7 +19,7 @@ type (
 	}
 )
 
-// NewContactModel returns a model for the database table.
+// NewContactModel returns a apollo for the database table.
 func NewContactModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) ContactModel {
 	return &customContactModel{
 		defaultContactModel: newContactModel(conn, c, opts...),

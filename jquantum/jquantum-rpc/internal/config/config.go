@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/jus-hermes/mq/rabbitMQ"
@@ -8,7 +9,8 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	Kafka struct {
+	ApolloRpc zrpc.RpcClientConf
+	Kafka     struct {
 		Brokers []string
 		Topic   string
 		//GroupID  string
@@ -22,4 +24,8 @@ type Config struct {
 	JQuantum  struct {
 		BaseDir string
 	}
+	DB struct {
+		DataSource string
+	}
+	Cache cache.CacheConf
 }

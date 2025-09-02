@@ -36,12 +36,12 @@ func NewConsumer(r RabbitMQ, redisClient *redis.Redis, f func(body []byte)) *Con
 			Heartbeat: time.Second * 10,
 		})
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+		log.Printf("Failed to connect to RabbitMQ: %v", err)
 	}
 
 	channel, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("Failed to open a channel: %v", err)
+		log.Printf("Failed to open a channel: %v", err)
 	}
 
 	// 设置 QoS - 一次只预取一条消息
@@ -51,7 +51,7 @@ func NewConsumer(r RabbitMQ, redisClient *redis.Redis, f func(body []byte)) *Con
 		false, // 全局
 	)
 	if err != nil {
-		log.Fatalf("Failed to set QoS: %v", err)
+		log.Printf("Failed to set QoS: %v", err)
 	}
 
 	return &Consumer{
@@ -76,7 +76,8 @@ func (c *Consumer) StartConsuming() {
 		nil,   // 参数
 	)
 	if err != nil {
-		log.Fatalf("Failed to declare queue: %v", err)
+		log.Printf("Failed to declare queue: %v", err)
+		return
 	}
 
 	// 开始消费消息（手动确认）
@@ -90,7 +91,8 @@ func (c *Consumer) StartConsuming() {
 		nil,   // 参数
 	)
 	if err != nil {
-		log.Fatalf("Failed to register consumer: %v", err)
+		log.Printf("Failed to register consumer: %v", err)
+		return
 	}
 
 	log.Printf("开始分布式顺序处理队列: %s", c.rabbitMQ.Queue)
@@ -165,6 +167,7 @@ func (c *Consumer) StartConsuming() {
 func (c *Consumer) keepAlive() {
 	log.Printf("消息队列监听关闭, 重新开启监听: " + c.rabbitMQ.Queue)
 	fmt.Println(c.rabbitMQ.URL)
+	c.Close()
 	*c = *NewConsumer(c.rabbitMQ, c.redis, c.f)
 	c.StartConsuming()
 }

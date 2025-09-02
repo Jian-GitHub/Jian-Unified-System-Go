@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.19.4
-// source: jquantum-rpc.proto
+// source: apollo-rpc.proto
 
 package apollo
 
@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Account_Registration_FullMethodName = "/apollo.Account/Registration"
-	Account_Login_FullMethodName        = "/apollo.Account/Login"
+	Account_Registration_FullMethodName     = "/apollo.Account/Registration"
+	Account_Login_FullMethodName            = "/apollo.Account/Login"
+	Account_NotificationInfo_FullMethodName = "/apollo.Account/NotificationInfo"
 )
 
 // AccountClient is the client API for Account service.
@@ -35,6 +36,9 @@ type AccountClient interface {
 	// 登录
 	// Login 登陆
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
+	// 用户信息
+	// NotificationInfo 查询用户通知联系方式
+	NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error)
 }
 
 type accountClient struct {
@@ -65,6 +69,16 @@ func (c *accountClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.Ca
 	return out, nil
 }
 
+func (c *accountClient) NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NotificationInfoResp)
+	err := c.cc.Invoke(ctx, Account_NotificationInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility.
@@ -77,6 +91,9 @@ type AccountServer interface {
 	// 登录
 	// Login 登陆
 	Login(context.Context, *LoginReq) (*LoginResp, error)
+	// 用户信息
+	// NotificationInfo 查询用户通知联系方式
+	NotificationInfo(context.Context, *NotificationInfoReq) (*NotificationInfoResp, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -92,6 +109,9 @@ func (UnimplementedAccountServer) Registration(context.Context, *RegistrationReq
 }
 func (UnimplementedAccountServer) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAccountServer) NotificationInfo(context.Context, *NotificationInfoReq) (*NotificationInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotificationInfo not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 func (UnimplementedAccountServer) testEmbeddedByValue()                 {}
@@ -150,6 +170,24 @@ func _Account_Login_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_NotificationInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotificationInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).NotificationInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_NotificationInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).NotificationInfo(ctx, req.(*NotificationInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -165,9 +203,13 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Login",
 			Handler:    _Account_Login_Handler,
 		},
+		{
+			MethodName: "NotificationInfo",
+			Handler:    _Account_NotificationInfo_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "jquantum-rpc.proto",
+	Metadata: "apollo-rpc.proto",
 }
 
 const (
@@ -399,7 +441,7 @@ var Passkeys_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "jquantum-rpc.proto",
+	Metadata: "apollo-rpc.proto",
 }
 
 const (
@@ -591,5 +633,5 @@ var ThirdParty_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "jquantum-rpc.proto",
+	Metadata: "apollo-rpc.proto",
 }

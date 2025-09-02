@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	jobService "jian-unified-system/jquantum/jquantum-rpc/internal/service/job"
+	"jian-unified-system/jus-hermes/mq/rabbitMQ"
 
 	"jian-unified-system/jquantum/jquantum-rpc/internal/config"
-	jobServer "jian-unified-system/jquantum/jquantum-rpc/internal/server/job"
+	jquantumServer "jian-unified-system/jquantum/jquantum-rpc/internal/server/jquantum"
 	"jian-unified-system/jquantum/jquantum-rpc/internal/svc"
 	"jian-unified-system/jquantum/jquantum-rpc/jquantum"
 
@@ -25,17 +27,19 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
 
+	consumer := rabbitMQ.NewConsumer(c.RabbitMQ, ctx.Redis, jobService.NewExecutor(ctx, c.JQuantum.BaseDir).Process)
+	// 启动消费者
+	consumer.StartConsuming()
+	go ctx.StartKafkaConsumer()
+
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		jquantum.RegisterJobServer(grpcServer, jobServer.NewJobServer(ctx))
+		jquantum.RegisterJQuantumServer(grpcServer, jquantumServer.NewJQuantumServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
 		}
 	})
 	defer s.Stop()
-
-	// 启动 Kafka 消费者作为后台任务
-	go ctx.StartKafkaConsumer()
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

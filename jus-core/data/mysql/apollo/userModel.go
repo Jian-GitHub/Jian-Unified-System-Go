@@ -1,4 +1,4 @@
-package model
+package apollo
 
 import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -19,7 +19,7 @@ type (
 	}
 )
 
-// NewUserModel returns a model for the database table.
+// NewUserModel returns a apollo for the database table.
 func NewUserModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) UserModel {
 	return &customUserModel{
 		defaultUserModel: newUserModel(conn, c, opts...),

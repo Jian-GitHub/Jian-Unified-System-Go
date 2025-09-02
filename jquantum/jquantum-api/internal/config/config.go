@@ -2,12 +2,14 @@ package config
 
 import (
 	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/jus-hermes/mq/rabbitMQ"
 )
 
 type Config struct {
 	rest.RestConf
-	Kafka struct {
+	JQuantumRpc zrpc.RpcClientConf
+	Kafka       struct {
 		Brokers  []string
 		Topic    string
 		Username string

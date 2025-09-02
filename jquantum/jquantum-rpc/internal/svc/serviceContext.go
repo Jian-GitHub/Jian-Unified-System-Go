@@ -6,8 +6,12 @@ import (
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
 	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jquantum/jquantum-rpc/internal/config"
-	jobService "jian-unified-system/jquantum/jquantum-rpc/internal/service/job"
+	"jian-unified-system/jus-core/data/mysql/jquantum"
+	"jian-unified-system/jus-hermes/email/service"
 
 	//"jian-unified-system/jquantum/jquantum-rpc/internal/mq"
 
@@ -17,14 +21,23 @@ import (
 )
 
 type ServiceContext struct {
-	Config      config.Config
-	KafkaReader *kafka.Reader
-	Consumer    *rabbitMQ.Consumer
-	Redis       *redis.Redis
+	Config        config.Config
+	ApolloAccount apollo.AccountClient
+	KafkaReader   *kafka.Reader
+	Producer      *rabbitMQ.Producer
+	//Consumer    *rabbitMQ.Consumer
+	Redis        *redis.Redis
+	JobModel     jquantum.JobModel
+	EmailService service.EmailService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	// MySQL
+	sqlConn := sqlx.NewMysql(c.DB.DataSource)
 
+	client := zrpc.MustNewClient(c.ApolloRpc)
+
+	// Kafka
 	// 创建认证机制
 	mechanism := plain.Mechanism{
 		Username: c.Kafka.Username,
@@ -53,19 +66,27 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ErrorLogger: kafka.LoggerFunc(log.Printf),
 	})
 
+	// Redis
 	redisClient, err := redis.NewRedis(c.RedisConf)
-	consumer := rabbitMQ.NewConsumer(c.RabbitMQ, redisClient, jobService.NewExecutor(c.JQuantum.BaseDir).Process)
-	// 启动消费者
-	consumer.StartConsuming()
+
+	// RabbitMQ
+	producer := rabbitMQ.NewProducer(c.RabbitMQ)
+
+	// Email
+	emailService := service.DefaultEmailService()
 
 	if err != nil {
 		panic(err)
 	}
 	return &ServiceContext{
-		Config:      c,
-		KafkaReader: r,
-		Redis:       redisClient,
-		Consumer:    consumer,
+		Config:        c,
+		ApolloAccount: apollo.NewAccountClient(client.Conn()),
+		KafkaReader:   r,
+		Redis:         redisClient,
+		JobModel:      jquantum.NewJobModel(sqlConn, c.Cache),
+		Producer:      producer,
+		//Consumer:    consumer,
+		EmailService: emailService,
 	}
 }
 

@@ -1,4 +1,4 @@
-package model
+package apollo
 
 import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -19,7 +19,7 @@ type (
 	}
 )
 
-// NewPasskeyModel returns a model for the database table.
+// NewPasskeyModel returns a apollo for the database table.
 func NewPasskeyModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) PasskeyModel {
 	return &customPasskeyModel{
 		defaultPasskeyModel: newPasskeyModel(conn, c, opts...),

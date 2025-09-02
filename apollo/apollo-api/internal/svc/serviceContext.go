@@ -21,7 +21,7 @@ type ServiceContext struct {
 	ApolloThirdParty         apollo.ThirdPartyClient
 	JWTVerifyAgentMiddleware middleware.JWTVerifyAgentMiddleware
 	// MySQL - Models
-	//UserModel model.UserModel
+	//UserModel apollo.UserModel
 
 	GeoService *util.GeoService
 
@@ -61,7 +61,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ApolloPasskeys:   apollo.NewPasskeysClient(client.Conn()),
 		ApolloThirdParty: apollo.NewThirdPartyClient(client.Conn()),
 
-		//UserModel: model.NewUserModel(sqlConn, c.Cache),
+		//UserModel: apollo.NewUserModel(sqlConn, c.Cache),
 
 		GeoService:     gs,
 		OauthProviders: OauthProviders,

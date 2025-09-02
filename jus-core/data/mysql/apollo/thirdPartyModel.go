@@ -1,4 +1,4 @@
-package model
+package apollo
 
 import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -19,7 +19,7 @@ type (
 	}
 )
 
-// NewThirdPartyModel returns a model for the database table.
+// NewThirdPartyModel returns a apollo for the database table.
 func NewThirdPartyModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) ThirdPartyModel {
 	return &customThirdPartyModel{
 		defaultThirdPartyModel: newThirdPartyModel(conn, c, opts...),

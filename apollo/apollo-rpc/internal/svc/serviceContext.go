@@ -4,7 +4,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"jian-unified-system/apollo/apollo-rpc/internal/config"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
+	"jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	"jian-unified-system/jus-core/util"
 )
@@ -13,10 +13,10 @@ type ServiceContext struct {
 	Config   config.Config
 	WebAuthn *webauthn.WebAuthn // 新增成员
 
-	UserModel       model.UserModel
-	PasskeyModel    model.PasskeyModel
-	ContactModel    model.ContactModel
-	ThirdPartyModel model.ThirdPartyModel
+	UserModel       apollo.UserModel
+	PasskeyModel    apollo.PasskeyModel
+	ContactModel    apollo.ContactModel
+	ThirdPartyModel apollo.ThirdPartyModel
 
 	MLKEMKeyManager util.MLKEMKeyManager
 
@@ -45,10 +45,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:   c,
 		WebAuthn: wa,
 
-		UserModel:       model.NewUserModel(sqlConn, c.Cache),
-		PasskeyModel:    model.NewPasskeyModel(sqlConn, c.Cache),
-		ContactModel:    model.NewContactModel(sqlConn, c.Cache),
-		ThirdPartyModel: model.NewThirdPartyModel(sqlConn, c.Cache),
+		UserModel:       apollo.NewUserModel(sqlConn, c.Cache),
+		PasskeyModel:    apollo.NewPasskeyModel(sqlConn, c.Cache),
+		ContactModel:    apollo.NewContactModel(sqlConn, c.Cache),
+		ThirdPartyModel: apollo.NewThirdPartyModel(sqlConn, c.Cache),
 
 		MLKEMKeyManager: util.DefaultMLKEMKeyManager(),
 		OauthProviders:  OauthProviders,

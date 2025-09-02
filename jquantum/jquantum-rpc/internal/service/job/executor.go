@@ -2,11 +2,15 @@ package jobService
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
 	"github.com/zeromicro/go-zero/core/logx"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/jquantum/jquantum-rpc/internal/svc"
 	"jian-unified-system/jquantum/jquantum-rpc/internal/util/code"
+	ap "jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/mq/jquantum"
 	"os"
 	"os/exec"
@@ -16,17 +20,19 @@ import (
 )
 
 type Executor struct {
-	//UserID int64
-	//JobID  string
+	UserID  int64
+	JobID   string
+	svc     *svc.ServiceContext
 	baseDir string
 	dir     string
 }
 
-func NewExecutor(baseDir string) *Executor {
+func NewExecutor(svc *svc.ServiceContext, baseDir string) *Executor {
 	return &Executor{
 		//UserID: userID,
 		//JobID:  jobID,
 		//dir:    filepath.Join(baseDir, strconv.FormatInt(userID, 10), jobID),
+		svc:     svc,
 		baseDir: baseDir,
 	}
 }
@@ -37,9 +43,14 @@ func (e *Executor) Process(body []byte) {
 	if err != nil {
 		return
 	}
+	e.UserID = msg.UserID
+	e.JobID = msg.JobID
 	e.dir = filepath.Join(e.baseDir, strconv.FormatInt(msg.UserID, 10), msg.JobID)
 
 	//executor := joblogic.NewExecutor(msg.UserID, msg.JobID, c.config.JQuantum.BaseDir)
+	// Send Email - Notify User Job is processing
+	e.sendEmail("JQuantum Job is Processing", "Your Quantum Computing Job (Job ID: "+e.JobID+") is processing now.")
+	e.updateJobState(1)
 	e.GenerateCode()
 	e.Compile()
 	e.Run()
@@ -109,11 +120,11 @@ func (e *Executor) GenerateCode() error {
 		return errorx.Wrap(err, "写入输出文件失败")
 	}
 
-	fmt.Printf("代码已生成到: %s\n", outputFile)
-	fmt.Printf("量子比特数: %d\n", result.NumQubits)
-	if len(result.Patterns) == 0 {
-		fmt.Println("提示: 电路较小，未检测到重复模式")
-	}
+	//fmt.Printf("代码已生成到: %s\n", outputFile)
+	//fmt.Printf("量子比特数: %d\n", result.NumQubits)
+	//if len(result.Patterns) == 0 {
+	//	fmt.Println("提示: 电路较小，未检测到重复模式")
+	//}
 	return nil
 }
 
@@ -163,16 +174,54 @@ func (e *Executor) Run() error {
 	// 添加 LD_LIBRARY_PATH
 	cmd.Env = append(cmd.Env, "LD_LIBRARY_PATH=/harmoniacore/jquantum/lib")
 
+	// Send Email
+	//go func() {
+	//	fmt.Println("Email Starting")
+	//	resp, err := e.svc.ApolloAccount.NotificationInfo(context.Background(), &apollo.NotificationInfoReq{
+	//		UserId: e.UserID,
+	//	})
+	//	if err != nil {
+	//		fmt.Println("Apollo User Account Error: ", err.Error())
+	//		return
+	//	}
+	//	if resp == nil {
+	//		fmt.Println("No notification info email")
+	//		return
+	//	}
+	//
+	//	var user ap.User
+	//	err = json.Unmarshal(resp.UserBytes, &user)
+	//
+	//	name := user.FamilyName + user.MiddleName + user.GivenName
+	//	if name == "" {
+	//		name = "User"
+	//	}
+	//
+	//	err = e.svc.EmailService.Send(
+	//		user.NotificationEmail.String,
+	//		"JQuantum Job is Running",
+	//		"Hello " + name + "\nYour Quantum Computing Job (Job ID: " + e.JobID + ") is running now.",
+	//	)
+	//	if err != nil {
+	//		fmt.Println(err.Error())
+	//		return
+	//	} else {
+	//		fmt.Println("Email: ok")
+	//	}
+	//}()
+	//e.sendEmail("JQuantum Job is Running", "Your Quantum Computing Job (Job ID: "+e.JobID+") is running now.")
+
 	var stdoutBuf, stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 	if err := cmd.Run(); err != nil {
-		stdoutStr := stdoutBuf.String()
+		//stdoutStr := stdoutBuf.String()
 		stderrStr := stderrBuf.String()
 		fmt.Println("MPIRUN job exited with error:", err)
-		fmt.Println(strings.TrimSpace(stdoutStr))
+		//fmt.Println(strings.TrimSpace(stdoutStr))
 		fmt.Println(strings.TrimSpace(stderrStr))
 		fmt.Println("===================")
+		e.sendEmail("JQuantum Job is Finished (Failed)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.\n Error info: \n"+strings.TrimSpace(stderrStr))
 		return errorx.Wrap(err, "MPIRUN job exited with error")
 	} else {
 		stdoutStr := stdoutBuf.String()
@@ -181,6 +230,51 @@ func (e *Executor) Run() error {
 		fmt.Println(strings.TrimSpace(stdoutStr))
 		//fmt.Println(strings.TrimSpace(stderrStr))
 		fmt.Println("===================")
+		e.sendEmail("JQuantum Job is Finished (Success)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.")
 	}
 	return nil
+}
+
+func (e *Executor) updateJobState(state int) {
+	go func() {
+		e.svc.JobModel.UpdateState(context.Background(), e.JobID, state)
+	}()
+}
+
+func (e *Executor) sendEmail(subject, body string) {
+	// Send Email
+	go func() {
+		fmt.Println("Email Starting")
+		resp, err := e.svc.ApolloAccount.NotificationInfo(context.Background(), &apollo.NotificationInfoReq{
+			UserId: e.UserID,
+		})
+		if err != nil {
+			fmt.Println("Apollo User Account Error: ", err.Error())
+			return
+		}
+		if resp == nil {
+			fmt.Println("No notification info email")
+			return
+		}
+
+		var user ap.UserNotificationInfo
+		err = json.Unmarshal(resp.UserBytes, &user)
+
+		name := user.FamilyName + user.MiddleName + user.GivenName
+		if name == "" {
+			name = "User"
+		}
+
+		err = e.svc.EmailService.Send(
+			user.NotificationEmail.String,
+			subject,
+			"<div>Hello "+name+"!</div><div>"+body+"</div>",
+		)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		} else {
+			fmt.Println("Email: ok")
+		}
+	}()
 }

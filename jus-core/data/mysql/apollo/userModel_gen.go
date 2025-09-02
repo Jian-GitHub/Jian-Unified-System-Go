@@ -2,12 +2,13 @@
 // versions:
 //  goctl version: 1.8.5
 
-package model
+package apollo
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	"jian-unified-system/jus-core/data/mysql/model"
 	"strings"
 	"time"
 
@@ -25,12 +26,18 @@ var (
 	userRowsWithPlaceHolder = strings.Join(stringx.Remove(userFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cacheApolloUserIdPrefix = "cache:apollo:user:id:"
+
+	// NotificationInfo
+	userNotificationInfoFieldNames          = builder.RawFieldNames(&UserNotificationInfo{})
+	userNotificationInfoRows                = strings.Join(userNotificationInfoFieldNames, ",")
+	cacheApolloUserNotificationInfoIdPrefix = "cache:apollo:user:notification:"
 )
 
 type (
 	userModel interface {
 		Insert(ctx context.Context, data *User) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*User, error)
+		FindOneNotificationInfo(ctx context.Context, id int64) (*UserNotificationInfo, error)
 		FindOneByEmail(ctx context.Context, email string) (*User, error)
 		Update(ctx context.Context, data *User) error
 		Delete(ctx context.Context, id int64) error
@@ -61,6 +68,21 @@ type (
 		UpdateTime        time.Time      `db:"update_time"`
 		Mark              string         `db:"mark"` // 备注
 	}
+	UserNotificationInfo struct {
+		Id                int64          `db:"id"`          // 雪花算法用户ID
+		GivenName         string         `db:"given_name"`  // 名字
+		MiddleName        string         `db:"middle_name"` // 中间名
+		FamilyName        string         `db:"family_name"` // 姓氏
+		Avatar            sql.NullString `db:"avatar"`      // 头像URL
+		BirthdayYear      sql.NullInt64  `db:"birthday_year"`
+		BirthdayMonth     sql.NullInt64  `db:"birthday_month"`
+		BirthdayDay       sql.NullInt64  `db:"birthday_day"`
+		NotificationEmail sql.NullString `db:"notification_email"`
+		Locate            string         `db:"locate"`
+		Language          string         `db:"language"`
+		CreateTime        time.Time      `db:"create_time"`     // 创建时间
+		LastLoginTime     time.Time      `db:"last_login_time"` // 最后登录时间
+	}
 )
 
 func newUserModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultUserModel {
@@ -90,7 +112,24 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error)
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, model.ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultUserModel) FindOneNotificationInfo(ctx context.Context, id int64) (*UserNotificationInfo, error) {
+	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserNotificationInfoIdPrefix, id)
+	var resp UserNotificationInfo
+	err := m.QueryRowCtx(ctx, &resp, apolloUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userNotificationInfoRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, model.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -107,7 +146,7 @@ func (m *defaultUserModel) FindOneByEmail(ctx context.Context, email string) (*U
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, model.ErrNotFound
 	default:
 		return nil, err
 	}

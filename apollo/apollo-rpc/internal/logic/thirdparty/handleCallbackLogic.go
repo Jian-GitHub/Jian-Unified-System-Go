@@ -11,9 +11,9 @@ import (
 	"golang.org/x/oauth2"
 	"io"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
 	o2 "jian-unified-system/apollo/apollo-rpc/util/oauth2"
+	ap "jian-unified-system/jus-core/data/mysql/apollo"
 	o2util "jian-unified-system/jus-core/util/oauth2"
 	redisUtil "jian-unified-system/jus-core/util/oauth2/redis"
 	"strconv"
@@ -102,7 +102,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 	// thirdParty no existing:	¬p,		Bind:		¬q
 	// 		1. p ∧ q
 	// 		2. ¬p ∧ ¬q
-	var user *model.User
+	var user *ap.User
 	var defaultUserId int64
 	if thirdPartyIsExist {
 		defaultUserId = existedThirdParty.UserId
@@ -146,7 +146,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		case redisUtil.BindFlag:
 			fmt.Println("进入绑定")
 			// 处理 绑定 - 存新 third_party
-			newThirdParty := &model.ThirdParty{
+			newThirdParty := &ap.ThirdParty{
 				RawData: sql.NullString{
 					String: string(body),
 					Valid:  true,
@@ -172,11 +172,11 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		fmt.Println("进入注册")
 		// 处理注册
 		// 创建 新 user, 新 contacts, 新 third_party
-		newUser := &model.User{
+		newUser := &ap.User{
 			Id: defaultUserId,
 		}
-		newContacts := make([]*model.Contact, 0)
-		newThirdParty := &model.ThirdParty{
+		newContacts := make([]*ap.Contact, 0)
+		newThirdParty := &ap.ThirdParty{
 			RawData: sql.NullString{
 				String: string(body),
 				Valid:  true,

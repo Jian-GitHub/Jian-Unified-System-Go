@@ -2,12 +2,13 @@
 // versions:
 //  goctl version: 1.8.5
 
-package model
+package apollo
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	"jian-unified-system/jus-core/data/mysql/model"
 	"strings"
 	"time"
 
@@ -79,7 +80,7 @@ func (m *defaultPasskeyModel) FindOne(ctx context.Context, credentialId string) 
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, model.ErrNotFound
 	default:
 		return nil, err
 	}

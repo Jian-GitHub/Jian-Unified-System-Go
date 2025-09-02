@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/jsonx"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
+	ap "jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/util"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
@@ -67,7 +67,7 @@ func (l *RegistrationLogic) Registration(in *apollo.RegistrationReq) (*apollo.Em
 	}
 
 	//fmt.Println(email)
-	user := &model.User{
+	user := &ap.User{
 		Id:       in.UserId,
 		Email:    email,
 		Password: pwd,

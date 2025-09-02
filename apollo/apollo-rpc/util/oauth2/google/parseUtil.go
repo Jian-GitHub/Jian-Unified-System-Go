@@ -2,12 +2,12 @@ package googleUtil
 
 import (
 	"database/sql"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
+	"jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	sqlType "jian-unified-system/jus-core/types/sql"
 )
 
-func ParseUserProfile(userProfile *oauth2.GoogleUserProfile) (user *model.User, contacts []*model.Contact, err error) {
+func ParseUserProfile(userProfile *oauth2.GoogleUserProfile) (user *apollo.User, contacts []*apollo.Contact, err error) {
 	// 3. Parse SQL User
 	err = parseUser(userProfile, user)
 	if err != nil {
@@ -23,7 +23,7 @@ func ParseUserProfile(userProfile *oauth2.GoogleUserProfile) (user *model.User, 
 	return user, contacts, nil
 }
 
-func parseUser(userProfile *oauth2.GoogleUserProfile, user *model.User) error {
+func parseUser(userProfile *oauth2.GoogleUserProfile, user *apollo.User) error {
 	// 1. 主要名字
 	for _, name := range userProfile.Names {
 		if name.Metadata.Primary {
@@ -65,7 +65,7 @@ func parseUser(userProfile *oauth2.GoogleUserProfile, user *model.User) error {
 	return nil
 }
 
-func parseContact(userProfile *oauth2.GoogleUserProfile, user *model.User, contacts []*model.Contact) error {
+func parseContact(userProfile *oauth2.GoogleUserProfile, user *apollo.User, contacts []*apollo.Contact) error {
 	// 4. 已验证邮件
 	for _, email := range userProfile.EmailAddresses {
 		if email.Metadata.Verified {
@@ -76,7 +76,7 @@ func parseContact(userProfile *oauth2.GoogleUserProfile, user *model.User, conta
 					Valid:  true,
 				}
 			}
-			contacts = append(contacts, &model.Contact{
+			contacts = append(contacts, &apollo.Contact{
 				UserId: (*user).Id,
 				Value:  email.Value,
 				Type:   sqlType.ContactType.Email,

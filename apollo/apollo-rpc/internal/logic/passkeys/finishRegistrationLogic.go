@@ -10,10 +10,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"jian-unified-system/apollo/apollo-rpc/internal/model"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
 	"jian-unified-system/apollo/apollo-rpc/internal/types"
 	passkeyUtil "jian-unified-system/apollo/apollo-rpc/util"
+	ap "jian-unified-system/jus-core/data/mysql/apollo"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -65,7 +65,7 @@ func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRe
 
 	_, err = l.svcCtx.UserModel.Insert(
 		l.ctx,
-		&model.User{
+		&ap.User{
 			Id:       in.UserId,
 			Locate:   in.Locate,
 			Language: in.Language,
@@ -90,7 +90,7 @@ func (l *FinishRegistrationLogic) saveCredential(uid int64, credential *webauthn
 		return err
 	}
 
-	_, err = l.svcCtx.PasskeyModel.Insert(l.ctx, &model.Passkey{
+	_, err = l.svcCtx.PasskeyModel.Insert(l.ctx, &ap.Passkey{
 		CredentialId: base64.RawURLEncoding.EncodeToString(credential.ID),
 		UserId:       uid,
 		DisplayName:  "Apollo System",

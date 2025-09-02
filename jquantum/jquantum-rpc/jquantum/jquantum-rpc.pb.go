@@ -9,6 +9,7 @@ package jquantum
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -21,26 +22,30 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Empty struct {
+// Job
+// ========== 任务流程 ==========
+type SubmitReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Thread        []byte                 `protobuf:"bytes,2,opt,name=thread,proto3" json:"thread,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Empty) Reset() {
-	*x = Empty{}
+func (x *SubmitReq) Reset() {
+	*x = SubmitReq{}
 	mi := &file_jquantum_rpc_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Empty) String() string {
+func (x *SubmitReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Empty) ProtoMessage() {}
+func (*SubmitReq) ProtoMessage() {}
 
-func (x *Empty) ProtoReflect() protoreflect.Message {
+func (x *SubmitReq) ProtoReflect() protoreflect.Message {
 	mi := &file_jquantum_rpc_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -52,19 +57,83 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
-func (*Empty) Descriptor() ([]byte, []int) {
+// Deprecated: Use SubmitReq.ProtoReflect.Descriptor instead.
+func (*SubmitReq) Descriptor() ([]byte, []int) {
 	return file_jquantum_rpc_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *SubmitReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *SubmitReq) GetThread() []byte {
+	if x != nil {
+		return x.Thread
+	}
+	return nil
+}
+
+type SubmitResp struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// int64 user_id = 1;
+	JobId         string `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitResp) Reset() {
+	*x = SubmitResp{}
+	mi := &file_jquantum_rpc_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitResp) ProtoMessage() {}
+
+func (x *SubmitResp) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitResp.ProtoReflect.Descriptor instead.
+func (*SubmitResp) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *SubmitResp) GetJobId() string {
+	if x != nil {
+		return x.JobId
+	}
+	return ""
 }
 
 var File_jquantum_rpc_proto protoreflect.FileDescriptor
 
 const file_jquantum_rpc_proto_rawDesc = "" +
 	"\n" +
-	"\x12jquantum-rpc.proto\x12\x06apollo\"\a\n" +
-	"\x05Empty2-\n" +
-	"\x03Job\x12&\n" +
-	"\x06Submit\x12\r.apollo.Empty\x1a\r.apollo.EmptyB\fZ\n" +
+	"\x12jquantum-rpc.proto\x12\x06apollo\x1a\x1bgoogle/protobuf/empty.proto\"<\n" +
+	"\tSubmitReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x16\n" +
+	"\x06thread\x18\x02 \x01(\fR\x06thread\"#\n" +
+	"\n" +
+	"SubmitResp\x12\x15\n" +
+	"\x06job_id\x18\x01 \x01(\tR\x05jobId2;\n" +
+	"\bJQuantum\x12/\n" +
+	"\x06Submit\x12\x11.apollo.SubmitReq\x1a\x12.apollo.SubmitRespB\fZ\n" +
 	"./jquantumb\x06proto3"
 
 var (
@@ -79,13 +148,14 @@ func file_jquantum_rpc_proto_rawDescGZIP() []byte {
 	return file_jquantum_rpc_proto_rawDescData
 }
 
-var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_jquantum_rpc_proto_goTypes = []any{
-	(*Empty)(nil), // 0: apollo.Empty
+	(*SubmitReq)(nil),  // 0: apollo.SubmitReq
+	(*SubmitResp)(nil), // 1: apollo.SubmitResp
 }
 var file_jquantum_rpc_proto_depIdxs = []int32{
-	0, // 0: apollo.Job.Submit:input_type -> apollo.Empty
-	0, // 1: apollo.Job.Submit:output_type -> apollo.Empty
+	0, // 0: apollo.JQuantum.Submit:input_type -> apollo.SubmitReq
+	1, // 1: apollo.JQuantum.Submit:output_type -> apollo.SubmitResp
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -104,7 +174,7 @@ func file_jquantum_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_jquantum_rpc_proto_rawDesc), len(file_jquantum_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

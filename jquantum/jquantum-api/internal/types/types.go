@@ -15,8 +15,6 @@ type SubmitReq struct {
 }
 
 type SubmitResp struct {
-	Email           string `json:"email" validate:"required"`
-	Password        string `json:"password" validate:"required"`
-	ConfirmPassword string `json:"confirm_password" validate:"required"`
-	Language        string `json:"language" validate:"required"`
+	BaseResponse
+	JobID string `json:"jobId"`
 }
