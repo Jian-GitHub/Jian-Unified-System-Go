@@ -25,7 +25,7 @@ const (
 // shots: 采样数
 // jobDir: 参数文件路径 - params.json
 // return: C++ 代码字符串
-func MainCodeTemplateBeginning(numQubits, shots int, jobDir string) string {
+func MainCodeTemplateBeginning(numQubits, shots int, jobDir string, jobId string) string {
 	return fmt.Sprintf(`// 重复模式-结束==========
 
 int main() {
@@ -33,6 +33,7 @@ int main() {
 	string job_dir = "%s";
 	int num_qubits = %d;
 	int shots = %d;
+	string jobId = "%s";
     ifstream f(job_dir + "/params.json");
     json compressed;
     f >> compressed;
@@ -50,7 +51,7 @@ int main() {
     initZeroState(qureg);
 
     // 应用量子门-开始==========
-`, jobDir, numQubits, shots, numQubits)
+`, jobDir, numQubits, shots, jobId, numQubits)
 }
 
 // MainCodeTemplateEnding QuEST C++量子电路代码模版 - main - 结尾
@@ -64,7 +65,7 @@ func MainCodeTemplateEnding() string {
 
     // 计算并报告概率分布
     if (env.rank == 0) {
-		string jsonResult = exportToJson(qureg, num_qubits, shots);
+		string jsonResult = exportToJson(qureg, num_qubits, jobId, shots);
 		
 		// 将结果保存到文件
         ofstream outFile(job_dir + "/result.json");

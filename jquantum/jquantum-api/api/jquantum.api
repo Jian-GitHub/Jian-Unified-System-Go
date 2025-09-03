@@ -20,11 +20,19 @@ type (
 
 // Account
 type (
-	// 注册
+	// 提交计算任务
 	SubmitReq  {}
 	SubmitResp {
 		BaseResponse
 		JobID string `json:"jobId"`
+	}
+	// 获取计算任务结果
+	RetrieveResultReq {
+		JobID string `json:"jobId"`
+	}
+	RetrieveResultResp {
+		BaseResponse
+		Result []byte `json:"result"`
 	}
 )
 
@@ -35,9 +43,13 @@ type (
 	jwt:    Auth
 )
 service jquantum-api {
-	// 注册流程
+	// 计算任务流程
 	@handler Submit
 	// 返回: Token
 	post /submit returns (SubmitResp)
+
+	@handler RetrieveResult
+	// 返回: Token
+	post /retrieveResult (RetrieveResultReq) returns (RetrieveResultResp)
 }
 

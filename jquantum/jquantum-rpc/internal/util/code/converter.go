@@ -8,11 +8,13 @@ import (
 
 type Converter struct {
 	jobDir string
+	jobId  string
 }
 
-func NewConverter(jobDir string) *Converter {
+func NewConverter(jobDir, jobId string) *Converter {
 	return &Converter{
 		jobDir: jobDir,
+		jobId:  jobId,
 	}
 }
 
@@ -219,7 +221,7 @@ func (c *Converter) CircuitToQuestJSON(result jquantum.ResultJSON) (string, erro
 	code += patternCode
 
 	// 主函数
-	code += MainCodeTemplateBeginning(numQubits, shots, c.jobDir)
+	code += MainCodeTemplateBeginning(numQubits, shots, c.jobDir, c.jobId)
 
 	// 添加序列代码
 	sequenceCode, err := c.generateSequenceCode(result.Sequence, patterns)

@@ -19,6 +19,14 @@ message SubmitResp {
 //  string locate = 4;
 //  string language = 5;
 }
+message RetrieveResultReq {
+  int64 user_id = 1;
+  string job_id = 2;
+}
+
+message RetrieveResultResp {
+  bytes result = 1;
+}
 
 //// ========== 登录流程 ==========
 //message LoginReq {
@@ -35,5 +43,7 @@ message SubmitResp {
 service JQuantum {
   // Submit 提交任务
   rpc Submit (SubmitReq) returns (SubmitResp);
+  // RetrieveResult 获取计算任务结果
+  rpc RetrieveResult (RetrieveResultReq) returns (RetrieveResultResp);
 
 }

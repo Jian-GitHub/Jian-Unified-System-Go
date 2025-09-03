@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	JQuantum_Submit_FullMethodName = "/apollo.JQuantum/Submit"
+	JQuantum_Submit_FullMethodName         = "/apollo.JQuantum/Submit"
+	JQuantum_RetrieveResult_FullMethodName = "/apollo.JQuantum/RetrieveResult"
 )
 
 // JQuantumClient is the client API for JQuantum service.
@@ -30,6 +31,8 @@ const (
 type JQuantumClient interface {
 	// Submit 提交任务
 	Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error)
+	// RetrieveResult 获取计算任务结果
+	RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error)
 }
 
 type jQuantumClient struct {
@@ -50,6 +53,16 @@ func (c *jQuantumClient) Submit(ctx context.Context, in *SubmitReq, opts ...grpc
 	return out, nil
 }
 
+func (c *jQuantumClient) RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RetrieveResultResp)
+	err := c.cc.Invoke(ctx, JQuantum_RetrieveResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JQuantumServer is the server API for JQuantum service.
 // All implementations must embed UnimplementedJQuantumServer
 // for forward compatibility.
@@ -58,6 +71,8 @@ func (c *jQuantumClient) Submit(ctx context.Context, in *SubmitReq, opts ...grpc
 type JQuantumServer interface {
 	// Submit 提交任务
 	Submit(context.Context, *SubmitReq) (*SubmitResp, error)
+	// RetrieveResult 获取计算任务结果
+	RetrieveResult(context.Context, *RetrieveResultReq) (*RetrieveResultResp, error)
 	mustEmbedUnimplementedJQuantumServer()
 }
 
@@ -70,6 +85,9 @@ type UnimplementedJQuantumServer struct{}
 
 func (UnimplementedJQuantumServer) Submit(context.Context, *SubmitReq) (*SubmitResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
+}
+func (UnimplementedJQuantumServer) RetrieveResult(context.Context, *RetrieveResultReq) (*RetrieveResultResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetrieveResult not implemented")
 }
 func (UnimplementedJQuantumServer) mustEmbedUnimplementedJQuantumServer() {}
 func (UnimplementedJQuantumServer) testEmbeddedByValue()                  {}
@@ -110,6 +128,24 @@ func _JQuantum_Submit_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JQuantum_RetrieveResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RetrieveResultReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JQuantumServer).RetrieveResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: JQuantum_RetrieveResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JQuantumServer).RetrieveResult(ctx, req.(*RetrieveResultReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JQuantum_ServiceDesc is the grpc.ServiceDesc for JQuantum service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -120,6 +156,10 @@ var JQuantum_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Submit",
 			Handler:    _JQuantum_Submit_Handler,
+		},
+		{
+			MethodName: "RetrieveResult",
+			Handler:    _JQuantum_RetrieveResult_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

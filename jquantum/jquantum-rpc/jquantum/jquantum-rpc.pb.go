@@ -121,6 +121,102 @@ func (x *SubmitResp) GetJobId() string {
 	return ""
 }
 
+type RetrieveResultReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	JobId         string                 `protobuf:"bytes,2,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RetrieveResultReq) Reset() {
+	*x = RetrieveResultReq{}
+	mi := &file_jquantum_rpc_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetrieveResultReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetrieveResultReq) ProtoMessage() {}
+
+func (x *RetrieveResultReq) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetrieveResultReq.ProtoReflect.Descriptor instead.
+func (*RetrieveResultReq) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *RetrieveResultReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *RetrieveResultReq) GetJobId() string {
+	if x != nil {
+		return x.JobId
+	}
+	return ""
+}
+
+type RetrieveResultResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Result        []byte                 `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RetrieveResultResp) Reset() {
+	*x = RetrieveResultResp{}
+	mi := &file_jquantum_rpc_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetrieveResultResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetrieveResultResp) ProtoMessage() {}
+
+func (x *RetrieveResultResp) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetrieveResultResp.ProtoReflect.Descriptor instead.
+func (*RetrieveResultResp) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RetrieveResultResp) GetResult() []byte {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
 var File_jquantum_rpc_proto protoreflect.FileDescriptor
 
 const file_jquantum_rpc_proto_rawDesc = "" +
@@ -131,9 +227,15 @@ const file_jquantum_rpc_proto_rawDesc = "" +
 	"\x06thread\x18\x02 \x01(\fR\x06thread\"#\n" +
 	"\n" +
 	"SubmitResp\x12\x15\n" +
-	"\x06job_id\x18\x01 \x01(\tR\x05jobId2;\n" +
+	"\x06job_id\x18\x01 \x01(\tR\x05jobId\"C\n" +
+	"\x11RetrieveResultReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x15\n" +
+	"\x06job_id\x18\x02 \x01(\tR\x05jobId\",\n" +
+	"\x12RetrieveResultResp\x12\x16\n" +
+	"\x06result\x18\x01 \x01(\fR\x06result2\x84\x01\n" +
 	"\bJQuantum\x12/\n" +
-	"\x06Submit\x12\x11.apollo.SubmitReq\x1a\x12.apollo.SubmitRespB\fZ\n" +
+	"\x06Submit\x12\x11.apollo.SubmitReq\x1a\x12.apollo.SubmitResp\x12G\n" +
+	"\x0eRetrieveResult\x12\x19.apollo.RetrieveResultReq\x1a\x1a.apollo.RetrieveResultRespB\fZ\n" +
 	"./jquantumb\x06proto3"
 
 var (
@@ -148,16 +250,20 @@ func file_jquantum_rpc_proto_rawDescGZIP() []byte {
 	return file_jquantum_rpc_proto_rawDescData
 }
 
-var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_jquantum_rpc_proto_goTypes = []any{
-	(*SubmitReq)(nil),  // 0: apollo.SubmitReq
-	(*SubmitResp)(nil), // 1: apollo.SubmitResp
+	(*SubmitReq)(nil),          // 0: apollo.SubmitReq
+	(*SubmitResp)(nil),         // 1: apollo.SubmitResp
+	(*RetrieveResultReq)(nil),  // 2: apollo.RetrieveResultReq
+	(*RetrieveResultResp)(nil), // 3: apollo.RetrieveResultResp
 }
 var file_jquantum_rpc_proto_depIdxs = []int32{
 	0, // 0: apollo.JQuantum.Submit:input_type -> apollo.SubmitReq
-	1, // 1: apollo.JQuantum.Submit:output_type -> apollo.SubmitResp
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: apollo.JQuantum.RetrieveResult:input_type -> apollo.RetrieveResultReq
+	1, // 2: apollo.JQuantum.Submit:output_type -> apollo.SubmitResp
+	3, // 3: apollo.JQuantum.RetrieveResult:output_type -> apollo.RetrieveResultResp
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -174,7 +280,7 @@ func file_jquantum_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_jquantum_rpc_proto_rawDesc), len(file_jquantum_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
