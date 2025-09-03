@@ -105,7 +105,7 @@ func (e *Executor) GenerateCode() error {
 		result.NumQubits, len(result.Patterns), len(result.Sequence))
 
 	// 创建转换器并生成代码
-	converter := code.NewConverter(e.dir)
+	converter := code.NewConverter(e.dir, e.JobID)
 	questCode, err := converter.CircuitToQuestJSON(result)
 	if err != nil {
 		//logx.Errorf("生成代码失败: %v", err)
@@ -145,20 +145,21 @@ func (e *Executor) Compile() error {
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 	if err := cmd.Run(); err != nil {
-		stdoutStr := stdoutBuf.String()
-		stderrStr := stderrBuf.String()
+		//stdoutStr := stdoutBuf.String()
+		//stderrStr := stderrBuf.String()
 		fmt.Println("MPICXX File Compilation exited with error:", err)
-		fmt.Println(stdoutStr)
-		fmt.Println(stderrStr)
-		fmt.Println("===================")
+		//fmt.Println(stdoutStr)
+		//fmt.Println(stderrStr)
+		//fmt.Println("===================")
+		e.updateJobState(-1)
 		return errorx.Wrap(err, "MPICXX File Compilation exited with error")
 	} else {
-		stdoutStr := stdoutBuf.String()
-		stderrStr := stderrBuf.String()
+		//stdoutStr := stdoutBuf.String()
+		//stderrStr := stderrBuf.String()
 		fmt.Println("MPICXX File Compilation completed.")
-		fmt.Println(stdoutStr)
-		fmt.Println(stderrStr)
-		fmt.Println("===================")
+		//fmt.Println(stdoutStr)
+		//fmt.Println(stderrStr)
+		//fmt.Println("===================")
 	}
 	return nil
 }
@@ -219,18 +220,20 @@ func (e *Executor) Run() error {
 		stderrStr := stderrBuf.String()
 		fmt.Println("MPIRUN job exited with error:", err)
 		//fmt.Println(strings.TrimSpace(stdoutStr))
-		fmt.Println(strings.TrimSpace(stderrStr))
-		fmt.Println("===================")
-		e.sendEmail("JQuantum Job is Finished (Failed)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.\n Error info: \n"+strings.TrimSpace(stderrStr))
-		return errorx.Wrap(err, "MPIRUN job exited with error")
-	} else {
-		stdoutStr := stdoutBuf.String()
-		//stderrStr := stderrBuf.String()
-		fmt.Println("MPIRUN job completed.")
-		fmt.Println(strings.TrimSpace(stdoutStr))
 		//fmt.Println(strings.TrimSpace(stderrStr))
 		fmt.Println("===================")
+		e.sendEmail("JQuantum Job is Finished (Failed)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.\n Error info: \n"+strings.TrimSpace(stderrStr))
+		e.updateJobState(-2)
+		return errorx.Wrap(err, "MPIRUN job exited with error")
+	} else {
+		//stdoutStr := stdoutBuf.String()
+		//stderrStr := stderrBuf.String()
+		fmt.Println("MPIRUN job completed.")
+		//fmt.Println(strings.TrimSpace(stdoutStr))
+		//fmt.Println(strings.TrimSpace(stderrStr))
+		//fmt.Println("===================")
 		e.sendEmail("JQuantum Job is Finished (Success)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.")
+		e.updateJobState(2)
 	}
 	return nil
 }
