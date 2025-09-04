@@ -31,7 +31,7 @@ var (
 type (
 	jobModel interface {
 		Insert(ctx context.Context, data *Job) (sql.Result, error)
-		FindOne(ctx context.Context, id string) (*Job, error)
+		FindOne(ctx context.Context, id string, userId int64) (*Job, error)
 		Update(ctx context.Context, data *Job) error
 		UpdateState(ctx context.Context, id string, state int) error
 		Delete(ctx context.Context, id string) error
@@ -69,12 +69,12 @@ func (m *defaultJobModel) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (m *defaultJobModel) FindOne(ctx context.Context, id string) (*Job, error) {
+func (m *defaultJobModel) FindOne(ctx context.Context, id string, userId int64) (*Job, error) {
 	jquantumJobIdKey := fmt.Sprintf("%s%v", cacheJquantumJobIdPrefix, id)
 	var resp Job
 	err := m.QueryRowCtx(ctx, &resp, jquantumJobIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", jobRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
+		query := fmt.Sprintf("select %s from %s where `id` = ? and `user_id` = ? limit 1", jobRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id, userId)
 	})
 	switch err {
 	case nil:

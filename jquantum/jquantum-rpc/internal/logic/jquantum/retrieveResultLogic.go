@@ -32,7 +32,7 @@ func NewRetrieveResultLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Re
 // RetrieveResult 获取计算任务结果
 func (l *RetrieveResultLogic) RetrieveResult(in *jquantum.RetrieveResultReq) (*jquantum.RetrieveResultResp, error) {
 	// todo: add your logic here and delete this line
-	result, err := l.svcCtx.JobModel.FindOne(l.ctx, in.JobId)
+	result, err := l.svcCtx.JobModel.FindOne(l.ctx, in.JobId, in.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +46,7 @@ func (l *RetrieveResultLogic) RetrieveResult(in *jquantum.RetrieveResultReq) (*j
 		return nil, errors.New("job encountered compilation error")
 	case jobResultStatus.RUNNING_ERROR:
 		return nil, errors.New("job encountered running error")
+	case jobResultStatus.FINISHED:
 	default:
 		panic("unhandled default case")
 	}
