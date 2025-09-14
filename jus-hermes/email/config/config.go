@@ -6,7 +6,7 @@ type EmailConfig struct {
 	DisplayName string
 	Username    string
 	Password    string
-	From        string // 默认发件人
+	From        string
 }
 
 func DefaultEmailConfig() *EmailConfig {

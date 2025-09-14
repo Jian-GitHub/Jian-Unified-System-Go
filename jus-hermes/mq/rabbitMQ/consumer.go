@@ -213,7 +213,7 @@ func (c *Consumer) renewLockPeriodically(lockKey, lockValue string, ttl time.Dur
 				c.stopLockRenewal()
 				return
 			}
-			log.Printf("锁续期成功")
+			log.Printf("Renew lock successfully")
 		case <-c.lockRenewalCh:
 			// 收到停止信号
 			return
@@ -317,7 +317,7 @@ func (c *Consumer) releaseLock(lockKey, lockValue string) error {
 	if eval.(int64) == 0 {
 		log.Printf("释放锁失败: 不是锁的持有者或锁已过期")
 	} else {
-		log.Printf("锁释放成功")
+		log.Printf("Lock release successfully")
 	}
 
 	return nil
@@ -326,7 +326,7 @@ func (c *Consumer) releaseLock(lockKey, lockValue string) error {
 // 处理消息
 func (c *Consumer) processMessage(body []byte) {
 	// 模拟耗时操作
-	log.Printf("开始处理消息: %s", string(body))
+	log.Printf("Starting process msg: %s", string(body))
 	//var msg jquantum.JobStructureMsg
 	//
 	//err := json.Unmarshal(body, &msg)
@@ -337,7 +337,7 @@ func (c *Consumer) processMessage(body []byte) {
 	//executor := joblogic.NewExecutor(msg.UserID, msg.JobID, c.config.JQuantum.BaseDir)
 	//executor.Compile()
 	//time.Sleep(10 * time.Second)
-	log.Printf("处理完成: %s", string(body))
+	log.Printf("process complete: %s", string(body))
 }
 
 func (c *Consumer) Stop() {

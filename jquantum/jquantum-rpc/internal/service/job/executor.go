@@ -101,8 +101,8 @@ func (e *Executor) GenerateCode() error {
 	}
 
 	// 输出解析的信息
-	fmt.Printf("解析成功: %d 量子比特, %d 模式, %d 序列项\n",
-		result.NumQubits, len(result.Patterns), len(result.Sequence))
+	//fmt.Printf("解析成功: %d 量子比特, %d 模式, %d 序列项\n",
+	//	result.NumQubits, len(result.Patterns), len(result.Sequence))
 
 	// 创建转换器并生成代码
 	converter := code.NewConverter(e.dir, e.JobID)
