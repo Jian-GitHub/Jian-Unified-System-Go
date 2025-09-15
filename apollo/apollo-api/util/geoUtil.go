@@ -25,6 +25,10 @@ func GetLocate(r *http.Request, f func(string) (*util.GeoResult, error)) string 
 
 // GetRealIP HTTP request -> IP Addr
 func GetRealIP(r *http.Request) string {
+	// Cloudflare
+	if cfip := r.Header.Get("CF-Connecting-IP"); cfip != "" {
+		return cfip
+	}
 	// 尝试从 X-Forwarded-For
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 		// 可能多个 IP 用逗号分隔，取第一个

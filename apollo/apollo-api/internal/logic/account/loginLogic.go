@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
+	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/util"
+	"net/http"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
@@ -27,7 +29,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 	}
 }
 
-func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
+func (l *LoginLogic) Login(req *types.LoginReq, r *http.Request) (resp *types.LoginResp, err error) {
 	// todo: add your logic here and delete this line
 	// Check params
 	if len(req.Email) == 0 || len(req.Password) == 0 {
@@ -43,6 +45,8 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 			},
 		}, errorx.Wrap(err, "params")
 	}
+	println(apolloUtil.GetRealIP(r))
+	println(apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup))
 
 	// Login
 	loginResp, err := l.svcCtx.ApolloAccount.Login(l.ctx, &apollo.LoginReq{
@@ -65,7 +69,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	return &types.LoginResp{
 		BaseResponse: types.BaseResponse{
 			Code:    200,
-			Message: "params",
+			Message: "success",
 		},
 		LoginData: struct {
 			Token string `json:"token"`

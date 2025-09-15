@@ -1,12 +1,12 @@
 package account
 
 import (
-	"net/http"
-
+	"fmt"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"jian-unified-system/apollo/apollo-api/internal/logic/account"
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
+	"net/http"
 )
 
 func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
@@ -16,9 +16,54 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
+		type TurnstileResponse struct {
+			Success     bool     `json:"success"`
+			ChallengeTs string   `json:"challenge_ts"`
+			Hostname    string   `json:"hostname"`
+			Action      string   `json:"action"` // 新增字段
+			ErrorCodes  []string `json:"error-codes"`
+		}
+
+		if req.CloudflareToken == "" {
+			return
+		}
+
+		// 设置 CORS 头
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		// 或开发阶段临时允许所有（不推荐生产环境）
+		// w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// 处理预检请求 (OPTIONS)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		//form := url.Values{}
+		//form.Add("secret", "0x4AAAAAAANVWcsutYm3MqUvm50PJPaBi3s")
+		//form.Add("response", req.CloudflareToken)
+		//respCloudflare, err := http.PostForm("https://challenges.cloudflare.com/turnstile/v0/siteverify", form)
+		//if err != nil {
+		//	fmt.Println(err.Error())
+		//}
+		//defer respCloudflare.Body.Close()
+		//
+		//var result TurnstileResponse
+		//if err := json.NewDecoder(respCloudflare.Body).Decode(&result); err != nil {
+		//	fmt.Println(err.Error())
+		//}
+		//
+		//fmt.Println(result)
+
+		fmt.Println(req.CloudflareToken)
+		// 0x4AAAAAAANVWcsutYm3MqUvm50PJPaBi3s
 
 		l := account.NewLoginLogic(r.Context(), svcCtx)
-		resp, err := l.Login(&req)
+
+		resp, err := l.Login(&req, r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
