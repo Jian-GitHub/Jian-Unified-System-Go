@@ -51,9 +51,18 @@ func (e *Executor) Process(body []byte) {
 	// Send Email - Notify User Job is processing
 	e.sendEmail("JQuantum Job is Processing", "Your Quantum Computing Job (Job ID: "+e.JobID+") is processing now.")
 	e.updateJobState(1)
-	e.GenerateCode()
-	e.Compile()
-	e.Run()
+	err = e.GenerateCode()
+	if err != nil {
+		e.sendEmail("JQuantum Job is Finished (Failed)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.\n Error info: \n"+err.Error())
+		e.updateJobState(-1)
+		return
+	}
+	err = e.Compile()
+	if err != nil {
+		e.sendEmail("JQuantum Job is Finished (Failed)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.\n Error info: \n"+err.Error())
+		return
+	}
+	_ = e.Run()
 }
 
 // readJSONFile 读取JSON文件内容
@@ -178,7 +187,7 @@ func (e *Executor) Run() error {
 	// Send Email
 	//go func() {
 	//	fmt.Println("Email Starting")
-	//	resp, err := e.svc.ApolloAccount.NotificationInfo(context.Background(), &apollo.NotificationInfoReq{
+	//	resp, err := e.svc.ApolloAccount.UserInfo(context.Background(), &apollo.UserInfoReq{
 	//		UserId: e.UserID,
 	//	})
 	//	if err != nil {
@@ -240,7 +249,10 @@ func (e *Executor) Run() error {
 
 func (e *Executor) updateJobState(state int) {
 	go func() {
-		e.svc.JobModel.UpdateState(context.Background(), e.JobID, state)
+		err := e.svc.JobModel.UpdateState(context.Background(), e.JobID, state)
+		if err != nil {
+			return
+		}
 	}()
 }
 
@@ -248,7 +260,7 @@ func (e *Executor) sendEmail(subject, body string) {
 	// Send Email
 	go func() {
 		fmt.Println("Email Starting")
-		resp, err := e.svc.ApolloAccount.NotificationInfo(context.Background(), &apollo.NotificationInfoReq{
+		resp, err := e.svc.ApolloAccount.UserInfo(context.Background(), &apollo.UserInfoReq{
 			UserId: e.UserID,
 		})
 		if err != nil {
@@ -260,7 +272,7 @@ func (e *Executor) sendEmail(subject, body string) {
 			return
 		}
 
-		var user ap.UserNotificationInfo
+		var user ap.UserInfo
 		err = json.Unmarshal(resp.UserBytes, &user)
 
 		name := user.FamilyName + user.MiddleName + user.GivenName

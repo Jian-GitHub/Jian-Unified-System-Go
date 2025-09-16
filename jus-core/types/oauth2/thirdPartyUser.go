@@ -5,6 +5,7 @@ import "database/sql"
 // ThirdPartyUser 统一接口
 type ThirdPartyUser interface {
 	GetID() string
+	GetProvider() string
 	GetGivenName() string
 	GetMiddleName() string
 	GetFamilyName() string

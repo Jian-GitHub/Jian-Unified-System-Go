@@ -19,8 +19,6 @@ type (
 	GenerateTokenResp             = apollo.GenerateTokenResp
 	LoginReq                      = apollo.LoginReq
 	LoginResp                     = apollo.LoginResp
-	NotificationInfoReq           = apollo.NotificationInfoReq
-	NotificationInfoResp          = apollo.NotificationInfoResp
 	PasskeysFinishLoginReq        = apollo.PasskeysFinishLoginReq
 	PasskeysFinishLoginResp       = apollo.PasskeysFinishLoginResp
 	PasskeysFinishRegistrationReq = apollo.PasskeysFinishRegistrationReq
@@ -31,6 +29,8 @@ type (
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
+	UserInfoReq                   = apollo.UserInfoReq
+	UserInfoResp                  = apollo.UserInfoResp
 	ValidateTokenReq              = apollo.ValidateTokenReq
 	ValidateTokenResp             = apollo.ValidateTokenResp
 
@@ -40,7 +40,7 @@ type (
 		// 登录
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		// 用户信息
-		NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error)
+		UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoResp, error)
 		// 生成子系统令牌
 		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 		// 验证子系统令牌
@@ -71,9 +71,9 @@ func (m *defaultAccount) Login(ctx context.Context, in *LoginReq, opts ...grpc.C
 }
 
 // 用户信息
-func (m *defaultAccount) NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error) {
+func (m *defaultAccount) UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoResp, error) {
 	client := apollo.NewAccountClient(m.cli.Conn())
-	return client.NotificationInfo(ctx, in, opts...)
+	return client.UserInfo(ctx, in, opts...)
 }
 
 // 生成子系统令牌

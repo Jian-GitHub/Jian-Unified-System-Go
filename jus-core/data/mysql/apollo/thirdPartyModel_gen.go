@@ -45,6 +45,7 @@ type (
 
 	ThirdParty struct {
 		Id         int64          `db:"id"` // Third Party Account ID
+		Provider   string         `db:"provider"`
 		ThirdId    string         `db:"third_id"`
 		UserId     int64          `db:"user_id"` // Apollo User ID
 		Name       string         `db:"name"`

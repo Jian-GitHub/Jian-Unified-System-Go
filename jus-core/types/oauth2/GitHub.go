@@ -24,6 +24,9 @@ type GitHubAdapter struct {
 func (g GitHubAdapter) GetID() string {
 	return strconv.FormatInt(g.ID, 10)
 }
+func (g GitHubAdapter) GetProvider() string {
+	return ProviderGithub
+}
 func (g GitHubAdapter) GenerateEmailContacts() *[][2]interface{} {
 	contacts := make([][2]interface{}, 0)
 	//notificationEmail := sql.NullString{

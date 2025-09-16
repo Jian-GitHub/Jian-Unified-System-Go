@@ -36,9 +36,9 @@ func (s *AccountServer) Login(ctx context.Context, in *apollo.LoginReq) (*apollo
 }
 
 // 用户信息
-func (s *AccountServer) NotificationInfo(ctx context.Context, in *apollo.NotificationInfoReq) (*apollo.NotificationInfoResp, error) {
-	l := accountlogic.NewNotificationInfoLogic(ctx, s.svcCtx)
-	return l.NotificationInfo(in)
+func (s *AccountServer) UserInfo(ctx context.Context, in *apollo.UserInfoReq) (*apollo.UserInfoResp, error) {
+	l := accountlogic.NewUserInfoLogic(ctx, s.svcCtx)
+	return l.UserInfo(in)
 }
 
 // 生成子系统令牌

@@ -58,6 +58,28 @@ type GenerateTokenResp struct {
 	} `json:"data"`
 }
 
+type GetUserInfoReq struct {
+}
+
+type GetUserInfoResp struct {
+	BaseResponse
+	GetUserInfoData struct {
+		Id                int64  `db:"id"`
+		GivenName         string `db:"given_name"`
+		MiddleName        string `db:"middle_name"`
+		FamilyName        string `db:"family_name"`
+		Avatar            string `db:"avatar"`
+		BirthdayYear      int64  `db:"birthday_year"`
+		BirthdayMonth     int64  `db:"birthday_month"`
+		BirthdayDay       int64  `db:"birthday_day"`
+		NotificationEmail string `db:"notification_email"`
+		Locate            string `db:"locate"`
+		Language          string `db:"language"`
+		CreateTime        string `db:"create_time"`
+		LastLoginTime     string `db:"last_login_time"`
+	} `json:"data"`
+}
+
 type LoginFinishReq struct {
 	SessionID string `json:"session_id" validate:"required"`
 	Assertion string `json:"assertion" validate:"required"` // 前端返回的断言数据
@@ -132,12 +154,11 @@ type RegStartResp struct {
 }
 
 type VerifyTokenReq struct {
-	Token string `json:"token"`
 }
 
 type VerifyTokenResp struct {
 	BaseResponse
 	Data struct {
-		Test bool `json:"test"`
+		Ok bool `json:"ok"`
 	} `json:"data"`
 }

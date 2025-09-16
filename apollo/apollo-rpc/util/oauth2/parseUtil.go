@@ -20,6 +20,7 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *apollo.Us
 
 	// set thirdParty fields
 	thirdParty.ThirdId = (*thirdPartyUser).GetID()
+	thirdParty.Provider = (*thirdPartyUser).GetProvider()
 	thirdParty.UserId = user.Id
 	thirdParty.Name = (*thirdPartyUser).GetDisplayName()
 

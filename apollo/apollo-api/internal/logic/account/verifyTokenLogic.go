@@ -2,8 +2,6 @@ package account
 
 import (
 	"context"
-	"github.com/zeromicro/go-zero/core/jsonx"
-
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
 
@@ -24,30 +22,24 @@ func NewVerifyTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Verif
 	}
 }
 
-func (l *VerifyTokenLogic) VerifyToken(req *types.VerifyTokenReq) (resp *types.VerifyTokenResp, err error) {
-	// todo: add your logic here and delete this line
-	returns := make(map[string]any)
-	returns["id"] = l.ctx.Value("id")
-
-	dataJson, err := jsonx.MarshalToString(returns)
-	if err != nil {
-		return nil, err
-	}
+func (l *VerifyTokenLogic) VerifyToken() (resp *types.VerifyTokenResp, err error) {
+	//returns := make(map[string]any)
+	//returns["id"] = l.ctx.Value("id")
+	//
+	//dataJson, err := jsonx.MarshalToString(returns)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	return &types.VerifyTokenResp{
 		BaseResponse: types.BaseResponse{
-			Code:    0,
-			Message: dataJson,
+			Code:    200,
+			Message: "success",
 		},
 		Data: struct {
-			Test bool `json:"test"`
+			Ok bool `json:"ok"`
 		}{
-			Test: true,
+			Ok: true,
 		},
 	}, nil
-	//return &types.BaseResponse{
-	//	Code:    202,
-	//	Message: "success",
-	//	Data:    dataJson,
-	//}, nil
 }

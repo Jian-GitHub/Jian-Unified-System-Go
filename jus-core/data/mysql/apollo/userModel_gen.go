@@ -27,17 +27,17 @@ var (
 
 	cacheApolloUserIdPrefix = "cache:apollo:user:id:"
 
-	// NotificationInfo
-	userNotificationInfoFieldNames          = builder.RawFieldNames(&UserNotificationInfo{})
-	userNotificationInfoRows                = strings.Join(userNotificationInfoFieldNames, ",")
-	cacheApolloUserNotificationInfoIdPrefix = "cache:apollo:user:notification:"
+	// UserInfo
+	userInfoFieldNames = builder.RawFieldNames(&UserInfo{})
+	userInfoRows       = strings.Join(userInfoFieldNames, ",")
+	//cacheApolloUserInfoIdPrefix = "cache:apollo:user:notification:"
 )
 
 type (
 	userModel interface {
 		Insert(ctx context.Context, data *User) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*User, error)
-		FindOneNotificationInfo(ctx context.Context, id int64) (*UserNotificationInfo, error)
+		FindOneUserInfo(ctx context.Context, id int64) (*UserInfo, error)
 		FindOneByEmail(ctx context.Context, email string) (*User, error)
 		Update(ctx context.Context, data *User) error
 		Delete(ctx context.Context, id int64) error
@@ -68,7 +68,7 @@ type (
 		UpdateTime        time.Time      `db:"update_time"`
 		Mark              string         `db:"mark"` // 备注
 	}
-	UserNotificationInfo struct {
+	UserInfo struct {
 		Id                int64          `db:"id"`          // 雪花算法用户ID
 		GivenName         string         `db:"given_name"`  // 名字
 		MiddleName        string         `db:"middle_name"` // 中间名
@@ -118,11 +118,12 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error)
 	}
 }
 
-func (m *defaultUserModel) FindOneNotificationInfo(ctx context.Context, id int64) (*UserNotificationInfo, error) {
-	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserNotificationInfoIdPrefix, id)
-	var resp UserNotificationInfo
+func (m *defaultUserModel) FindOneUserInfo(ctx context.Context, id int64) (*UserInfo, error) {
+	//apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserNotificationInfoIdPrefix, id)
+	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, id)
+	var resp UserInfo
 	err := m.QueryRowCtx(ctx, &resp, apolloUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userNotificationInfoRows, m.table)
+		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userInfoRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id)
 	})
 	switch err {

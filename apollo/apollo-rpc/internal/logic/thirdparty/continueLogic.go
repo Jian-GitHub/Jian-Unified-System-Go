@@ -29,7 +29,7 @@ func NewContinueLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Continue
 	}
 }
 
-// 继续 - 登录或注册
+// Continue 继续 - 登录或注册
 func (l *ContinueLogic) Continue(in *apollo.ThirdPartyContinueReq) (*apollo.ThirdPartyContinueResp, error) {
 	// todo: add your logic here and delete this line
 	// 1. Parse Token

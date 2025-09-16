@@ -45,17 +45,6 @@ type (
 			Token string `json:"token"`
 		} `json:"data"`
 	}
-	// 生成令牌
-	GenerateTokenReq {
-		Name  string  `json:"name"`
-		Scope []int64 `json:"scope" validate:"required"`
-	}
-	GenerateTokenResp {
-		BaseResponse
-		GenerateTokenData {
-			Token string `json:"token"`
-		} `json:"data"`
-	}
 )
 
 // Account
@@ -161,13 +150,42 @@ service apollo-api {
 }
 
 type (
-	VerifyTokenReq {
-		Token string `json:"token"`
-	}
+	VerifyTokenReq  {}
 	VerifyTokenResp {
 		BaseResponse
 		Data {
-			Test bool `json:"test"`
+			Ok bool `json:"ok"`
+		} `json:"data"`
+	}
+	// 生成令牌
+	GenerateTokenReq {
+		Name  string  `json:"name"`
+		Scope []int64 `json:"scope" validate:"required"`
+	}
+	GenerateTokenResp {
+		BaseResponse
+		GenerateTokenData {
+			Token string `json:"token"`
+		} `json:"data"`
+	}
+	// 获取用户信息
+	GetUserInfoReq  {}
+	GetUserInfoResp {
+		BaseResponse
+		GetUserInfoData {
+			Id                int64  `db:"id"`
+			GivenName         string `db:"given_name"`
+			MiddleName        string `db:"middle_name"`
+			FamilyName        string `db:"family_name"`
+			Avatar            string `db:"avatar"`
+			BirthdayYear      int64  `db:"birthday_year"`
+			BirthdayMonth     int64  `db:"birthday_month"`
+			BirthdayDay       int64  `db:"birthday_day"`
+			NotificationEmail string `db:"notification_email"`
+			Locate            string `db:"locate"`
+			Language          string `db:"language"`
+			CreateTime        string `db:"create_time"`
+			LastLoginTime     string `db:"last_login_time"`
 		} `json:"data"`
 	}
 )
@@ -188,6 +206,11 @@ service apollo-api {
 	@handler GenerateToken
 	// 返回: Token
 	post /GenerateToken (GenerateTokenReq) returns (GenerateTokenResp)
+
+	// Get User Info
+	@handler GetUserInfo
+	// 返回: UserInfo
+	post /GetUserInfo (GetUserInfoReq) returns (GetUserInfoResp)
 }
 
 // Third Party

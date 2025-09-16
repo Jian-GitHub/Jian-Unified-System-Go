@@ -19,8 +19,6 @@ type (
 	GenerateTokenResp             = apollo.GenerateTokenResp
 	LoginReq                      = apollo.LoginReq
 	LoginResp                     = apollo.LoginResp
-	NotificationInfoReq           = apollo.NotificationInfoReq
-	NotificationInfoResp          = apollo.NotificationInfoResp
 	PasskeysFinishLoginReq        = apollo.PasskeysFinishLoginReq
 	PasskeysFinishLoginResp       = apollo.PasskeysFinishLoginResp
 	PasskeysFinishRegistrationReq = apollo.PasskeysFinishRegistrationReq
@@ -31,6 +29,8 @@ type (
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
+	UserInfoReq                   = apollo.UserInfoReq
+	UserInfoResp                  = apollo.UserInfoResp
 	ValidateTokenReq              = apollo.ValidateTokenReq
 	ValidateTokenResp             = apollo.ValidateTokenResp
 

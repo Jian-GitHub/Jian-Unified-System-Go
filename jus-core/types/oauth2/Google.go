@@ -142,6 +142,9 @@ func (g GoogleAdapter) GetID() string {
 	}
 	return parts[1]
 }
+func (g GoogleAdapter) GetProvider() string {
+	return ProviderGoogle
+}
 func (g GoogleAdapter) GetGivenName() string {
 	for _, name := range g.Names {
 		if name.Metadata.Primary {

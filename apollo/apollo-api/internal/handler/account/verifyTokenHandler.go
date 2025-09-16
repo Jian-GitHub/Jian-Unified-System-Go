@@ -18,7 +18,7 @@ func VerifyTokenHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := account.NewVerifyTokenLogic(r.Context(), svcCtx)
-		resp, err := l.VerifyToken(&req)
+		resp, err := l.VerifyToken()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

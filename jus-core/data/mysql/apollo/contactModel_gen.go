@@ -89,7 +89,6 @@ func (m *defaultContactModel) FindOne(ctx context.Context, id int64) (*Contact, 
 }
 
 func (m *defaultContactModel) FindByUserID(ctx context.Context, userID int64) ([]*Contact, error) {
-	// 使用集合缓存键
 	cacheKey := fmt.Sprintf("%s%v", cacheApolloContactUserPrefix, userID)
 
 	var resp []*Contact

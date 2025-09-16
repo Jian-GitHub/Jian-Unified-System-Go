@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
+	//"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"golang.org/x/oauth2"
@@ -40,7 +40,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 	// 1. Check Redis Cache
 	// Parse Redis Data
 	// redis data string -> RedisData
-	fmt.Println(in.RedisDataJson)
+	//fmt.Println(in.RedisDataJson)
 	var redisData *redisUtil.RedisData
 	err := json.Unmarshal([]byte(in.RedisDataJson), &redisData)
 	if err != nil {
@@ -69,7 +69,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		//fmt.Println(err.Error())
 		return nil, err
 	}
 	_ = resp.Body.Close()
@@ -95,7 +95,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		return nil, err
 	}
 
-	fmt.Println("thirdPartyIsExist", thirdPartyIsExist)
+	//fmt.Println("thirdPartyIsExist", thirdPartyIsExist)
 
 	// 需要查 user 的情况
 	// thirdParty exists: 		 p,		continue:	 q
@@ -131,7 +131,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		// 分情况讨论: 流程类型
 		switch redisData.Flag {
 		case redisUtil.ContinueFlag:
-			fmt.Println("进入登录")
+			//fmt.Println("进入登录")
 			// 处理 登录 - 返回 user defaultUserId
 			// 更新第三方数据
 			existedThirdParty.Name = thirdPartyUser.GetDisplayName()
@@ -144,7 +144,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 				UserId: user.Id,
 			}, nil
 		case redisUtil.BindFlag:
-			fmt.Println("进入绑定")
+			//fmt.Println("进入绑定")
 			// 处理 绑定 - 存新 third_party
 			newThirdParty := &ap.ThirdParty{
 				RawData: sql.NullString{
@@ -169,7 +169,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 		}
 	// 第三方不存在 && Continue: 注册流程
 	case !thirdPartyIsExist && redisData.Flag == redisUtil.ContinueFlag:
-		fmt.Println("进入注册")
+		//fmt.Println("进入注册")
 		// 处理注册
 		// 创建 新 user, 新 contacts, 新 third_party
 		newUser := &ap.User{
@@ -195,9 +195,9 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 			return nil, err
 		}
 		// contacts
-		fmt.Println("检查 contacts")
-		fmt.Println(newContacts == nil)
-		fmt.Println(len(newContacts))
+		//fmt.Println("检查 contacts")
+		//fmt.Println(newContacts == nil)
+		//fmt.Println(len(newContacts))
 		if len(newContacts) > 0 {
 			_, err = l.svcCtx.ContactModel.InsertBatch(l.ctx, newContacts)
 			if err != nil {

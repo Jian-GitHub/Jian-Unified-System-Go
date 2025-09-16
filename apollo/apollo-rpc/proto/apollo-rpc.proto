@@ -27,11 +27,11 @@ message LoginResp {
 }
 
 // ========== 用户信息 ==========
-message NotificationInfoReq {
+message UserInfoReq {
   int64 user_id = 1;
 }
 
-message NotificationInfoResp {
+message UserInfoResp {
   bytes user_bytes = 1;
 }
 
@@ -67,8 +67,8 @@ service Account {
   rpc Login (LoginReq) returns (LoginResp);
 
   // 用户信息
-  // NotificationInfo 查询用户通知联系方式
-  rpc NotificationInfo (NotificationInfoReq) returns (NotificationInfoResp);
+  // UserInfo 查询用户通知联系方式
+  rpc UserInfo (UserInfoReq) returns (UserInfoResp);
 
   // 生成子系统令牌
   // GenerateToken 生成可调用子系统的令牌
