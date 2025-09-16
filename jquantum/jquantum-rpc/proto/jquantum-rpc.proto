@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package apollo;
+package jquantum;
 
 option go_package = "./jquantum";
 import "google/protobuf/empty.proto";
@@ -28,6 +28,14 @@ message RetrieveResultResp {
   bytes result = 1;
 }
 
+message ValidateTokenReq {
+  int64 token_id = 1;
+}
+
+message ValidateTokenResp {
+  bool validated = 1;
+}
+
 //// ========== 登录流程 ==========
 //message LoginReq {
 //  string email = 1;
@@ -46,4 +54,5 @@ service JQuantum {
   // RetrieveResult 获取计算任务结果
   rpc RetrieveResult (RetrieveResultReq) returns (RetrieveResultResp);
 
+  rpc ValidateToken (ValidateTokenReq) returns (ValidateTokenResp);
 }

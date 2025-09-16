@@ -5,7 +5,6 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/apollo/apollo-api/internal/config"
-	"jian-unified-system/apollo/apollo-api/internal/middleware"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	"jian-unified-system/jus-core/util"
@@ -16,10 +15,10 @@ type ServiceContext struct {
 	Redis     *redis.Redis
 	Snowflake *snowflake.Node // 添加字段
 	// Apollo RPC
-	ApolloAccount            apollo.AccountClient
-	ApolloPasskeys           apollo.PasskeysClient
-	ApolloThirdParty         apollo.ThirdPartyClient
-	JWTVerifyAgentMiddleware middleware.JWTVerifyAgentMiddleware
+	ApolloAccount    apollo.AccountClient
+	ApolloPasskeys   apollo.PasskeysClient
+	ApolloThirdParty apollo.ThirdPartyClient
+	//JWTVerifyAgentMiddleware middleware.JWTVerifyAgentMiddleware
 	// MySQL - Models
 	//UserModel apollo.UserModel
 

@@ -18,12 +18,15 @@ type (
 	RetrieveResultResp = jquantum.RetrieveResultResp
 	SubmitReq          = jquantum.SubmitReq
 	SubmitResp         = jquantum.SubmitResp
+	ValidateTokenReq   = jquantum.ValidateTokenReq
+	ValidateTokenResp  = jquantum.ValidateTokenResp
 
 	JQuantum interface {
 		// Submit 提交任务
 		Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error)
 		// RetrieveResult 获取计算任务结果
 		RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error)
+		ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
 	}
 
 	defaultJQuantum struct {
@@ -47,4 +50,9 @@ func (m *defaultJQuantum) Submit(ctx context.Context, in *SubmitReq, opts ...grp
 func (m *defaultJQuantum) RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error) {
 	client := jquantum.NewJQuantumClient(m.cli.Conn())
 	return client.RetrieveResult(ctx, in, opts...)
+}
+
+func (m *defaultJQuantum) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
+	client := jquantum.NewJQuantumClient(m.cli.Conn())
+	return client.ValidateToken(ctx, in, opts...)
 }

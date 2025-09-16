@@ -35,6 +35,26 @@ message NotificationInfoResp {
   bytes user_bytes = 1;
 }
 
+// ========== 生成系统令牌 ==========
+message GenerateTokenReq {
+  int64 user_id = 1;
+  string name = 2;
+  bytes scope = 3;
+}
+
+message GenerateTokenResp {
+  string token = 1;
+}
+
+// ========== 验证系统令牌 ==========
+message ValidateTokenReq {
+  int64 token_id = 1;
+}
+
+message ValidateTokenResp {
+  bool validated = 1;
+}
+
 
 // ================= 服务定义 =================
 service Account {
@@ -49,6 +69,14 @@ service Account {
   // 用户信息
   // NotificationInfo 查询用户通知联系方式
   rpc NotificationInfo (NotificationInfoReq) returns (NotificationInfoResp);
+
+  // 生成子系统令牌
+  // GenerateToken 生成可调用子系统的令牌
+  rpc GenerateToken (GenerateTokenReq) returns (GenerateTokenResp);
+
+  // 验证子系统令牌
+  // ValidateToken 验证可调用子系统的令牌
+  rpc ValidateToken (ValidateTokenReq) returns (ValidateTokenResp);
 }
 
 // Passkeys

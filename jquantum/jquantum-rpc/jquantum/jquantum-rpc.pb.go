@@ -217,11 +217,99 @@ func (x *RetrieveResultResp) GetResult() []byte {
 	return nil
 }
 
+type ValidateTokenReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TokenId       int64                  `protobuf:"varint,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateTokenReq) Reset() {
+	*x = ValidateTokenReq{}
+	mi := &file_jquantum_rpc_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateTokenReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateTokenReq) ProtoMessage() {}
+
+func (x *ValidateTokenReq) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateTokenReq.ProtoReflect.Descriptor instead.
+func (*ValidateTokenReq) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ValidateTokenReq) GetTokenId() int64 {
+	if x != nil {
+		return x.TokenId
+	}
+	return 0
+}
+
+type ValidateTokenResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Validated     bool                   `protobuf:"varint,1,opt,name=validated,proto3" json:"validated,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateTokenResp) Reset() {
+	*x = ValidateTokenResp{}
+	mi := &file_jquantum_rpc_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateTokenResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateTokenResp) ProtoMessage() {}
+
+func (x *ValidateTokenResp) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateTokenResp.ProtoReflect.Descriptor instead.
+func (*ValidateTokenResp) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ValidateTokenResp) GetValidated() bool {
+	if x != nil {
+		return x.Validated
+	}
+	return false
+}
+
 var File_jquantum_rpc_proto protoreflect.FileDescriptor
 
 const file_jquantum_rpc_proto_rawDesc = "" +
 	"\n" +
-	"\x12jquantum-rpc.proto\x12\x06apollo\x1a\x1bgoogle/protobuf/empty.proto\"<\n" +
+	"\x12jquantum-rpc.proto\x12\bjquantum\x1a\x1bgoogle/protobuf/empty.proto\"<\n" +
 	"\tSubmitReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x16\n" +
 	"\x06thread\x18\x02 \x01(\fR\x06thread\"#\n" +
@@ -232,10 +320,15 @@ const file_jquantum_rpc_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x15\n" +
 	"\x06job_id\x18\x02 \x01(\tR\x05jobId\",\n" +
 	"\x12RetrieveResultResp\x12\x16\n" +
-	"\x06result\x18\x01 \x01(\fR\x06result2\x84\x01\n" +
-	"\bJQuantum\x12/\n" +
-	"\x06Submit\x12\x11.apollo.SubmitReq\x1a\x12.apollo.SubmitResp\x12G\n" +
-	"\x0eRetrieveResult\x12\x19.apollo.RetrieveResultReq\x1a\x1a.apollo.RetrieveResultRespB\fZ\n" +
+	"\x06result\x18\x01 \x01(\fR\x06result\"-\n" +
+	"\x10ValidateTokenReq\x12\x19\n" +
+	"\btoken_id\x18\x01 \x01(\x03R\atokenId\"1\n" +
+	"\x11ValidateTokenResp\x12\x1c\n" +
+	"\tvalidated\x18\x01 \x01(\bR\tvalidated2\xd6\x01\n" +
+	"\bJQuantum\x123\n" +
+	"\x06Submit\x12\x13.jquantum.SubmitReq\x1a\x14.jquantum.SubmitResp\x12K\n" +
+	"\x0eRetrieveResult\x12\x1b.jquantum.RetrieveResultReq\x1a\x1c.jquantum.RetrieveResultResp\x12H\n" +
+	"\rValidateToken\x12\x1a.jquantum.ValidateTokenReq\x1a\x1b.jquantum.ValidateTokenRespB\fZ\n" +
 	"./jquantumb\x06proto3"
 
 var (
@@ -250,20 +343,24 @@ func file_jquantum_rpc_proto_rawDescGZIP() []byte {
 	return file_jquantum_rpc_proto_rawDescData
 }
 
-var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_jquantum_rpc_proto_goTypes = []any{
-	(*SubmitReq)(nil),          // 0: apollo.SubmitReq
-	(*SubmitResp)(nil),         // 1: apollo.SubmitResp
-	(*RetrieveResultReq)(nil),  // 2: apollo.RetrieveResultReq
-	(*RetrieveResultResp)(nil), // 3: apollo.RetrieveResultResp
+	(*SubmitReq)(nil),          // 0: jquantum.SubmitReq
+	(*SubmitResp)(nil),         // 1: jquantum.SubmitResp
+	(*RetrieveResultReq)(nil),  // 2: jquantum.RetrieveResultReq
+	(*RetrieveResultResp)(nil), // 3: jquantum.RetrieveResultResp
+	(*ValidateTokenReq)(nil),   // 4: jquantum.ValidateTokenReq
+	(*ValidateTokenResp)(nil),  // 5: jquantum.ValidateTokenResp
 }
 var file_jquantum_rpc_proto_depIdxs = []int32{
-	0, // 0: apollo.JQuantum.Submit:input_type -> apollo.SubmitReq
-	2, // 1: apollo.JQuantum.RetrieveResult:input_type -> apollo.RetrieveResultReq
-	1, // 2: apollo.JQuantum.Submit:output_type -> apollo.SubmitResp
-	3, // 3: apollo.JQuantum.RetrieveResult:output_type -> apollo.RetrieveResultResp
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	0, // 0: jquantum.JQuantum.Submit:input_type -> jquantum.SubmitReq
+	2, // 1: jquantum.JQuantum.RetrieveResult:input_type -> jquantum.RetrieveResultReq
+	4, // 2: jquantum.JQuantum.ValidateToken:input_type -> jquantum.ValidateTokenReq
+	1, // 3: jquantum.JQuantum.Submit:output_type -> jquantum.SubmitResp
+	3, // 4: jquantum.JQuantum.RetrieveResult:output_type -> jquantum.RetrieveResultResp
+	5, // 5: jquantum.JQuantum.ValidateToken:output_type -> jquantum.ValidateTokenResp
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -280,7 +377,7 @@ func file_jquantum_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_jquantum_rpc_proto_rawDesc), len(file_jquantum_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

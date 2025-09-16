@@ -14,19 +14,22 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/retrieveResult",
-				Handler: job.RetrieveResultHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/submit",
-				Handler: job.SubmitHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.TokenMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/retrieveResult",
+					Handler: job.RetrieveResultHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/submit",
+					Handler: job.SubmitHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.SubSystem.AccessSecret),
 		rest.WithPrefix("/v1/job"),
 	)
 }

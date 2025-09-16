@@ -22,6 +22,8 @@ const (
 	Account_Registration_FullMethodName     = "/apollo.Account/Registration"
 	Account_Login_FullMethodName            = "/apollo.Account/Login"
 	Account_NotificationInfo_FullMethodName = "/apollo.Account/NotificationInfo"
+	Account_GenerateToken_FullMethodName    = "/apollo.Account/GenerateToken"
+	Account_ValidateToken_FullMethodName    = "/apollo.Account/ValidateToken"
 )
 
 // AccountClient is the client API for Account service.
@@ -39,6 +41,12 @@ type AccountClient interface {
 	// 用户信息
 	// NotificationInfo 查询用户通知联系方式
 	NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error)
+	// 生成子系统令牌
+	// GenerateToken 生成可调用子系统的令牌
+	GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
+	// 验证子系统令牌
+	// ValidateToken 验证可调用子系统的令牌
+	ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
 }
 
 type accountClient struct {
@@ -79,6 +87,26 @@ func (c *accountClient) NotificationInfo(ctx context.Context, in *NotificationIn
 	return out, nil
 }
 
+func (c *accountClient) GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenerateTokenResp)
+	err := c.cc.Invoke(ctx, Account_GenerateToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateTokenResp)
+	err := c.cc.Invoke(ctx, Account_ValidateToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility.
@@ -94,6 +122,12 @@ type AccountServer interface {
 	// 用户信息
 	// NotificationInfo 查询用户通知联系方式
 	NotificationInfo(context.Context, *NotificationInfoReq) (*NotificationInfoResp, error)
+	// 生成子系统令牌
+	// GenerateToken 生成可调用子系统的令牌
+	GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error)
+	// 验证子系统令牌
+	// ValidateToken 验证可调用子系统的令牌
+	ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -112,6 +146,12 @@ func (UnimplementedAccountServer) Login(context.Context, *LoginReq) (*LoginResp,
 }
 func (UnimplementedAccountServer) NotificationInfo(context.Context, *NotificationInfoReq) (*NotificationInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NotificationInfo not implemented")
+}
+func (UnimplementedAccountServer) GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateToken not implemented")
+}
+func (UnimplementedAccountServer) ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 func (UnimplementedAccountServer) testEmbeddedByValue()                 {}
@@ -188,6 +228,42 @@ func _Account_NotificationInfo_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_GenerateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).GenerateToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_GenerateToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).GenerateToken(ctx, req.(*GenerateTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).ValidateToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_ValidateToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).ValidateToken(ctx, req.(*ValidateTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +282,14 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NotificationInfo",
 			Handler:    _Account_NotificationInfo_Handler,
+		},
+		{
+			MethodName: "GenerateToken",
+			Handler:    _Account_GenerateToken_Handler,
+		},
+		{
+			MethodName: "ValidateToken",
+			Handler:    _Account_ValidateToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

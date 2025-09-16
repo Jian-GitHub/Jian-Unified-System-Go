@@ -15,6 +15,8 @@ import (
 
 type (
 	Empty                         = apollo.Empty
+	GenerateTokenReq              = apollo.GenerateTokenReq
+	GenerateTokenResp             = apollo.GenerateTokenResp
 	LoginReq                      = apollo.LoginReq
 	LoginResp                     = apollo.LoginResp
 	NotificationInfoReq           = apollo.NotificationInfoReq
@@ -29,6 +31,8 @@ type (
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
+	ValidateTokenReq              = apollo.ValidateTokenReq
+	ValidateTokenResp             = apollo.ValidateTokenResp
 
 	Account interface {
 		// 注册
@@ -37,6 +41,10 @@ type (
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		// 用户信息
 		NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error)
+		// 生成子系统令牌
+		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
+		// 验证子系统令牌
+		ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
 	}
 
 	defaultAccount struct {
@@ -66,4 +74,16 @@ func (m *defaultAccount) Login(ctx context.Context, in *LoginReq, opts ...grpc.C
 func (m *defaultAccount) NotificationInfo(ctx context.Context, in *NotificationInfoReq, opts ...grpc.CallOption) (*NotificationInfoResp, error) {
 	client := apollo.NewAccountClient(m.cli.Conn())
 	return client.NotificationInfo(ctx, in, opts...)
+}
+
+// 生成子系统令牌
+func (m *defaultAccount) GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error) {
+	client := apollo.NewAccountClient(m.cli.Conn())
+	return client.GenerateToken(ctx, in, opts...)
+}
+
+// 验证子系统令牌
+func (m *defaultAccount) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
+	client := apollo.NewAccountClient(m.cli.Conn())
+	return client.ValidateToken(ctx, in, opts...)
 }

@@ -15,6 +15,8 @@ import (
 
 type (
 	Empty                         = apollo.Empty
+	GenerateTokenReq              = apollo.GenerateTokenReq
+	GenerateTokenResp             = apollo.GenerateTokenResp
 	LoginReq                      = apollo.LoginReq
 	LoginResp                     = apollo.LoginResp
 	NotificationInfoReq           = apollo.NotificationInfoReq
@@ -29,6 +31,8 @@ type (
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
+	ValidateTokenReq              = apollo.ValidateTokenReq
+	ValidateTokenResp             = apollo.ValidateTokenResp
 
 	ThirdParty interface {
 		// 绑定

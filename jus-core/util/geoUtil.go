@@ -3,7 +3,6 @@ package util
 import (
 	"fmt"
 	"github.com/oschwald/geoip2-golang"
-	"github.com/zeromicro/go-zero/core/jsonx"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
 	"net"
@@ -38,8 +37,6 @@ func (g *GeoService) Lookup(ipStr string) (*GeoResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("record")
-	fmt.Println(jsonx.MarshalToString(record))
 
 	country := record.Country.Names["en"]
 	city := record.City.Names["en"]

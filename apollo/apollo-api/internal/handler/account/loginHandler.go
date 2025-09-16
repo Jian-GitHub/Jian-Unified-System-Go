@@ -1,12 +1,16 @@
 package account
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/jsonx"
 	"github.com/zeromicro/go-zero/rest/httpx"
+	"io"
 	"jian-unified-system/apollo/apollo-api/internal/logic/account"
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
 	"net/http"
+	"net/url"
 )
 
 func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
@@ -42,23 +46,27 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		//form := url.Values{}
-		//form.Add("secret", "0x4AAAAAAANVWcsutYm3MqUvm50PJPaBi3s")
-		//form.Add("response", req.CloudflareToken)
-		//respCloudflare, err := http.PostForm("https://challenges.cloudflare.com/turnstile/v0/siteverify", form)
-		//if err != nil {
-		//	fmt.Println(err.Error())
-		//}
-		//defer respCloudflare.Body.Close()
-		//
-		//var result TurnstileResponse
-		//if err := json.NewDecoder(respCloudflare.Body).Decode(&result); err != nil {
-		//	fmt.Println(err.Error())
-		//}
-		//
-		//fmt.Println(result)
-
 		fmt.Println(req.CloudflareToken)
+
+		form := url.Values{}
+		form.Add("secret", "0x4AAAAAAANVWcsutYm3MqUvm50PJPaBi3s")
+		form.Add("response", req.CloudflareToken)
+		respCloudflare, err := http.PostForm("https://challenges.cloudflare.com/turnstile/v0/siteverify", form)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		defer func(Body io.ReadCloser) {
+			_ = Body.Close()
+		}(respCloudflare.Body)
+
+		var result TurnstileResponse
+		if err := json.NewDecoder(respCloudflare.Body).Decode(&result); err != nil {
+			fmt.Println(err.Error())
+		}
+
+		marshalToString, _ := jsonx.MarshalToString(result)
+		fmt.Println(marshalToString)
+
 		// 0x4AAAAAAANVWcsutYm3MqUvm50PJPaBi3s
 
 		l := account.NewLoginLogic(r.Context(), svcCtx)

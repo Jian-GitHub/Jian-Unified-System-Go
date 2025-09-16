@@ -38,9 +38,10 @@ type (
 
 // Account
 @server (
-	prefix: /v1/job
-	group:  job
-	jwt:    Auth
+	prefix:     /v1/job
+	group:      job
+	jwt:        SubSystem
+	middleware: TokenMiddleware
 )
 service jquantum-api {
 	// 计算任务流程

@@ -4,6 +4,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/apollo/apollo-rpc/internal/types"
+	"jian-unified-system/jus-core/types/jwt"
 	"jian-unified-system/jus-core/types/oauth2"
 )
 
@@ -14,5 +15,6 @@ type Config struct {
 	DB       struct {
 		DataSource string
 	}
-	OAuth oauth2.OAuthProviders
+	OAuth     oauth2.OAuthProviders
+	SubSystem jwt.TokenConfig
 }

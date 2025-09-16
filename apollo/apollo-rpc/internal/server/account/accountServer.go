@@ -40,3 +40,15 @@ func (s *AccountServer) NotificationInfo(ctx context.Context, in *apollo.Notific
 	l := accountlogic.NewNotificationInfoLogic(ctx, s.svcCtx)
 	return l.NotificationInfo(in)
 }
+
+// 生成子系统令牌
+func (s *AccountServer) GenerateToken(ctx context.Context, in *apollo.GenerateTokenReq) (*apollo.GenerateTokenResp, error) {
+	l := accountlogic.NewGenerateTokenLogic(ctx, s.svcCtx)
+	return l.GenerateToken(in)
+}
+
+// 验证子系统令牌
+func (s *AccountServer) ValidateToken(ctx context.Context, in *apollo.ValidateTokenReq) (*apollo.ValidateTokenResp, error) {
+	l := accountlogic.NewValidateTokenLogic(ctx, s.svcCtx)
+	return l.ValidateToken(in)
+}

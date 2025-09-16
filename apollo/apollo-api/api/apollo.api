@@ -45,6 +45,17 @@ type (
 			Token string `json:"token"`
 		} `json:"data"`
 	}
+	// 生成令牌
+	GenerateTokenReq {
+		Name  string  `json:"name"`
+		Scope []int64 `json:"scope" validate:"required"`
+	}
+	GenerateTokenResp {
+		BaseResponse
+		GenerateTokenData {
+			Token string `json:"token"`
+		} `json:"data"`
+	}
 )
 
 // Account
@@ -172,6 +183,11 @@ service apollo-api {
 	@handler VerifyToken
 	// 返回: Token
 	post /VerifyToken (VerifyTokenReq) returns (VerifyTokenResp)
+
+	// Generate Token
+	@handler GenerateToken
+	// 返回: Token
+	post /GenerateToken (GenerateTokenReq) returns (GenerateTokenResp)
 }
 
 // Third Party

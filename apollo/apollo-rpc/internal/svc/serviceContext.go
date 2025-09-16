@@ -17,6 +17,7 @@ type ServiceContext struct {
 	PasskeyModel    apollo.PasskeyModel
 	ContactModel    apollo.ContactModel
 	ThirdPartyModel apollo.ThirdPartyModel
+	TokenModel      apollo.TokenModel
 
 	MLKEMKeyManager util.MLKEMKeyManager
 
@@ -49,6 +50,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		PasskeyModel:    apollo.NewPasskeyModel(sqlConn, c.Cache),
 		ContactModel:    apollo.NewContactModel(sqlConn, c.Cache),
 		ThirdPartyModel: apollo.NewThirdPartyModel(sqlConn, c.Cache),
+		TokenModel:      apollo.NewTokenModel(sqlConn, c.Cache),
 
 		MLKEMKeyManager: util.DefaultMLKEMKeyManager(),
 		OauthProviders:  OauthProviders,

@@ -321,6 +321,200 @@ func (x *NotificationInfoResp) GetUserBytes() []byte {
 	return nil
 }
 
+// ========== 生成系统令牌 ==========
+type GenerateTokenReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Scope         []byte                 `protobuf:"bytes,3,opt,name=scope,proto3" json:"scope,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateTokenReq) Reset() {
+	*x = GenerateTokenReq{}
+	mi := &file_apollo_rpc_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateTokenReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateTokenReq) ProtoMessage() {}
+
+func (x *GenerateTokenReq) ProtoReflect() protoreflect.Message {
+	mi := &file_apollo_rpc_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateTokenReq.ProtoReflect.Descriptor instead.
+func (*GenerateTokenReq) Descriptor() ([]byte, []int) {
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GenerateTokenReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *GenerateTokenReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GenerateTokenReq) GetScope() []byte {
+	if x != nil {
+		return x.Scope
+	}
+	return nil
+}
+
+type GenerateTokenResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateTokenResp) Reset() {
+	*x = GenerateTokenResp{}
+	mi := &file_apollo_rpc_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateTokenResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateTokenResp) ProtoMessage() {}
+
+func (x *GenerateTokenResp) ProtoReflect() protoreflect.Message {
+	mi := &file_apollo_rpc_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateTokenResp.ProtoReflect.Descriptor instead.
+func (*GenerateTokenResp) Descriptor() ([]byte, []int) {
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GenerateTokenResp) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+// ========== 验证系统令牌 ==========
+type ValidateTokenReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TokenId       int64                  `protobuf:"varint,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateTokenReq) Reset() {
+	*x = ValidateTokenReq{}
+	mi := &file_apollo_rpc_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateTokenReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateTokenReq) ProtoMessage() {}
+
+func (x *ValidateTokenReq) ProtoReflect() protoreflect.Message {
+	mi := &file_apollo_rpc_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateTokenReq.ProtoReflect.Descriptor instead.
+func (*ValidateTokenReq) Descriptor() ([]byte, []int) {
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ValidateTokenReq) GetTokenId() int64 {
+	if x != nil {
+		return x.TokenId
+	}
+	return 0
+}
+
+type ValidateTokenResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Validated     bool                   `protobuf:"varint,1,opt,name=validated,proto3" json:"validated,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateTokenResp) Reset() {
+	*x = ValidateTokenResp{}
+	mi := &file_apollo_rpc_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateTokenResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateTokenResp) ProtoMessage() {}
+
+func (x *ValidateTokenResp) ProtoReflect() protoreflect.Message {
+	mi := &file_apollo_rpc_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateTokenResp.ProtoReflect.Descriptor instead.
+func (*ValidateTokenResp) Descriptor() ([]byte, []int) {
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ValidateTokenResp) GetValidated() bool {
+	if x != nil {
+		return x.Validated
+	}
+	return false
+}
+
 // Passkeys
 // ========== 注册流程 ==========
 type PasskeysStartRegistrationReq struct {
@@ -334,7 +528,7 @@ type PasskeysStartRegistrationReq struct {
 
 func (x *PasskeysStartRegistrationReq) Reset() {
 	*x = PasskeysStartRegistrationReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[6]
+	mi := &file_apollo_rpc_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -346,7 +540,7 @@ func (x *PasskeysStartRegistrationReq) String() string {
 func (*PasskeysStartRegistrationReq) ProtoMessage() {}
 
 func (x *PasskeysStartRegistrationReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[6]
+	mi := &file_apollo_rpc_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +553,7 @@ func (x *PasskeysStartRegistrationReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysStartRegistrationReq.ProtoReflect.Descriptor instead.
 func (*PasskeysStartRegistrationReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{6}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PasskeysStartRegistrationReq) GetUserId() int64 {
@@ -393,7 +587,7 @@ type PasskeysStartRegistrationResp struct {
 
 func (x *PasskeysStartRegistrationResp) Reset() {
 	*x = PasskeysStartRegistrationResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[7]
+	mi := &file_apollo_rpc_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +599,7 @@ func (x *PasskeysStartRegistrationResp) String() string {
 func (*PasskeysStartRegistrationResp) ProtoMessage() {}
 
 func (x *PasskeysStartRegistrationResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[7]
+	mi := &file_apollo_rpc_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +612,7 @@ func (x *PasskeysStartRegistrationResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysStartRegistrationResp.ProtoReflect.Descriptor instead.
 func (*PasskeysStartRegistrationResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{7}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *PasskeysStartRegistrationResp) GetOptionsJson() []byte {
@@ -448,7 +642,7 @@ type PasskeysFinishRegistrationReq struct {
 
 func (x *PasskeysFinishRegistrationReq) Reset() {
 	*x = PasskeysFinishRegistrationReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[8]
+	mi := &file_apollo_rpc_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -460,7 +654,7 @@ func (x *PasskeysFinishRegistrationReq) String() string {
 func (*PasskeysFinishRegistrationReq) ProtoMessage() {}
 
 func (x *PasskeysFinishRegistrationReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[8]
+	mi := &file_apollo_rpc_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -473,7 +667,7 @@ func (x *PasskeysFinishRegistrationReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysFinishRegistrationReq.ProtoReflect.Descriptor instead.
 func (*PasskeysFinishRegistrationReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{8}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *PasskeysFinishRegistrationReq) GetUserId() int64 {
@@ -522,7 +716,7 @@ type PasskeysStartLoginResp struct {
 
 func (x *PasskeysStartLoginResp) Reset() {
 	*x = PasskeysStartLoginResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[9]
+	mi := &file_apollo_rpc_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -534,7 +728,7 @@ func (x *PasskeysStartLoginResp) String() string {
 func (*PasskeysStartLoginResp) ProtoMessage() {}
 
 func (x *PasskeysStartLoginResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[9]
+	mi := &file_apollo_rpc_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +741,7 @@ func (x *PasskeysStartLoginResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysStartLoginResp.ProtoReflect.Descriptor instead.
 func (*PasskeysStartLoginResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{9}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PasskeysStartLoginResp) GetOptionsJson() []byte {
@@ -574,7 +768,7 @@ type PasskeysFinishLoginReq struct {
 
 func (x *PasskeysFinishLoginReq) Reset() {
 	*x = PasskeysFinishLoginReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[10]
+	mi := &file_apollo_rpc_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -586,7 +780,7 @@ func (x *PasskeysFinishLoginReq) String() string {
 func (*PasskeysFinishLoginReq) ProtoMessage() {}
 
 func (x *PasskeysFinishLoginReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[10]
+	mi := &file_apollo_rpc_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -599,7 +793,7 @@ func (x *PasskeysFinishLoginReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysFinishLoginReq.ProtoReflect.Descriptor instead.
 func (*PasskeysFinishLoginReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{10}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PasskeysFinishLoginReq) GetCredentialJson() string {
@@ -625,7 +819,7 @@ type PasskeysFinishLoginResp struct {
 
 func (x *PasskeysFinishLoginResp) Reset() {
 	*x = PasskeysFinishLoginResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[11]
+	mi := &file_apollo_rpc_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -637,7 +831,7 @@ func (x *PasskeysFinishLoginResp) String() string {
 func (*PasskeysFinishLoginResp) ProtoMessage() {}
 
 func (x *PasskeysFinishLoginResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[11]
+	mi := &file_apollo_rpc_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -650,7 +844,7 @@ func (x *PasskeysFinishLoginResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysFinishLoginResp.ProtoReflect.Descriptor instead.
 func (*PasskeysFinishLoginResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{11}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PasskeysFinishLoginResp) GetUserId() int64 {
@@ -672,7 +866,7 @@ type ThirdPartyBindReq struct {
 
 func (x *ThirdPartyBindReq) Reset() {
 	*x = ThirdPartyBindReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[12]
+	mi := &file_apollo_rpc_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -684,7 +878,7 @@ func (x *ThirdPartyBindReq) String() string {
 func (*ThirdPartyBindReq) ProtoMessage() {}
 
 func (x *ThirdPartyBindReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[12]
+	mi := &file_apollo_rpc_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -697,7 +891,7 @@ func (x *ThirdPartyBindReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdPartyBindReq.ProtoReflect.Descriptor instead.
 func (*ThirdPartyBindReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{12}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ThirdPartyBindReq) GetToken() []byte {
@@ -720,7 +914,7 @@ type ThirdPartyContinueReq struct {
 
 func (x *ThirdPartyContinueReq) Reset() {
 	*x = ThirdPartyContinueReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[13]
+	mi := &file_apollo_rpc_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -732,7 +926,7 @@ func (x *ThirdPartyContinueReq) String() string {
 func (*ThirdPartyContinueReq) ProtoMessage() {}
 
 func (x *ThirdPartyContinueReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[13]
+	mi := &file_apollo_rpc_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -745,7 +939,7 @@ func (x *ThirdPartyContinueReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdPartyContinueReq.ProtoReflect.Descriptor instead.
 func (*ThirdPartyContinueReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{13}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ThirdPartyContinueReq) GetProvider() string {
@@ -778,7 +972,7 @@ type ThirdPartyContinueResp struct {
 
 func (x *ThirdPartyContinueResp) Reset() {
 	*x = ThirdPartyContinueResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[14]
+	mi := &file_apollo_rpc_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -790,7 +984,7 @@ func (x *ThirdPartyContinueResp) String() string {
 func (*ThirdPartyContinueResp) ProtoMessage() {}
 
 func (x *ThirdPartyContinueResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[14]
+	mi := &file_apollo_rpc_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -803,7 +997,7 @@ func (x *ThirdPartyContinueResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdPartyContinueResp.ProtoReflect.Descriptor instead.
 func (*ThirdPartyContinueResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{14}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ThirdPartyContinueResp) GetUserId() int64 {
@@ -834,7 +1028,17 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"5\n" +
 	"\x14NotificationInfoResp\x12\x1d\n" +
 	"\n" +
-	"user_bytes\x18\x01 \x01(\fR\tuserBytes\"w\n" +
+	"user_bytes\x18\x01 \x01(\fR\tuserBytes\"U\n" +
+	"\x10GenerateTokenReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05scope\x18\x03 \x01(\fR\x05scope\")\n" +
+	"\x11GenerateTokenResp\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"-\n" +
+	"\x10ValidateTokenReq\x12\x19\n" +
+	"\btoken_id\x18\x01 \x01(\x03R\atokenId\"1\n" +
+	"\x11ValidateTokenResp\x12\x1c\n" +
+	"\tvalidated\x18\x01 \x01(\bR\tvalidated\"w\n" +
 	"\x1cPasskeysStartRegistrationReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1b\n" +
 	"\tuser_name\x18\x02 \x01(\tR\buserName\x12!\n" +
@@ -863,11 +1067,13 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\x05token\x18\x02 \x01(\fR\x05token\x12&\n" +
 	"\x0fredis_data_json\x18\x03 \x01(\tR\rredisDataJson\"1\n" +
 	"\x16ThirdPartyContinueResp\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId2\xbe\x01\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId2\xca\x02\n" +
 	"\aAccount\x126\n" +
 	"\fRegistration\x12\x17.apollo.RegistrationReq\x1a\r.apollo.Empty\x12,\n" +
 	"\x05Login\x12\x10.apollo.LoginReq\x1a\x11.apollo.LoginResp\x12M\n" +
-	"\x10NotificationInfo\x12\x1b.apollo.NotificationInfoReq\x1a\x1c.apollo.NotificationInfoResp2\xc5\x02\n" +
+	"\x10NotificationInfo\x12\x1b.apollo.NotificationInfoReq\x1a\x1c.apollo.NotificationInfoResp\x12D\n" +
+	"\rGenerateToken\x12\x18.apollo.GenerateTokenReq\x1a\x19.apollo.GenerateTokenResp\x12D\n" +
+	"\rValidateToken\x12\x18.apollo.ValidateTokenReq\x1a\x19.apollo.ValidateTokenResp2\xc5\x02\n" +
 	"\bPasskeys\x12`\n" +
 	"\x11StartRegistration\x12$.apollo.PasskeysStartRegistrationReq\x1a%.apollo.PasskeysStartRegistrationResp\x12J\n" +
 	"\x12FinishRegistration\x12%.apollo.PasskeysFinishRegistrationReq\x1a\r.apollo.Empty\x12;\n" +
@@ -893,7 +1099,7 @@ func file_apollo_rpc_proto_rawDescGZIP() []byte {
 	return file_apollo_rpc_proto_rawDescData
 }
 
-var file_apollo_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_apollo_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_apollo_rpc_proto_goTypes = []any{
 	(*Empty)(nil),                         // 0: apollo.Empty
 	(*RegistrationReq)(nil),               // 1: apollo.RegistrationReq
@@ -901,39 +1107,47 @@ var file_apollo_rpc_proto_goTypes = []any{
 	(*LoginResp)(nil),                     // 3: apollo.LoginResp
 	(*NotificationInfoReq)(nil),           // 4: apollo.NotificationInfoReq
 	(*NotificationInfoResp)(nil),          // 5: apollo.NotificationInfoResp
-	(*PasskeysStartRegistrationReq)(nil),  // 6: apollo.PasskeysStartRegistrationReq
-	(*PasskeysStartRegistrationResp)(nil), // 7: apollo.PasskeysStartRegistrationResp
-	(*PasskeysFinishRegistrationReq)(nil), // 8: apollo.PasskeysFinishRegistrationReq
-	(*PasskeysStartLoginResp)(nil),        // 9: apollo.PasskeysStartLoginResp
-	(*PasskeysFinishLoginReq)(nil),        // 10: apollo.PasskeysFinishLoginReq
-	(*PasskeysFinishLoginResp)(nil),       // 11: apollo.PasskeysFinishLoginResp
-	(*ThirdPartyBindReq)(nil),             // 12: apollo.ThirdPartyBindReq
-	(*ThirdPartyContinueReq)(nil),         // 13: apollo.ThirdPartyContinueReq
-	(*ThirdPartyContinueResp)(nil),        // 14: apollo.ThirdPartyContinueResp
+	(*GenerateTokenReq)(nil),              // 6: apollo.GenerateTokenReq
+	(*GenerateTokenResp)(nil),             // 7: apollo.GenerateTokenResp
+	(*ValidateTokenReq)(nil),              // 8: apollo.ValidateTokenReq
+	(*ValidateTokenResp)(nil),             // 9: apollo.ValidateTokenResp
+	(*PasskeysStartRegistrationReq)(nil),  // 10: apollo.PasskeysStartRegistrationReq
+	(*PasskeysStartRegistrationResp)(nil), // 11: apollo.PasskeysStartRegistrationResp
+	(*PasskeysFinishRegistrationReq)(nil), // 12: apollo.PasskeysFinishRegistrationReq
+	(*PasskeysStartLoginResp)(nil),        // 13: apollo.PasskeysStartLoginResp
+	(*PasskeysFinishLoginReq)(nil),        // 14: apollo.PasskeysFinishLoginReq
+	(*PasskeysFinishLoginResp)(nil),       // 15: apollo.PasskeysFinishLoginResp
+	(*ThirdPartyBindReq)(nil),             // 16: apollo.ThirdPartyBindReq
+	(*ThirdPartyContinueReq)(nil),         // 17: apollo.ThirdPartyContinueReq
+	(*ThirdPartyContinueResp)(nil),        // 18: apollo.ThirdPartyContinueResp
 }
 var file_apollo_rpc_proto_depIdxs = []int32{
 	1,  // 0: apollo.Account.Registration:input_type -> apollo.RegistrationReq
 	2,  // 1: apollo.Account.Login:input_type -> apollo.LoginReq
 	4,  // 2: apollo.Account.NotificationInfo:input_type -> apollo.NotificationInfoReq
-	6,  // 3: apollo.Passkeys.StartRegistration:input_type -> apollo.PasskeysStartRegistrationReq
-	8,  // 4: apollo.Passkeys.FinishRegistration:input_type -> apollo.PasskeysFinishRegistrationReq
-	0,  // 5: apollo.Passkeys.StartLogin:input_type -> apollo.Empty
-	10, // 6: apollo.Passkeys.FinishLogin:input_type -> apollo.PasskeysFinishLoginReq
-	12, // 7: apollo.ThirdParty.Bind:input_type -> apollo.ThirdPartyBindReq
-	13, // 8: apollo.ThirdParty.Continue:input_type -> apollo.ThirdPartyContinueReq
-	13, // 9: apollo.ThirdParty.HandleCallback:input_type -> apollo.ThirdPartyContinueReq
-	0,  // 10: apollo.Account.Registration:output_type -> apollo.Empty
-	3,  // 11: apollo.Account.Login:output_type -> apollo.LoginResp
-	5,  // 12: apollo.Account.NotificationInfo:output_type -> apollo.NotificationInfoResp
-	7,  // 13: apollo.Passkeys.StartRegistration:output_type -> apollo.PasskeysStartRegistrationResp
-	0,  // 14: apollo.Passkeys.FinishRegistration:output_type -> apollo.Empty
-	9,  // 15: apollo.Passkeys.StartLogin:output_type -> apollo.PasskeysStartLoginResp
-	11, // 16: apollo.Passkeys.FinishLogin:output_type -> apollo.PasskeysFinishLoginResp
-	0,  // 17: apollo.ThirdParty.Bind:output_type -> apollo.Empty
-	14, // 18: apollo.ThirdParty.Continue:output_type -> apollo.ThirdPartyContinueResp
-	14, // 19: apollo.ThirdParty.HandleCallback:output_type -> apollo.ThirdPartyContinueResp
-	10, // [10:20] is the sub-list for method output_type
-	0,  // [0:10] is the sub-list for method input_type
+	6,  // 3: apollo.Account.GenerateToken:input_type -> apollo.GenerateTokenReq
+	8,  // 4: apollo.Account.ValidateToken:input_type -> apollo.ValidateTokenReq
+	10, // 5: apollo.Passkeys.StartRegistration:input_type -> apollo.PasskeysStartRegistrationReq
+	12, // 6: apollo.Passkeys.FinishRegistration:input_type -> apollo.PasskeysFinishRegistrationReq
+	0,  // 7: apollo.Passkeys.StartLogin:input_type -> apollo.Empty
+	14, // 8: apollo.Passkeys.FinishLogin:input_type -> apollo.PasskeysFinishLoginReq
+	16, // 9: apollo.ThirdParty.Bind:input_type -> apollo.ThirdPartyBindReq
+	17, // 10: apollo.ThirdParty.Continue:input_type -> apollo.ThirdPartyContinueReq
+	17, // 11: apollo.ThirdParty.HandleCallback:input_type -> apollo.ThirdPartyContinueReq
+	0,  // 12: apollo.Account.Registration:output_type -> apollo.Empty
+	3,  // 13: apollo.Account.Login:output_type -> apollo.LoginResp
+	5,  // 14: apollo.Account.NotificationInfo:output_type -> apollo.NotificationInfoResp
+	7,  // 15: apollo.Account.GenerateToken:output_type -> apollo.GenerateTokenResp
+	9,  // 16: apollo.Account.ValidateToken:output_type -> apollo.ValidateTokenResp
+	11, // 17: apollo.Passkeys.StartRegistration:output_type -> apollo.PasskeysStartRegistrationResp
+	0,  // 18: apollo.Passkeys.FinishRegistration:output_type -> apollo.Empty
+	13, // 19: apollo.Passkeys.StartLogin:output_type -> apollo.PasskeysStartLoginResp
+	15, // 20: apollo.Passkeys.FinishLogin:output_type -> apollo.PasskeysFinishLoginResp
+	0,  // 21: apollo.ThirdParty.Bind:output_type -> apollo.Empty
+	18, // 22: apollo.ThirdParty.Continue:output_type -> apollo.ThirdPartyContinueResp
+	18, // 23: apollo.ThirdParty.HandleCallback:output_type -> apollo.ThirdPartyContinueResp
+	12, // [12:24] is the sub-list for method output_type
+	0,  // [0:12] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -950,7 +1164,7 @@ func file_apollo_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_apollo_rpc_proto_rawDesc), len(file_apollo_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   3,
 		},

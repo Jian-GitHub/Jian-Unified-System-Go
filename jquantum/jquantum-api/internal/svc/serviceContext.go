@@ -3,18 +3,21 @@ package svc
 import (
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
+	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/jquantum/jquantum-api/internal/config"
+	"jian-unified-system/jquantum/jquantum-api/internal/middleware"
 	"jian-unified-system/jquantum/jquantum-rpc/jquantum"
 	"jian-unified-system/jus-hermes/mq/rabbitMQ"
 	"time"
 )
 
 type ServiceContext struct {
-	Config         config.Config
-	KafkaWriter    *kafka.Writer
-	Producer       *rabbitMQ.Producer
-	JQuantumClient jquantum.JQuantumClient
+	Config          config.Config
+	KafkaWriter     *kafka.Writer
+	Producer        *rabbitMQ.Producer
+	JQuantumClient  jquantum.JQuantumClient
+	TokenMiddleware rest.Middleware
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -47,10 +50,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 
 	producer := rabbitMQ.NewProducer(c.RabbitMQ)
+
+	jquantumClient := jquantum.NewJQuantumClient(client.Conn())
 	return &ServiceContext{
-		Config:         c,
-		JQuantumClient: jquantum.NewJQuantumClient(client.Conn()),
-		KafkaWriter:    writer,
-		Producer:       producer,
+		Config:          c,
+		JQuantumClient:  jquantumClient,
+		KafkaWriter:     writer,
+		Producer:        producer,
+		TokenMiddleware: middleware.NewTokenMiddleware(c.SubSystem.AccessSecret, jquantumClient).Handle,
 	}
 }

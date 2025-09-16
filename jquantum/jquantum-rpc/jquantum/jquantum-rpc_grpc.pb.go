@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	JQuantum_Submit_FullMethodName         = "/apollo.JQuantum/Submit"
-	JQuantum_RetrieveResult_FullMethodName = "/apollo.JQuantum/RetrieveResult"
+	JQuantum_Submit_FullMethodName         = "/jquantum.JQuantum/Submit"
+	JQuantum_RetrieveResult_FullMethodName = "/jquantum.JQuantum/RetrieveResult"
+	JQuantum_ValidateToken_FullMethodName  = "/jquantum.JQuantum/ValidateToken"
 )
 
 // JQuantumClient is the client API for JQuantum service.
@@ -33,6 +34,7 @@ type JQuantumClient interface {
 	Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error)
 	// RetrieveResult 获取计算任务结果
 	RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error)
+	ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
 }
 
 type jQuantumClient struct {
@@ -63,6 +65,16 @@ func (c *jQuantumClient) RetrieveResult(ctx context.Context, in *RetrieveResultR
 	return out, nil
 }
 
+func (c *jQuantumClient) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateTokenResp)
+	err := c.cc.Invoke(ctx, JQuantum_ValidateToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JQuantumServer is the server API for JQuantum service.
 // All implementations must embed UnimplementedJQuantumServer
 // for forward compatibility.
@@ -73,6 +85,7 @@ type JQuantumServer interface {
 	Submit(context.Context, *SubmitReq) (*SubmitResp, error)
 	// RetrieveResult 获取计算任务结果
 	RetrieveResult(context.Context, *RetrieveResultReq) (*RetrieveResultResp, error)
+	ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error)
 	mustEmbedUnimplementedJQuantumServer()
 }
 
@@ -88,6 +101,9 @@ func (UnimplementedJQuantumServer) Submit(context.Context, *SubmitReq) (*SubmitR
 }
 func (UnimplementedJQuantumServer) RetrieveResult(context.Context, *RetrieveResultReq) (*RetrieveResultResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RetrieveResult not implemented")
+}
+func (UnimplementedJQuantumServer) ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
 }
 func (UnimplementedJQuantumServer) mustEmbedUnimplementedJQuantumServer() {}
 func (UnimplementedJQuantumServer) testEmbeddedByValue()                  {}
@@ -146,11 +162,29 @@ func _JQuantum_RetrieveResult_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JQuantum_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JQuantumServer).ValidateToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: JQuantum_ValidateToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JQuantumServer).ValidateToken(ctx, req.(*ValidateTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JQuantum_ServiceDesc is the grpc.ServiceDesc for JQuantum service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var JQuantum_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "apollo.JQuantum",
+	ServiceName: "jquantum.JQuantum",
 	HandlerType: (*JQuantumServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -160,6 +194,10 @@ var JQuantum_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RetrieveResult",
 			Handler:    _JQuantum_RetrieveResult_Handler,
+		},
+		{
+			MethodName: "ValidateToken",
+			Handler:    _JQuantum_ValidateToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

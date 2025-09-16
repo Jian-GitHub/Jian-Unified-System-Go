@@ -34,3 +34,8 @@ func (s *JQuantumServer) RetrieveResult(ctx context.Context, in *jquantum.Retrie
 	l := jquantumlogic.NewRetrieveResultLogic(ctx, s.svcCtx)
 	return l.RetrieveResult(in)
 }
+
+func (s *JQuantumServer) ValidateToken(ctx context.Context, in *jquantum.ValidateTokenReq) (*jquantum.ValidateTokenResp, error) {
+	l := jquantumlogic.NewValidateTokenLogic(ctx, s.svcCtx)
+	return l.ValidateToken(in)
+}
