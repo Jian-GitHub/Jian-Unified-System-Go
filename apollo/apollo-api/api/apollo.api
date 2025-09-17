@@ -43,6 +43,15 @@ type (
 		BaseResponse
 		LoginData {
 			Token string `json:"token"`
+			Id    string `json:"id"`
+			Name {
+				GivenName  string `json:"givenName"`
+				MiddleName string `json:"middleName"`
+				FamilyName string `json:"familyName"`
+			} `json:"name"`
+			Avatar   string `json:"avatar"`
+			Locale   string `json:"locale"`
+			Language string `json:"language"`
 		} `json:"data"`
 	}
 )
@@ -61,7 +70,7 @@ service apollo-api {
 	// 登录流程
 	@handler Login
 	// 返回: Token
-	post /login (LoginReq) returns (BaseResponse)
+	post /login (LoginReq) returns (LoginResp)
 }
 
 // Passkeys

@@ -3,7 +3,6 @@ package accountlogic
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
 	"jian-unified-system/jus-core/util"
 
@@ -34,7 +33,7 @@ func (l *LoginLogic) Login(in *apollo.LoginReq) (*apollo.LoginResp, error) {
 	if err != nil {
 		return nil, errorx.Wrap(errors.New("no user found"), "login sql err")
 	}
-	fmt.Println(user)
+	//fmt.Println(user)
 	if user == nil {
 		return nil, errorx.Wrap(errors.New("null user"), "login sql err")
 	}
@@ -43,6 +42,12 @@ func (l *LoginLogic) Login(in *apollo.LoginReq) (*apollo.LoginResp, error) {
 	}
 
 	return &apollo.LoginResp{
-		UserId: user.Id,
+		UserId:     user.Id,
+		GivenName:  user.GivenName,
+		MiddleName: user.MiddleName,
+		FamilyName: user.FamilyName,
+		Avatar:     user.Avatar.String,
+		Locale:     user.Locate,
+		Language:   user.Language,
 	}, nil
 }

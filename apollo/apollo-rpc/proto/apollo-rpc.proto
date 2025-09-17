@@ -24,6 +24,12 @@ message LoginReq {
 
 message LoginResp {
   int64 user_id = 1;
+  string given_name = 2;
+  string middle_name = 3;
+  string family_name = 4;
+  string avatar = 5;
+  string locale = 6;
+  string language = 7;
 }
 
 // ========== 用户信息 ==========

@@ -102,6 +102,15 @@ type LoginResp struct {
 	BaseResponse
 	LoginData struct {
 		Token string `json:"token"`
+		Id    string `json:"id"`
+		Name  struct {
+			GivenName  string `json:"givenName"`
+			MiddleName string `json:"middleName"`
+			FamilyName string `json:"familyName"`
+		} `json:"name"`
+		Avatar   string `json:"avatar"`
+		Locale   string `json:"locale"`
+		Language string `json:"language"`
 	} `json:"data"`
 }
 

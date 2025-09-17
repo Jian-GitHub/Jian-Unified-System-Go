@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
-	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/util"
-	"net/http"
+	"strconv"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
@@ -29,8 +28,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 	}
 }
 
-func (l *LoginLogic) Login(req *types.LoginReq, r *http.Request) (resp *types.LoginResp, err error) {
-	// todo: add your logic here and delete this line
+func (l *LoginLogic) Login(req *types.LoginReq /*, r *http.Request*/) (resp *types.LoginResp, err error) {
 	// Check params
 	if len(req.Email) == 0 || len(req.Password) == 0 {
 		return &types.LoginResp{
@@ -38,15 +36,10 @@ func (l *LoginLogic) Login(req *types.LoginReq, r *http.Request) (resp *types.Lo
 				Code:    -1,
 				Message: "params",
 			},
-			LoginData: struct {
-				Token string `json:"token"`
-			}{
-				Token: "",
-			},
 		}, errorx.Wrap(err, "params")
 	}
-	println(apolloUtil.GetRealIP(r))
-	println(apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup))
+	//println(apolloUtil.GetRealIP(r))
+	//println(apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup))
 
 	// Login
 	loginResp, err := l.svcCtx.ApolloAccount.Login(l.ctx, &apollo.LoginReq{
@@ -73,8 +66,30 @@ func (l *LoginLogic) Login(req *types.LoginReq, r *http.Request) (resp *types.Lo
 		},
 		LoginData: struct {
 			Token string `json:"token"`
+			Id    string `json:"id"`
+			Name  struct {
+				GivenName  string `json:"givenName"`
+				MiddleName string `json:"middleName"`
+				FamilyName string `json:"familyName"`
+			} `json:"name"`
+			Avatar   string `json:"avatar"`
+			Locale   string `json:"locale"`
+			Language string `json:"language"`
 		}{
 			Token: token,
+			Id:    strconv.FormatInt(loginResp.UserId, 10),
+			Name: struct {
+				GivenName  string `json:"givenName"`
+				MiddleName string `json:"middleName"`
+				FamilyName string `json:"familyName"`
+			}{
+				GivenName:  loginResp.GivenName,
+				MiddleName: loginResp.MiddleName,
+				FamilyName: loginResp.FamilyName,
+			},
+			Avatar:   loginResp.Avatar,
+			Locale:   loginResp.Locale,
+			Language: loginResp.Language,
 		},
 	}, nil
 }
