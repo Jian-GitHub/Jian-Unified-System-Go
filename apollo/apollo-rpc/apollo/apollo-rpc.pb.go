@@ -197,6 +197,9 @@ type LoginResp struct {
 	Avatar        string                 `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	Locale        string                 `protobuf:"bytes,6,opt,name=locale,proto3" json:"locale,omitempty"`
 	Language      string                 `protobuf:"bytes,7,opt,name=language,proto3" json:"language,omitempty"`
+	BirthdayYear  int64                  `protobuf:"varint,8,opt,name=birthday_year,json=birthdayYear,proto3" json:"birthday_year,omitempty"`
+	BirthdayMonth int64                  `protobuf:"varint,9,opt,name=birthday_month,json=birthdayMonth,proto3" json:"birthday_month,omitempty"`
+	BirthdayDay   int64                  `protobuf:"varint,10,opt,name=birthday_day,json=birthdayDay,proto3" json:"birthday_day,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -278,6 +281,27 @@ func (x *LoginResp) GetLanguage() string {
 		return x.Language
 	}
 	return ""
+}
+
+func (x *LoginResp) GetBirthdayYear() int64 {
+	if x != nil {
+		return x.BirthdayYear
+	}
+	return 0
+}
+
+func (x *LoginResp) GetBirthdayMonth() int64 {
+	if x != nil {
+		return x.BirthdayMonth
+	}
+	return 0
+}
+
+func (x *LoginResp) GetBirthdayDay() int64 {
+	if x != nil {
+		return x.BirthdayDay
+	}
+	return 0
 }
 
 // ========== 用户信息 ==========
@@ -1069,7 +1093,7 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\blanguage\x18\x05 \x01(\tR\blanguage\"<\n" +
 	"\bLoginReq\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xd1\x01\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xc0\x02\n" +
 	"\tLoginResp\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1d\n" +
 	"\n" +
@@ -1080,7 +1104,11 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"familyName\x12\x16\n" +
 	"\x06avatar\x18\x05 \x01(\tR\x06avatar\x12\x16\n" +
 	"\x06locale\x18\x06 \x01(\tR\x06locale\x12\x1a\n" +
-	"\blanguage\x18\a \x01(\tR\blanguage\"&\n" +
+	"\blanguage\x18\a \x01(\tR\blanguage\x12#\n" +
+	"\rbirthday_year\x18\b \x01(\x03R\fbirthdayYear\x12%\n" +
+	"\x0ebirthday_month\x18\t \x01(\x03R\rbirthdayMonth\x12!\n" +
+	"\fbirthday_day\x18\n" +
+	" \x01(\x03R\vbirthdayDay\"&\n" +
 	"\vUserInfoReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"-\n" +
 	"\fUserInfoResp\x12\x1d\n" +

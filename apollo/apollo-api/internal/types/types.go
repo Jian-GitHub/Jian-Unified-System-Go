@@ -64,19 +64,19 @@ type GetUserInfoReq struct {
 type GetUserInfoResp struct {
 	BaseResponse
 	GetUserInfoData struct {
-		Id                int64  `db:"id"`
-		GivenName         string `db:"given_name"`
-		MiddleName        string `db:"middle_name"`
-		FamilyName        string `db:"family_name"`
-		Avatar            string `db:"avatar"`
-		BirthdayYear      int64  `db:"birthday_year"`
-		BirthdayMonth     int64  `db:"birthday_month"`
-		BirthdayDay       int64  `db:"birthday_day"`
-		NotificationEmail string `db:"notification_email"`
-		Locate            string `db:"locate"`
-		Language          string `db:"language"`
-		CreateTime        string `db:"create_time"`
-		LastLoginTime     string `db:"last_login_time"`
+		Id                string `json:"id"`
+		GivenName         string `json:"given_name"`
+		MiddleName        string `json:"middle_name"`
+		FamilyName        string `json:"family_name"`
+		Avatar            string `json:"avatar"`
+		BirthdayYear      int64  `json:"birthday_year"`
+		BirthdayMonth     int64  `json:"birthday_month"`
+		BirthdayDay       int64  `json:"birthday_day"`
+		NotificationEmail string `json:"notification_email"`
+		Locate            string `json:"locate"`
+		Language          string `json:"language"`
+		CreateTime        string `json:"create_time"`
+		LastLoginTime     string `json:"last_login_time"`
 	} `json:"data"`
 }
 
@@ -111,6 +111,11 @@ type LoginResp struct {
 		Avatar   string `json:"avatar"`
 		Locale   string `json:"locale"`
 		Language string `json:"language"`
+		Birthday struct {
+			Year  int64 `json:"year"`
+			Month int64 `json:"month"`
+			Day   int64 `json:"day"`
+		} `json:"birthday"`
 	} `json:"data"`
 }
 

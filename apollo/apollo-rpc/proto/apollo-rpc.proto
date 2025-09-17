@@ -30,6 +30,9 @@ message LoginResp {
   string avatar = 5;
   string locale = 6;
   string language = 7;
+  int64 birthday_year = 8;
+  int64 birthday_month = 9;
+  int64 birthday_day = 10;
 }
 
 // ========== 用户信息 ==========

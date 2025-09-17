@@ -75,6 +75,11 @@ func (l *LoginLogic) Login(req *types.LoginReq /*, r *http.Request*/) (resp *typ
 			Avatar   string `json:"avatar"`
 			Locale   string `json:"locale"`
 			Language string `json:"language"`
+			Birthday struct {
+				Year  int64 `json:"year"`
+				Month int64 `json:"month"`
+				Day   int64 `json:"day"`
+			} `json:"birthday"`
 		}{
 			Token: token,
 			Id:    strconv.FormatInt(loginResp.UserId, 10),
@@ -90,6 +95,15 @@ func (l *LoginLogic) Login(req *types.LoginReq /*, r *http.Request*/) (resp *typ
 			Avatar:   loginResp.Avatar,
 			Locale:   loginResp.Locale,
 			Language: loginResp.Language,
+			Birthday: struct {
+				Year  int64 `json:"year"`
+				Month int64 `json:"month"`
+				Day   int64 `json:"day"`
+			}{
+				Year:  loginResp.BirthdayYear,
+				Month: loginResp.BirthdayMonth,
+				Day:   loginResp.BirthdayDay,
+			},
 		},
 	}, nil
 }

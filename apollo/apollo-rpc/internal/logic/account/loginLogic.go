@@ -42,12 +42,15 @@ func (l *LoginLogic) Login(in *apollo.LoginReq) (*apollo.LoginResp, error) {
 	}
 
 	return &apollo.LoginResp{
-		UserId:     user.Id,
-		GivenName:  user.GivenName,
-		MiddleName: user.MiddleName,
-		FamilyName: user.FamilyName,
-		Avatar:     user.Avatar.String,
-		Locale:     user.Locate,
-		Language:   user.Language,
+		UserId:        user.Id,
+		GivenName:     user.GivenName,
+		MiddleName:    user.MiddleName,
+		FamilyName:    user.FamilyName,
+		Avatar:        user.Avatar.String,
+		Locale:        user.Locate,
+		Language:      user.Language,
+		BirthdayYear:  user.BirthdayYear.Int64,
+		BirthdayMonth: user.BirthdayMonth.Int64,
+		BirthdayDay:   user.BirthdayDay.Int64,
 	}, nil
 }

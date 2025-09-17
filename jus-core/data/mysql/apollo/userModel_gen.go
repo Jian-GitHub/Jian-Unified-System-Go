@@ -28,9 +28,9 @@ var (
 	cacheApolloUserIdPrefix = "cache:apollo:user:id:"
 
 	// UserInfo
-	userInfoFieldNames = builder.RawFieldNames(&UserInfo{})
-	userInfoRows       = strings.Join(userInfoFieldNames, ",")
-	//cacheApolloUserInfoIdPrefix = "cache:apollo:user:notification:"
+	userInfoFieldNames          = builder.RawFieldNames(&UserInfo{})
+	userInfoRows                = strings.Join(userInfoFieldNames, ",")
+	cacheApolloUserInfoIdPrefix = "cache:apollo:userInfo:userId:"
 )
 
 type (
@@ -119,8 +119,8 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error)
 }
 
 func (m *defaultUserModel) FindOneUserInfo(ctx context.Context, id int64) (*UserInfo, error) {
-	//apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserNotificationInfoIdPrefix, id)
-	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, id)
+	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserInfoIdPrefix, id)
+	//apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, id)
 	var resp UserInfo
 	err := m.QueryRowCtx(ctx, &resp, apolloUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userInfoRows, m.table)
@@ -140,7 +140,7 @@ func (m *defaultUserModel) FindOneByEmail(ctx context.Context, email string) (*U
 	apolloUserIdKey := fmt.Sprintf("%s%v", cacheApolloUserIdPrefix, email)
 	var resp User
 	err := m.QueryRowCtx(ctx, &resp, apolloUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `email` = ? limit 1", userRows, m.table)
+		query := fmt.Sprintf("select `password` from %s where `email` = ? limit 1", userRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, email)
 	})
 	switch err {
