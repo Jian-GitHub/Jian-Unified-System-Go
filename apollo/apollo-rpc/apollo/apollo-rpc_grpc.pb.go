@@ -682,21 +682,24 @@ const (
 	Security_GenerateSubsystemToken_FullMethodName = "/apollo.Security/GenerateSubsystemToken"
 	Security_ValidateSubsystemToken_FullMethodName = "/apollo.Security/ValidateSubsystemToken"
 	Security_RemoveSubsystemToken_FullMethodName   = "/apollo.Security/RemoveSubsystemToken"
+	Security_FindTenSubsystemTokens_FullMethodName = "/apollo.Security/FindTenSubsystemTokens"
 )
 
 // SecurityClient is the client API for Security service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SecurityClient interface {
-	// 生成子系统令牌
+	// GenerateSubsystemToken 生成子系统令牌
 	// GenerateSubsystemToken 生成可调用子系统的令牌
 	GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error)
-	// 验证子系统令牌
+	// ValidateSubsystemToken 验证子系统令牌
 	// ValidateToken 验证可调用子系统的令牌
 	ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error)
-	// 移除子系统令牌
+	// RemoveSubsystemToken 移除子系统令牌
 	// RemoveSubsystemToken 验证可调用子系统的令牌
 	RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error)
+	// FindTenSubsystemTokens 查询 10 个子系统令牌
+	FindTenSubsystemTokens(ctx context.Context, in *FindTenSubsystemTokensReq, opts ...grpc.CallOption) (*FindTenSubsystemTokensResp, error)
 }
 
 type securityClient struct {
@@ -737,19 +740,31 @@ func (c *securityClient) RemoveSubsystemToken(ctx context.Context, in *RemoveSub
 	return out, nil
 }
 
+func (c *securityClient) FindTenSubsystemTokens(ctx context.Context, in *FindTenSubsystemTokensReq, opts ...grpc.CallOption) (*FindTenSubsystemTokensResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindTenSubsystemTokensResp)
+	err := c.cc.Invoke(ctx, Security_FindTenSubsystemTokens_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SecurityServer is the server API for Security service.
 // All implementations must embed UnimplementedSecurityServer
 // for forward compatibility.
 type SecurityServer interface {
-	// 生成子系统令牌
+	// GenerateSubsystemToken 生成子系统令牌
 	// GenerateSubsystemToken 生成可调用子系统的令牌
 	GenerateSubsystemToken(context.Context, *GenerateSubsystemTokenReq) (*GenerateSubsystemTokenResp, error)
-	// 验证子系统令牌
+	// ValidateSubsystemToken 验证子系统令牌
 	// ValidateToken 验证可调用子系统的令牌
 	ValidateSubsystemToken(context.Context, *ValidateSubsystemTokenReq) (*ValidateSubsystemTokenResp, error)
-	// 移除子系统令牌
+	// RemoveSubsystemToken 移除子系统令牌
 	// RemoveSubsystemToken 验证可调用子系统的令牌
 	RemoveSubsystemToken(context.Context, *RemoveSubsystemTokenReq) (*RemoveSubsystemTokenResp, error)
+	// FindTenSubsystemTokens 查询 10 个子系统令牌
+	FindTenSubsystemTokens(context.Context, *FindTenSubsystemTokensReq) (*FindTenSubsystemTokensResp, error)
 	mustEmbedUnimplementedSecurityServer()
 }
 
@@ -768,6 +783,9 @@ func (UnimplementedSecurityServer) ValidateSubsystemToken(context.Context, *Vali
 }
 func (UnimplementedSecurityServer) RemoveSubsystemToken(context.Context, *RemoveSubsystemTokenReq) (*RemoveSubsystemTokenResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveSubsystemToken not implemented")
+}
+func (UnimplementedSecurityServer) FindTenSubsystemTokens(context.Context, *FindTenSubsystemTokensReq) (*FindTenSubsystemTokensResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindTenSubsystemTokens not implemented")
 }
 func (UnimplementedSecurityServer) mustEmbedUnimplementedSecurityServer() {}
 func (UnimplementedSecurityServer) testEmbeddedByValue()                  {}
@@ -844,6 +862,24 @@ func _Security_RemoveSubsystemToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Security_FindTenSubsystemTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindTenSubsystemTokensReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SecurityServer).FindTenSubsystemTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Security_FindTenSubsystemTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SecurityServer).FindTenSubsystemTokens(ctx, req.(*FindTenSubsystemTokensReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Security_ServiceDesc is the grpc.ServiceDesc for Security service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -862,6 +898,10 @@ var Security_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveSubsystemToken",
 			Handler:    _Security_RemoveSubsystemToken_Handler,
+		},
+		{
+			MethodName: "FindTenSubsystemTokens",
+			Handler:    _Security_FindTenSubsystemTokens_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

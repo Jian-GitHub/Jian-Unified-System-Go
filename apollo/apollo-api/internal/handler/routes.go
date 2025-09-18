@@ -63,6 +63,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/GetTenSubsystemTokens",
+				Handler: accountsecurity.GetTenSubsystemTokensHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/RemoveSubsystemToken",
 				Handler: accountsecurity.RemoveSubsystemTokenHandler(serverCtx),
 			},

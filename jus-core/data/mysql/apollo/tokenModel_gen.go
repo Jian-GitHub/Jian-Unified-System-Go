@@ -91,11 +91,9 @@ func (m *defaultTokenModel) FindOne(ctx context.Context, id int64, userId int64)
 func (m *defaultTokenModel) FindBatch(ctx context.Context, userId int64, page int64) (*[]Token, error) {
 	//apolloTokenIdKey := fmt.Sprintf("%s%v", cacheApolloTokenIdPrefix, id)
 	var resp []Token
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, "", func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		offset := (page - 1) * 10
-		query := fmt.Sprintf("select %s from %s where `user_id` = ? and `is_deleted` = 0 limit 10 OFFSET ?", tokenRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, userId, offset)
-	})
+	offset := (page - 1) * 10
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? and `is_enabled` = 1 and `is_deleted` = 0 ORDER BY `create_time` DESC limit 10 OFFSET ?", tokenRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, userId, offset)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -108,16 +106,16 @@ func (m *defaultTokenModel) FindBatch(ctx context.Context, userId int64, page in
 
 func (m *defaultTokenModel) CountTokens(ctx context.Context, userId int64) (int64, error) {
 	var resp int64
-	query := fmt.Sprintf("select COUNT(`id`) from %s where `user_id` = ? and `is_deleted` = 0 limit 1", m.table)
+	query := fmt.Sprintf("select COUNT(`id`) from %s where `user_id` = ? and `is_enabled` = 1 and `is_deleted` = 0 limit 1", m.table)
 	err := m.QueryRowNoCacheCtx(ctx, &resp, query, userId)
 
 	switch err {
 	case nil:
-		return 0, nil
+		return resp, nil
 	case sqlc.ErrNotFound:
 		return 0, model.ErrNotFound
 	default:
-		return resp, err
+		return 0, err
 	}
 }
 

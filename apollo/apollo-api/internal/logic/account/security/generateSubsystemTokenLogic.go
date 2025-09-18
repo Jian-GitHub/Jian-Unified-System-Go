@@ -73,8 +73,6 @@ func (l *GenerateSubsystemTokenLogic) GenerateSubsystemToken(req *types.Generate
 		}, errorx.Wrap(errors.New("scope"), "caller err")
 	}
 
-	fmt.Println("进入")
-
 	rpcResp, err := l.svcCtx.ApolloSecurity.GenerateSubsystemToken(l.ctx, &apollo.GenerateSubsystemTokenReq{
 		UserId: id,
 		Name:   name,
@@ -91,28 +89,21 @@ func (l *GenerateSubsystemTokenLogic) GenerateSubsystemToken(req *types.Generate
 
 	return &types.GenerateSubsystemTokenResp{
 		BaseResponse: types.BaseResponse{
-			Code:    0,
+			Code:    200,
 			Message: "success",
 		},
 		GenerateSubsystemTokenData: struct {
-			Token string `json:"token"`
-			Name  string `json:"name"`
-			Date  struct {
-				Year  int64 `json:"year"`
-				Month int64 `json:"month"`
-				Day   int64 `json:"day"`
-			} `json:"date"`
+			Token types.SubsystemToken `json:"token"`
 		}{
-			Token: rpcResp.Token,
-			Name:  rpcResp.Name,
-			Date: struct {
-				Year  int64 `json:"year"`
-				Month int64 `json:"month"`
-				Day   int64 `json:"day"`
-			}{
-				Year:  rpcResp.Year,
-				Month: rpcResp.Month,
-				Day:   rpcResp.Day,
+			Token: types.SubsystemToken{
+				Id:    rpcResp.Token.Id,
+				Value: rpcResp.Token.Value,
+				Name:  rpcResp.Token.Name,
+				Date: types.RespnseDate{
+					Year:  rpcResp.Token.Year,
+					Month: rpcResp.Token.Month,
+					Day:   rpcResp.Token.Day,
+				},
 			},
 		},
 	}, nil

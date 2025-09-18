@@ -16,6 +16,11 @@ type (
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 	}
+	RespnseDate {
+		Year  int64 `json:"year"`
+		Month int64 `json:"month"`
+		Day   int64 `json:"day"`
+	}
 )
 
 // Account
@@ -242,6 +247,12 @@ service apollo-api {
 
 // User Account Security
 type (
+	SubsystemToken {
+		Id    string      `json:"id"`
+		Value string      `json:"value"`
+		Name  string      `json:"name"`
+		Date  RespnseDate `json:"date"`
+	}
 	// 生成令牌
 	GenerateSubsystemTokenReq {
 		Name  string  `json:"name"`
@@ -250,13 +261,17 @@ type (
 	GenerateSubsystemTokenResp {
 		BaseResponse
 		GenerateSubsystemTokenData {
-			Token string `json:"token"`
-			Name  string `json:"name"`
-			Date {
-				Year  int64 `json:"year"`
-				Month int64 `json:"month"`
-				Day   int64 `json:"day"`
-			} `json:"date"`
+			Token SubsystemToken `json:"token"`
+		} `json:"data"`
+	}
+	// 查询 10 个子系统令牌
+	GetTenSubsystemTokensReq {
+		Page int64 `json:"page"`
+	}
+	GetTenSubsystemTokensResp {
+		BaseResponse
+		GetAllSubsystemTokensData {
+			Tokens []SubsystemToken `json:"tokens"`
 		} `json:"data"`
 	}
 	// 移除令牌
@@ -285,6 +300,11 @@ service apollo-api {
 	@handler RemoveSubsystemToken
 	// 返回: ok
 	post /RemoveSubsystemToken (RemoveSubsystemTokenReq) returns (RemoveSubsystemTokenResp)
+
+	// Get 10 Subsystem Tokens
+	@handler GetTenSubsystemTokens
+	// 返回: ok
+	post /GetTenSubsystemTokens (GetTenSubsystemTokensReq) returns (GetTenSubsystemTokensResp)
 }
 
 // Third Party

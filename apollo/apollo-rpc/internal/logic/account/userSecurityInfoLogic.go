@@ -120,60 +120,6 @@ func (l *UserSecurityInfoLogic) UserSecurityInfo(in *apollo.UserSecurityInfoReq)
 		}
 	}
 
-	//// contacts
-	//contacts, err := l.svcCtx.ContactModel.FindByUserID(l.ctx, in.UserId)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//securityContacts := make([]*apollo.UserContact, 0, len(contacts))
-	//for index, contact := range contacts {
-	//	securityContacts[index] = &apollo.UserContact{
-	//		Id:          strconv.FormatInt(contact.Id, 10),
-	//		Value:       contact.Value,
-	//		Type:        contact.Type,
-	//		PhoneRegion: contact.PhoneRegion,
-	//	}
-	//}
-	//
-	//// pwd updated time
-	//var updatedDate *apollo.PasswordUpdatedDate
-	//passwordUpdateTime, err = l.svcCtx.UserModel.FindPasswordUpdateTime(l.ctx, in.UserId)
-	//if err != nil {
-	//	return nil, err
-	//} else if passwordUpdateTime != nil {
-	//	updatedDate = &apollo.PasswordUpdatedDate{
-	//		Year: int64(passwordUpdateTime.PasswordUpdateTime.Year()),
-	//	}
-	//}
-	//
-	//// AccountSecurityTokenNum
-	//tokenNum, err := l.svcCtx.TokenModel.CountTokens(l.ctx, in.UserId)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//// PasskeysNum
-	//passkeysNum, err := l.svcCtx.PasskeyModel.CountPasskeys(l.ctx, in.UserId)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//// ThirdPartyAccounts
-	//var thirdPartyAccounts *apollo.ThirdPartyAccounts
-	//thirdParties, err := l.svcCtx.ThirdPartyModel.FindBatch(l.ctx, in.UserId)
-	//if err != nil {
-	//	return nil, err
-	//} else if thirdParties != nil {
-	//	for _, thirdParty := range thirdParties {
-	//		switch thirdParty.Provider {
-	//		case oauth2.ProviderGithub:
-	//			thirdPartyAccounts.Github = true
-	//		case oauth2.ProviderGoogle:
-	//			thirdPartyAccounts.Google = true
-	//		}
-	//	}
-	//}
-
 	return &apollo.UserSecurityInfoResp{
 		Contacts:                securityContacts,
 		PasswordUpdatedDate:     updatedDate,

@@ -23,20 +23,26 @@ func NewSecurityServer(svcCtx *svc.ServiceContext) *SecurityServer {
 	}
 }
 
-// 生成子系统令牌
+// GenerateSubsystemToken 生成子系统令牌
 func (s *SecurityServer) GenerateSubsystemToken(ctx context.Context, in *apollo.GenerateSubsystemTokenReq) (*apollo.GenerateSubsystemTokenResp, error) {
 	l := securitylogic.NewGenerateSubsystemTokenLogic(ctx, s.svcCtx)
 	return l.GenerateSubsystemToken(in)
 }
 
-// 验证子系统令牌
+// ValidateSubsystemToken 验证子系统令牌
 func (s *SecurityServer) ValidateSubsystemToken(ctx context.Context, in *apollo.ValidateSubsystemTokenReq) (*apollo.ValidateSubsystemTokenResp, error) {
 	l := securitylogic.NewValidateSubsystemTokenLogic(ctx, s.svcCtx)
 	return l.ValidateSubsystemToken(in)
 }
 
-// 移除子系统令牌
+// RemoveSubsystemToken 移除子系统令牌
 func (s *SecurityServer) RemoveSubsystemToken(ctx context.Context, in *apollo.RemoveSubsystemTokenReq) (*apollo.RemoveSubsystemTokenResp, error) {
 	l := securitylogic.NewRemoveSubsystemTokenLogic(ctx, s.svcCtx)
 	return l.RemoveSubsystemToken(in)
+}
+
+// FindTenSubsystemTokens 查询 10 个子系统令牌
+func (s *SecurityServer) FindTenSubsystemTokens(ctx context.Context, in *apollo.FindTenSubsystemTokensReq) (*apollo.FindTenSubsystemTokensResp, error) {
+	l := securitylogic.NewFindTenSubsystemTokensLogic(ctx, s.svcCtx)
+	return l.FindTenSubsystemTokens(in)
 }

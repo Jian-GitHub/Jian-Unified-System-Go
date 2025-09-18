@@ -15,6 +15,8 @@ import (
 
 type (
 	Empty                         = apollo.Empty
+	FindTenSubsystemTokensReq     = apollo.FindTenSubsystemTokensReq
+	FindTenSubsystemTokensResp    = apollo.FindTenSubsystemTokensResp
 	GenerateSubsystemTokenReq     = apollo.GenerateSubsystemTokenReq
 	GenerateSubsystemTokenResp    = apollo.GenerateSubsystemTokenResp
 	LoginReq                      = apollo.LoginReq
@@ -29,6 +31,7 @@ type (
 	RegistrationReq               = apollo.RegistrationReq
 	RemoveSubsystemTokenReq       = apollo.RemoveSubsystemTokenReq
 	RemoveSubsystemTokenResp      = apollo.RemoveSubsystemTokenResp
+	SubsystemToken                = apollo.SubsystemToken
 	ThirdPartyAccounts            = apollo.ThirdPartyAccounts
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq

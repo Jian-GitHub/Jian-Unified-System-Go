@@ -59,8 +59,8 @@ func (l *GetUserSecurityInfoLogic) GetUserSecurityInfo( /*req *types.GetUserSecu
 	var year, month, day int64
 	if securityInfo.PasswordUpdatedDate != nil {
 		year = securityInfo.PasswordUpdatedDate.Year
-		month = securityInfo.PasswordUpdatedDate.Year
-		day = securityInfo.PasswordUpdatedDate.Year
+		month = securityInfo.PasswordUpdatedDate.Month
+		day = securityInfo.PasswordUpdatedDate.Day
 	}
 
 	return &types.GetUserSecurityInfoResp{

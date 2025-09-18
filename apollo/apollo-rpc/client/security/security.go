@@ -15,6 +15,8 @@ import (
 
 type (
 	Empty                         = apollo.Empty
+	FindTenSubsystemTokensReq     = apollo.FindTenSubsystemTokensReq
+	FindTenSubsystemTokensResp    = apollo.FindTenSubsystemTokensResp
 	GenerateSubsystemTokenReq     = apollo.GenerateSubsystemTokenReq
 	GenerateSubsystemTokenResp    = apollo.GenerateSubsystemTokenResp
 	LoginReq                      = apollo.LoginReq
@@ -29,6 +31,7 @@ type (
 	RegistrationReq               = apollo.RegistrationReq
 	RemoveSubsystemTokenReq       = apollo.RemoveSubsystemTokenReq
 	RemoveSubsystemTokenResp      = apollo.RemoveSubsystemTokenResp
+	SubsystemToken                = apollo.SubsystemToken
 	ThirdPartyAccounts            = apollo.ThirdPartyAccounts
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
@@ -42,12 +45,14 @@ type (
 	ValidateSubsystemTokenResp    = apollo.ValidateSubsystemTokenResp
 
 	Security interface {
-		// 生成子系统令牌
+		// GenerateSubsystemToken 生成子系统令牌
 		GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error)
-		// 验证子系统令牌
+		// ValidateSubsystemToken 验证子系统令牌
 		ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error)
-		// 移除子系统令牌
+		// RemoveSubsystemToken 移除子系统令牌
 		RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error)
+		// FindTenSubsystemTokens 查询 10 个子系统令牌
+		FindTenSubsystemTokens(ctx context.Context, in *FindTenSubsystemTokensReq, opts ...grpc.CallOption) (*FindTenSubsystemTokensResp, error)
 	}
 
 	defaultSecurity struct {
@@ -61,20 +66,26 @@ func NewSecurity(cli zrpc.Client) Security {
 	}
 }
 
-// 生成子系统令牌
+// GenerateSubsystemToken 生成子系统令牌
 func (m *defaultSecurity) GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error) {
 	client := apollo.NewSecurityClient(m.cli.Conn())
 	return client.GenerateSubsystemToken(ctx, in, opts...)
 }
 
-// 验证子系统令牌
+// ValidateSubsystemToken 验证子系统令牌
 func (m *defaultSecurity) ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error) {
 	client := apollo.NewSecurityClient(m.cli.Conn())
 	return client.ValidateSubsystemToken(ctx, in, opts...)
 }
 
-// 移除子系统令牌
+// RemoveSubsystemToken 移除子系统令牌
 func (m *defaultSecurity) RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error) {
 	client := apollo.NewSecurityClient(m.cli.Conn())
 	return client.RemoveSubsystemToken(ctx, in, opts...)
+}
+
+// FindTenSubsystemTokens 查询 10 个子系统令牌
+func (m *defaultSecurity) FindTenSubsystemTokens(ctx context.Context, in *FindTenSubsystemTokensReq, opts ...grpc.CallOption) (*FindTenSubsystemTokensResp, error) {
+	client := apollo.NewSecurityClient(m.cli.Conn())
+	return client.FindTenSubsystemTokens(ctx, in, opts...)
 }

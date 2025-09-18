@@ -8,6 +8,7 @@ import (
 	ap "jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/system"
 	"jian-unified-system/jus-core/util"
+	"strconv"
 	"time"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
@@ -73,10 +74,13 @@ func (l *GenerateSubsystemTokenLogic) GenerateSubsystemToken(in *apollo.Generate
 
 	now := time.Now()
 	return &apollo.GenerateSubsystemTokenResp{
-		Token: token,
-		Name:  in.Name,
-		Year:  int64(now.Year()),
-		Month: int64(now.Month()),
-		Day:   int64(now.Day()),
+		Token: &apollo.SubsystemToken{
+			Id:    strconv.FormatInt(tokenId, 10),
+			Value: token,
+			Name:  in.Name,
+			Year:  int64(now.Year()),
+			Month: int64(now.Month()),
+			Day:   int64(now.Day()),
+		},
 	}, nil
 }

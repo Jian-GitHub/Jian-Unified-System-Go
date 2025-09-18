@@ -54,13 +54,18 @@ type GenerateSubsystemTokenReq struct {
 type GenerateSubsystemTokenResp struct {
 	BaseResponse
 	GenerateSubsystemTokenData struct {
-		Token string `json:"token"`
-		Name  string `json:"name"`
-		Date  struct {
-			Year  int64 `json:"year"`
-			Month int64 `json:"month"`
-			Day   int64 `json:"day"`
-		} `json:"date"`
+		Token SubsystemToken `json:"token"`
+	} `json:"data"`
+}
+
+type GetTenSubsystemTokensReq struct {
+	Page int64 `json:"page"`
+}
+
+type GetTenSubsystemTokensResp struct {
+	BaseResponse
+	GetAllSubsystemTokensData struct {
+		Tokens []SubsystemToken `json:"tokens"`
 	} `json:"data"`
 }
 
@@ -203,6 +208,19 @@ type RemoveSubsystemTokenResp struct {
 	RemoveSubsystemTokenData struct {
 		Ok bool `json:"ok"`
 	} `json:"data"`
+}
+
+type RespnseDate struct {
+	Year  int64 `json:"year"`
+	Month int64 `json:"month"`
+	Day   int64 `json:"day"`
+}
+
+type SubsystemToken struct {
+	Id    string      `json:"id"`
+	Value string      `json:"value"`
+	Name  string      `json:"name"`
+	Date  RespnseDate `json:"date"`
 }
 
 type UserContact struct {
