@@ -46,15 +46,21 @@ type ContinueResp struct {
 type Empty struct {
 }
 
-type GenerateTokenReq struct {
+type GenerateSubsystemTokenReq struct {
 	Name  string  `json:"name"`
 	Scope []int64 `json:"scope" validate:"required"`
 }
 
-type GenerateTokenResp struct {
+type GenerateSubsystemTokenResp struct {
 	BaseResponse
-	GenerateTokenData struct {
+	GenerateSubsystemTokenData struct {
 		Token string `json:"token"`
+		Name  string `json:"name"`
+		Date  struct {
+			Year  int64 `json:"year"`
+			Month int64 `json:"month"`
+			Day   int64 `json:"day"`
+		} `json:"date"`
 	} `json:"data"`
 }
 
@@ -77,6 +83,27 @@ type GetUserInfoResp struct {
 		Language          string `json:"language"`
 		CreateTime        string `json:"create_time"`
 		LastLoginTime     string `json:"last_login_time"`
+	} `json:"data"`
+}
+
+type GetUserSecurityInfoReq struct {
+}
+
+type GetUserSecurityInfoResp struct {
+	BaseResponse
+	GetUserSecurityInfoData struct {
+		Contacts            []UserContact `json:"contacts"`
+		PasswordUpdatedDate struct {
+			Year  int64 `json:"year"`
+			Month int64 `json:"month"`
+			Day   int64 `json:"day"`
+		} `json:"passwordUpdatedDate"`
+		AccountSecurityTokenNum int64 `json:"accountSecurityTokenNum"`
+		PasskeysNum             int64 `json:"passkeysNum"`
+		ThirdPartyAccounts      struct {
+			Github bool `json:"github"`
+			Google bool `json:"google"`
+		} `json:"thirdPartyAccounts"`
 	} `json:"data"`
 }
 
@@ -165,6 +192,24 @@ type RegStartResp struct {
 		OptionsJson string `json:"options_json"` // WebAuthn注册选项
 		SessionID   string `json:"session_id"`   // 会话标识
 	} `json:"data"`
+}
+
+type RemoveSubsystemTokenReq struct {
+	Id int64 `json:"id" validate:"required`
+}
+
+type RemoveSubsystemTokenResp struct {
+	BaseResponse
+	RemoveSubsystemTokenData struct {
+		Ok bool `json:"ok"`
+	} `json:"data"`
+}
+
+type UserContact struct {
+	Id          string `json:"id"`
+	Value       string `json:"value"`
+	Type        int64  `json:"type"`
+	PhoneRegion string `json:"phoneRegion"`
 }
 
 type VerifyTokenReq struct {

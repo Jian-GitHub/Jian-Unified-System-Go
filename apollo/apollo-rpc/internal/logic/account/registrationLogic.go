@@ -8,6 +8,7 @@ import (
 	"github.com/zeromicro/go-zero/core/jsonx"
 	ap "jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/util"
+	"time"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -71,6 +72,10 @@ func (l *RegistrationLogic) Registration(in *apollo.RegistrationReq) (*apollo.Em
 		Id:       in.UserId,
 		Email:    email,
 		Password: pwd,
+		PasswordUpdateTime: sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		},
 		Locate:   in.Locate,
 		Language: in.Language,
 		NotificationEmail: sql.NullString{

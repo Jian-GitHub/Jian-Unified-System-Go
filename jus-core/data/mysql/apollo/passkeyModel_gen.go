@@ -32,6 +32,7 @@ type (
 	passkeyModel interface {
 		Insert(ctx context.Context, data *Passkey) (sql.Result, error)
 		FindOne(ctx context.Context, credentialId string) (*Passkey, error)
+		CountPasskeys(ctx context.Context, userId int64) (int64, error)
 		Update(ctx context.Context, data *Passkey) error
 		Delete(ctx context.Context, credentialId string) error
 	}
@@ -83,6 +84,21 @@ func (m *defaultPasskeyModel) FindOne(ctx context.Context, credentialId string) 
 		return nil, model.ErrNotFound
 	default:
 		return nil, err
+	}
+}
+
+func (m *defaultPasskeyModel) CountPasskeys(ctx context.Context, userId int64) (int64, error) {
+	var resp int64
+	query := fmt.Sprintf("select COUNT(`credential_id`) from %s where `user_id` = ?", m.table)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, userId)
+
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return 0, model.ErrNotFound
+	default:
+		return 0, err
 	}
 }
 

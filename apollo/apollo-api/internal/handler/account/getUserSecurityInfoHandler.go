@@ -9,16 +9,16 @@ import (
 	"jian-unified-system/apollo/apollo-api/internal/types"
 )
 
-func GetUserInfoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func GetUserSecurityInfoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.GetUserInfoReq
+		var req types.GetUserSecurityInfoReq
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := account.NewGetUserInfoLogic(r.Context(), svcCtx)
-		resp, err := l.GetUserInfo()
+		l := account.NewGetUserSecurityInfoLogic(r.Context(), svcCtx)
+		resp, err := l.GetUserSecurityInfo()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

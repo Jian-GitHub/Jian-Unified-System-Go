@@ -50,6 +50,11 @@ func (l *RegLogic) Reg(req *types.RegReq, r *http.Request) (resp *types.RegResp,
 	//return nil, nil
 	// Check params
 	if len(req.Email) == 0 || len(req.Password) == 0 || len(req.ConfirmPassword) == 0 || len(req.Language) == 0 || strings.Compare(req.Password, req.ConfirmPassword) != 0 {
+		fmt.Println(len(req.Email) == 0)
+		fmt.Println(len(req.Password) == 0)
+		fmt.Println(len(req.ConfirmPassword) == 0)
+		fmt.Println(len(req.Language) == 0)
+		fmt.Println(strings.Compare(req.Password, req.ConfirmPassword) != 0)
 		return &types.RegResp{
 			BaseResponse: types.BaseResponse{
 				Code:    -1,

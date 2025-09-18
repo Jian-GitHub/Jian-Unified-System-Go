@@ -44,25 +44,37 @@ message UserInfoResp {
   bytes user_bytes = 1;
 }
 
-// ========== 生成系统令牌 ==========
-message GenerateTokenReq {
+// ========== 用户安全信息 ==========
+message UserSecurityInfoReq {
   int64 user_id = 1;
-  string name = 2;
-  bytes scope = 3;
 }
 
-message GenerateTokenResp {
-  string token = 1;
+message UserContact {
+  string id = 1;
+  string value = 2;
+  int64 type = 3;
+  string phone_region = 4;
+}
+message PasswordUpdatedDate {
+  int64 year = 1;
+  int64 month = 2;
+  int64 day = 3;
+}
+message ThirdPartyAccounts {
+  bool github = 1;
+  bool google = 2;
+}
+message UserSecurityInfoResp {
+  repeated UserContact contacts = 1;
+  PasswordUpdatedDate password_updated_date = 2;
+  int64 account_security_token_num = 3;
+  int64 passkeys_num = 4;
+  ThirdPartyAccounts third_party_accounts = 5;
 }
 
-// ========== 验证系统令牌 ==========
-message ValidateTokenReq {
-  int64 token_id = 1;
-}
 
-message ValidateTokenResp {
-  bool validated = 1;
-}
+
+
 
 
 // ================= 服务定义 =================
@@ -79,13 +91,10 @@ service Account {
   // UserInfo 查询用户通知联系方式
   rpc UserInfo (UserInfoReq) returns (UserInfoResp);
 
-  // 生成子系统令牌
-  // GenerateToken 生成可调用子系统的令牌
-  rpc GenerateToken (GenerateTokenReq) returns (GenerateTokenResp);
+  // 用户安全信息
+  // UserSecurityInfo 查询用户通知联系方式
+  rpc UserSecurityInfo (UserSecurityInfoReq) returns (UserSecurityInfoResp);
 
-  // 验证子系统令牌
-  // ValidateToken 验证可调用子系统的令牌
-  rpc ValidateToken (ValidateTokenReq) returns (ValidateTokenResp);
 }
 
 // Passkeys
@@ -172,4 +181,52 @@ service ThirdParty {
 
   // HandleCallback 处理第三方回调数据
   rpc HandleCallback (ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
+}
+
+// ========== 生成系统令牌 ==========
+message GenerateSubsystemTokenReq {
+  int64 user_id = 1;
+  string name = 2;
+  bytes scope = 3;
+}
+
+message GenerateSubsystemTokenResp {
+  string token = 1;
+  string name = 2;
+  int64 year = 3;
+  int64 month = 4;
+  int64 day = 5;
+}
+
+// ========== 验证系统令牌 ==========
+message ValidateSubsystemTokenReq {
+  int64 user_id = 1;
+  int64 token_id = 2;
+}
+
+message ValidateSubsystemTokenResp {
+  bool validated = 1;
+}
+
+// ========== 移除系统令牌 ==========
+message RemoveSubsystemTokenReq {
+  int64 token_id = 1;
+}
+
+message RemoveSubsystemTokenResp {
+  bool validated = 1;
+}
+
+service Security {
+  // 生成子系统令牌
+  // GenerateSubsystemToken 生成可调用子系统的令牌
+  rpc GenerateSubsystemToken (GenerateSubsystemTokenReq) returns (GenerateSubsystemTokenResp);
+
+  // 验证子系统令牌
+  // ValidateToken 验证可调用子系统的令牌
+  rpc ValidateSubsystemToken (ValidateSubsystemTokenReq) returns (ValidateSubsystemTokenResp);
+
+  // 移除子系统令牌
+  // RemoveSubsystemToken 验证可调用子系统的令牌
+  rpc RemoveSubsystemToken (RemoveSubsystemTokenReq) returns (RemoveSubsystemTokenResp);
 }

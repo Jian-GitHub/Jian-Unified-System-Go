@@ -33,6 +33,7 @@ type (
 	thirdPartyModel interface {
 		Insert(ctx context.Context, data *ThirdParty) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*ThirdParty, error)
+		FindBatch(ctx context.Context, userId int64) (*[]ThirdParty, error)
 		FindOneByThirdID(ctx context.Context, id string) (*ThirdParty, error)
 		Update(ctx context.Context, data *ThirdParty) error
 		Delete(ctx context.Context, id int64) error
@@ -78,6 +79,22 @@ func (m *defaultThirdPartyModel) FindOne(ctx context.Context, id int64) (*ThirdP
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", thirdPartyRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id)
 	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, model.ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultThirdPartyModel) FindBatch(ctx context.Context, userId int64) (*[]ThirdParty, error) {
+	var resp []ThirdParty
+
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? limit 10", thirdPartyRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, userId)
+
 	switch err {
 	case nil:
 		return &resp, nil

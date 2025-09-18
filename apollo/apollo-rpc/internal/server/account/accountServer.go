@@ -41,14 +41,8 @@ func (s *AccountServer) UserInfo(ctx context.Context, in *apollo.UserInfoReq) (*
 	return l.UserInfo(in)
 }
 
-// 生成子系统令牌
-func (s *AccountServer) GenerateToken(ctx context.Context, in *apollo.GenerateTokenReq) (*apollo.GenerateTokenResp, error) {
-	l := accountlogic.NewGenerateTokenLogic(ctx, s.svcCtx)
-	return l.GenerateToken(in)
-}
-
-// 验证子系统令牌
-func (s *AccountServer) ValidateToken(ctx context.Context, in *apollo.ValidateTokenReq) (*apollo.ValidateTokenResp, error) {
-	l := accountlogic.NewValidateTokenLogic(ctx, s.svcCtx)
-	return l.ValidateToken(in)
+// 用户安全信息
+func (s *AccountServer) UserSecurityInfo(ctx context.Context, in *apollo.UserSecurityInfoReq) (*apollo.UserSecurityInfoResp, error) {
+	l := accountlogic.NewUserSecurityInfoLogic(ctx, s.svcCtx)
+	return l.UserSecurityInfo(in)
 }

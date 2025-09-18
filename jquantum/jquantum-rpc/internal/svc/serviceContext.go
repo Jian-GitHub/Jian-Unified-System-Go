@@ -21,10 +21,11 @@ import (
 )
 
 type ServiceContext struct {
-	Config        config.Config
-	ApolloAccount apollo.AccountClient
-	KafkaReader   *kafka.Reader
-	Producer      *rabbitMQ.Producer
+	Config                config.Config
+	ApolloAccount         apollo.AccountClient
+	ApolloSecurityAccount apollo.SecurityClient
+	KafkaReader           *kafka.Reader
+	Producer              *rabbitMQ.Producer
 	//Consumer    *rabbitMQ.Consumer
 	Redis        *redis.Redis
 	JobModel     jquantum.JobModel
@@ -79,19 +80,22 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 	return &ServiceContext{
-		Config:        c,
-		ApolloAccount: apollo.NewAccountClient(client.Conn()),
-		KafkaReader:   r,
-		Redis:         redisClient,
-		JobModel:      jquantum.NewJobModel(sqlConn, c.Cache),
-		Producer:      producer,
+		Config:                c,
+		ApolloAccount:         apollo.NewAccountClient(client.Conn()),
+		ApolloSecurityAccount: apollo.NewSecurityClient(client.Conn()),
+		KafkaReader:           r,
+		Redis:                 redisClient,
+		JobModel:              jquantum.NewJobModel(sqlConn, c.Cache),
+		Producer:              producer,
 		//Consumer:    consumer,
 		EmailService: emailService,
 	}
 }
 
 func (sc *ServiceContext) StartKafkaConsumer() {
-	defer sc.KafkaReader.Close()
+	defer func(KafkaReader *kafka.Reader) {
+		_ = KafkaReader.Close()
+	}(sc.KafkaReader)
 
 	ctx := context.Background()
 

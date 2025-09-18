@@ -18,6 +18,9 @@ type ServiceContext struct {
 	ApolloAccount    apollo.AccountClient
 	ApolloPasskeys   apollo.PasskeysClient
 	ApolloThirdParty apollo.ThirdPartyClient
+
+	ApolloSecurity apollo.SecurityClient
+
 	//JWTVerifyAgentMiddleware middleware.JWTVerifyAgentMiddleware
 	// MySQL - Models
 	//UserModel apollo.UserModel
@@ -59,6 +62,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ApolloAccount:    apollo.NewAccountClient(client.Conn()),
 		ApolloPasskeys:   apollo.NewPasskeysClient(client.Conn()),
 		ApolloThirdParty: apollo.NewThirdPartyClient(client.Conn()),
+
+		ApolloSecurity: apollo.NewSecurityClient(client.Conn()),
 
 		//UserModel: apollo.NewUserModel(sqlConn, c.Cache),
 

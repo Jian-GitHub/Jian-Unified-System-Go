@@ -11,13 +11,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/streadway/amqp"
+	//"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 type Consumer struct {
-	conn           *amqp.Connection
-	channel        *amqp.Channel
+	conn           *amqp091.Connection
+	channel        *amqp091.Channel
 	rabbitMQ       RabbitMQ
 	redis          *redis.Redis
 	ctx            context.Context
@@ -30,9 +31,9 @@ type Consumer struct {
 }
 
 func NewConsumer(r RabbitMQ, redisClient *redis.Redis, f func(body []byte)) *Consumer {
-	conn, err := amqp.DialConfig(
+	conn, err := amqp091.DialConfig(
 		r.URL,
-		amqp.Config{
+		amqp091.Config{
 			Heartbeat: time.Second * 10,
 		})
 	if err != nil {

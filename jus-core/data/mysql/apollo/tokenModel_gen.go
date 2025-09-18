@@ -32,7 +32,7 @@ var (
 type (
 	tokenModel interface {
 		Insert(ctx context.Context, data *Token) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*Token, error)
+		FindOne(ctx context.Context, id int64, userId int64) (*Token, error)
 		FindBatch(ctx context.Context, userId int64, page int64) (*[]Token, error)
 		CountTokens(ctx context.Context, userId int64) (int64, error)
 		Update(ctx context.Context, data *Token) error
@@ -71,12 +71,12 @@ func (m *defaultTokenModel) Delete(ctx context.Context, id int64) error {
 	return err
 }
 
-func (m *defaultTokenModel) FindOne(ctx context.Context, id int64) (*Token, error) {
+func (m *defaultTokenModel) FindOne(ctx context.Context, id int64, userId int64) (*Token, error) {
 	apolloTokenIdKey := fmt.Sprintf("%s%v", cacheApolloTokenIdPrefix, id)
 	var resp Token
 	err := m.QueryRowCtx(ctx, &resp, apolloTokenIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tokenRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
+		query := fmt.Sprintf("select %s from %s where `id` = ? and `user_id` = ? and `is_enabled` = 1 and `is_deleted` = 0 limit 1", tokenRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id, userId)
 	})
 	switch err {
 	case nil:
@@ -108,10 +108,9 @@ func (m *defaultTokenModel) FindBatch(ctx context.Context, userId int64, page in
 
 func (m *defaultTokenModel) CountTokens(ctx context.Context, userId int64) (int64, error) {
 	var resp int64
-	err := m.QueryRowNoCacheCtx(ctx, &resp, "", func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select COUNT(`id`) from %s where `id` = ? and `is_deleted` = 0 limit 1", tokenRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, userId)
-	})
+	query := fmt.Sprintf("select COUNT(`id`) from %s where `user_id` = ? and `is_deleted` = 0 limit 1", m.table)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, userId)
+
 	switch err {
 	case nil:
 		return 0, nil

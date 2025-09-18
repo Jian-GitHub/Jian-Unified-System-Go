@@ -19,11 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Account_Registration_FullMethodName  = "/apollo.Account/Registration"
-	Account_Login_FullMethodName         = "/apollo.Account/Login"
-	Account_UserInfo_FullMethodName      = "/apollo.Account/UserInfo"
-	Account_GenerateToken_FullMethodName = "/apollo.Account/GenerateToken"
-	Account_ValidateToken_FullMethodName = "/apollo.Account/ValidateToken"
+	Account_Registration_FullMethodName     = "/apollo.Account/Registration"
+	Account_Login_FullMethodName            = "/apollo.Account/Login"
+	Account_UserInfo_FullMethodName         = "/apollo.Account/UserInfo"
+	Account_UserSecurityInfo_FullMethodName = "/apollo.Account/UserSecurityInfo"
 )
 
 // AccountClient is the client API for Account service.
@@ -41,12 +40,9 @@ type AccountClient interface {
 	// 用户信息
 	// UserInfo 查询用户通知联系方式
 	UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoResp, error)
-	// 生成子系统令牌
-	// GenerateToken 生成可调用子系统的令牌
-	GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
-	// 验证子系统令牌
-	// ValidateToken 验证可调用子系统的令牌
-	ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
+	// 用户安全信息
+	// UserSecurityInfo 查询用户通知联系方式
+	UserSecurityInfo(ctx context.Context, in *UserSecurityInfoReq, opts ...grpc.CallOption) (*UserSecurityInfoResp, error)
 }
 
 type accountClient struct {
@@ -87,20 +83,10 @@ func (c *accountClient) UserInfo(ctx context.Context, in *UserInfoReq, opts ...g
 	return out, nil
 }
 
-func (c *accountClient) GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error) {
+func (c *accountClient) UserSecurityInfo(ctx context.Context, in *UserSecurityInfoReq, opts ...grpc.CallOption) (*UserSecurityInfoResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GenerateTokenResp)
-	err := c.cc.Invoke(ctx, Account_GenerateToken_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountClient) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ValidateTokenResp)
-	err := c.cc.Invoke(ctx, Account_ValidateToken_FullMethodName, in, out, cOpts...)
+	out := new(UserSecurityInfoResp)
+	err := c.cc.Invoke(ctx, Account_UserSecurityInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,12 +108,9 @@ type AccountServer interface {
 	// 用户信息
 	// UserInfo 查询用户通知联系方式
 	UserInfo(context.Context, *UserInfoReq) (*UserInfoResp, error)
-	// 生成子系统令牌
-	// GenerateToken 生成可调用子系统的令牌
-	GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error)
-	// 验证子系统令牌
-	// ValidateToken 验证可调用子系统的令牌
-	ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error)
+	// 用户安全信息
+	// UserSecurityInfo 查询用户通知联系方式
+	UserSecurityInfo(context.Context, *UserSecurityInfoReq) (*UserSecurityInfoResp, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -147,11 +130,8 @@ func (UnimplementedAccountServer) Login(context.Context, *LoginReq) (*LoginResp,
 func (UnimplementedAccountServer) UserInfo(context.Context, *UserInfoReq) (*UserInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
 }
-func (UnimplementedAccountServer) GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateToken not implemented")
-}
-func (UnimplementedAccountServer) ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
+func (UnimplementedAccountServer) UserSecurityInfo(context.Context, *UserSecurityInfoReq) (*UserSecurityInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserSecurityInfo not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 func (UnimplementedAccountServer) testEmbeddedByValue()                 {}
@@ -228,38 +208,20 @@ func _Account_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Account_GenerateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateTokenReq)
+func _Account_UserSecurityInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserSecurityInfoReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServer).GenerateToken(ctx, in)
+		return srv.(AccountServer).UserSecurityInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Account_GenerateToken_FullMethodName,
+		FullMethod: Account_UserSecurityInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).GenerateToken(ctx, req.(*GenerateTokenReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Account_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ValidateTokenReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServer).ValidateToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Account_ValidateToken_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).ValidateToken(ctx, req.(*ValidateTokenReq))
+		return srv.(AccountServer).UserSecurityInfo(ctx, req.(*UserSecurityInfoReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -284,12 +246,8 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Account_UserInfo_Handler,
 		},
 		{
-			MethodName: "GenerateToken",
-			Handler:    _Account_GenerateToken_Handler,
-		},
-		{
-			MethodName: "ValidateToken",
-			Handler:    _Account_ValidateToken_Handler,
+			MethodName: "UserSecurityInfo",
+			Handler:    _Account_UserSecurityInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -714,6 +672,196 @@ var ThirdParty_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandleCallback",
 			Handler:    _ThirdParty_HandleCallback_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "apollo-rpc.proto",
+}
+
+const (
+	Security_GenerateSubsystemToken_FullMethodName = "/apollo.Security/GenerateSubsystemToken"
+	Security_ValidateSubsystemToken_FullMethodName = "/apollo.Security/ValidateSubsystemToken"
+	Security_RemoveSubsystemToken_FullMethodName   = "/apollo.Security/RemoveSubsystemToken"
+)
+
+// SecurityClient is the client API for Security service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type SecurityClient interface {
+	// 生成子系统令牌
+	// GenerateSubsystemToken 生成可调用子系统的令牌
+	GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error)
+	// 验证子系统令牌
+	// ValidateToken 验证可调用子系统的令牌
+	ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error)
+	// 移除子系统令牌
+	// RemoveSubsystemToken 验证可调用子系统的令牌
+	RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error)
+}
+
+type securityClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewSecurityClient(cc grpc.ClientConnInterface) SecurityClient {
+	return &securityClient{cc}
+}
+
+func (c *securityClient) GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenerateSubsystemTokenResp)
+	err := c.cc.Invoke(ctx, Security_GenerateSubsystemToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *securityClient) ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateSubsystemTokenResp)
+	err := c.cc.Invoke(ctx, Security_ValidateSubsystemToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *securityClient) RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RemoveSubsystemTokenResp)
+	err := c.cc.Invoke(ctx, Security_RemoveSubsystemToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// SecurityServer is the server API for Security service.
+// All implementations must embed UnimplementedSecurityServer
+// for forward compatibility.
+type SecurityServer interface {
+	// 生成子系统令牌
+	// GenerateSubsystemToken 生成可调用子系统的令牌
+	GenerateSubsystemToken(context.Context, *GenerateSubsystemTokenReq) (*GenerateSubsystemTokenResp, error)
+	// 验证子系统令牌
+	// ValidateToken 验证可调用子系统的令牌
+	ValidateSubsystemToken(context.Context, *ValidateSubsystemTokenReq) (*ValidateSubsystemTokenResp, error)
+	// 移除子系统令牌
+	// RemoveSubsystemToken 验证可调用子系统的令牌
+	RemoveSubsystemToken(context.Context, *RemoveSubsystemTokenReq) (*RemoveSubsystemTokenResp, error)
+	mustEmbedUnimplementedSecurityServer()
+}
+
+// UnimplementedSecurityServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedSecurityServer struct{}
+
+func (UnimplementedSecurityServer) GenerateSubsystemToken(context.Context, *GenerateSubsystemTokenReq) (*GenerateSubsystemTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateSubsystemToken not implemented")
+}
+func (UnimplementedSecurityServer) ValidateSubsystemToken(context.Context, *ValidateSubsystemTokenReq) (*ValidateSubsystemTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateSubsystemToken not implemented")
+}
+func (UnimplementedSecurityServer) RemoveSubsystemToken(context.Context, *RemoveSubsystemTokenReq) (*RemoveSubsystemTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveSubsystemToken not implemented")
+}
+func (UnimplementedSecurityServer) mustEmbedUnimplementedSecurityServer() {}
+func (UnimplementedSecurityServer) testEmbeddedByValue()                  {}
+
+// UnsafeSecurityServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SecurityServer will
+// result in compilation errors.
+type UnsafeSecurityServer interface {
+	mustEmbedUnimplementedSecurityServer()
+}
+
+func RegisterSecurityServer(s grpc.ServiceRegistrar, srv SecurityServer) {
+	// If the following call pancis, it indicates UnimplementedSecurityServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Security_ServiceDesc, srv)
+}
+
+func _Security_GenerateSubsystemToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateSubsystemTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SecurityServer).GenerateSubsystemToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Security_GenerateSubsystemToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SecurityServer).GenerateSubsystemToken(ctx, req.(*GenerateSubsystemTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Security_ValidateSubsystemToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateSubsystemTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SecurityServer).ValidateSubsystemToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Security_ValidateSubsystemToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SecurityServer).ValidateSubsystemToken(ctx, req.(*ValidateSubsystemTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Security_RemoveSubsystemToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveSubsystemTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SecurityServer).RemoveSubsystemToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Security_RemoveSubsystemToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SecurityServer).RemoveSubsystemToken(ctx, req.(*RemoveSubsystemTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Security_ServiceDesc is the grpc.ServiceDesc for Security service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Security_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "apollo.Security",
+	HandlerType: (*SecurityServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GenerateSubsystemToken",
+			Handler:    _Security_GenerateSubsystemToken_Handler,
+		},
+		{
+			MethodName: "ValidateSubsystemToken",
+			Handler:    _Security_ValidateSubsystemToken_Handler,
+		},
+		{
+			MethodName: "RemoveSubsystemToken",
+			Handler:    _Security_RemoveSubsystemToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

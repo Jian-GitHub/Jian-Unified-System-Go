@@ -15,8 +15,8 @@ import (
 
 type (
 	Empty                         = apollo.Empty
-	GenerateTokenReq              = apollo.GenerateTokenReq
-	GenerateTokenResp             = apollo.GenerateTokenResp
+	GenerateSubsystemTokenReq     = apollo.GenerateSubsystemTokenReq
+	GenerateSubsystemTokenResp    = apollo.GenerateSubsystemTokenResp
 	LoginReq                      = apollo.LoginReq
 	LoginResp                     = apollo.LoginResp
 	PasskeysFinishLoginReq        = apollo.PasskeysFinishLoginReq
@@ -25,14 +25,21 @@ type (
 	PasskeysStartLoginResp        = apollo.PasskeysStartLoginResp
 	PasskeysStartRegistrationReq  = apollo.PasskeysStartRegistrationReq
 	PasskeysStartRegistrationResp = apollo.PasskeysStartRegistrationResp
+	PasswordUpdatedDate           = apollo.PasswordUpdatedDate
 	RegistrationReq               = apollo.RegistrationReq
+	RemoveSubsystemTokenReq       = apollo.RemoveSubsystemTokenReq
+	RemoveSubsystemTokenResp      = apollo.RemoveSubsystemTokenResp
+	ThirdPartyAccounts            = apollo.ThirdPartyAccounts
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
+	UserContact                   = apollo.UserContact
 	UserInfoReq                   = apollo.UserInfoReq
 	UserInfoResp                  = apollo.UserInfoResp
-	ValidateTokenReq              = apollo.ValidateTokenReq
-	ValidateTokenResp             = apollo.ValidateTokenResp
+	UserSecurityInfoReq           = apollo.UserSecurityInfoReq
+	UserSecurityInfoResp          = apollo.UserSecurityInfoResp
+	ValidateSubsystemTokenReq     = apollo.ValidateSubsystemTokenReq
+	ValidateSubsystemTokenResp    = apollo.ValidateSubsystemTokenResp
 
 	Passkeys interface {
 		// 注册

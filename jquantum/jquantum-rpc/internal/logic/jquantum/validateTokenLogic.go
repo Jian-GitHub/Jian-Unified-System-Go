@@ -25,7 +25,8 @@ func NewValidateTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Val
 }
 
 func (l *ValidateTokenLogic) ValidateToken(in *jquantum.ValidateTokenReq) (*jquantum.ValidateTokenResp, error) {
-	resp, err := l.svcCtx.ApolloAccount.ValidateToken(l.ctx, &apollo.ValidateTokenReq{
+	resp, err := l.svcCtx.ApolloSecurityAccount.ValidateSubsystemToken(l.ctx, &apollo.ValidateSubsystemTokenReq{
+		UserId:  in.UserId,
 		TokenId: in.TokenId,
 	})
 	if err != nil {

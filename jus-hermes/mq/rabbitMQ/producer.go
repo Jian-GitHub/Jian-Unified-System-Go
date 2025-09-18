@@ -1,18 +1,19 @@
 package rabbitMQ
 
 import (
-	"github.com/streadway/amqp"
+	//"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 	"log"
 )
 
 type Producer struct {
-	conn     *amqp.Connection
-	channel  *amqp.Channel
+	conn     *amqp091.Connection
+	channel  *amqp091.Channel
 	rabbitMQ RabbitMQ
 }
 
 func NewProducer(r RabbitMQ) *Producer {
-	conn, err := amqp.Dial(r.URL)
+	conn, err := amqp091.Dial(r.URL)
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
@@ -74,19 +75,19 @@ func (p *Producer) Publish(message []byte) error {
 		p.rabbitMQ.RoutingKey, // routing key
 		false,                 // mandatory
 		false,                 // immediate
-		amqp.Publishing{
+		amqp091.Publishing{
 			ContentType: "text/plain",
 			Body:        message,
 		})
 }
 
-func (p *Producer) PublishWithHeaders(message []byte, headers *amqp.Table) error {
+func (p *Producer) PublishWithHeaders(message []byte, headers *amqp091.Table) error {
 	return p.channel.Publish(
 		p.rabbitMQ.Exchange,   // exchange
 		p.rabbitMQ.RoutingKey, // routing key
 		false,                 // mandatory
 		false,                 // immediate
-		amqp.Publishing{
+		amqp091.Publishing{
 			ContentType: "application/json",
 			Body:        message,
 			Headers:     *headers,
@@ -99,6 +100,6 @@ func (p *Producer) PublishWithHeaders(message []byte, headers *amqp.Table) error
 }
 
 func (p *Producer) Close() {
-	p.channel.Close()
-	p.conn.Close()
+	_ = p.channel.Close()
+	_ = p.conn.Close()
 }

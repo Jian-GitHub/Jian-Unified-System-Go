@@ -164,24 +164,6 @@ service apollo-api {
 }
 
 type (
-	VerifyTokenReq  {}
-	VerifyTokenResp {
-		BaseResponse
-		Data {
-			Ok bool `json:"ok"`
-		} `json:"data"`
-	}
-	// 生成令牌
-	GenerateTokenReq {
-		Name  string  `json:"name"`
-		Scope []int64 `json:"scope" validate:"required"`
-	}
-	GenerateTokenResp {
-		BaseResponse
-		GenerateTokenData {
-			Token string `json:"token"`
-		} `json:"data"`
-	}
 	// 获取用户信息
 	GetUserInfoReq  {}
 	GetUserInfoResp {
@@ -202,6 +184,38 @@ type (
 			LastLoginTime     string `json:"last_login_time"`
 		} `json:"data"`
 	}
+	// 获取用户安全信息
+	GetUserSecurityInfoReq  {}
+	UserContact {
+		Id          string `json:"id"`
+		Value       string `json:"value"`
+		Type        int64  `json:"type"`
+		PhoneRegion string `json:"phoneRegion"`
+	}
+	GetUserSecurityInfoResp {
+		BaseResponse
+		GetUserSecurityInfoData {
+			Contacts []UserContact `json:"contacts"`
+			PasswordUpdatedDate {
+				Year  int64 `json:"year"`
+				Month int64 `json:"month"`
+				Day   int64 `json:"day"`
+			} `json:"passwordUpdatedDate"`
+			AccountSecurityTokenNum int64 `json:"accountSecurityTokenNum"`
+			PasskeysNum             int64 `json:"passkeysNum"`
+			ThirdPartyAccounts {
+				github bool `json:"github"`
+				google bool `json:"google"`
+			} `json:"thirdPartyAccounts"`
+		} `json:"data"`
+	}
+	VerifyTokenReq  {}
+	VerifyTokenResp {
+		BaseResponse
+		Data {
+			Ok bool `json:"ok"`
+		} `json:"data"`
+	}
 )
 
 @server (
@@ -211,20 +225,66 @@ type (
 // middleware: JWTVerifyAgentMiddleware
 )
 service apollo-api {
-	// 验证Token
-	@handler VerifyToken
-	// 返回: Token
-	post /VerifyToken (VerifyTokenReq) returns (VerifyTokenResp)
-
-	// Generate Token
-	@handler GenerateToken
-	// 返回: Token
-	post /GenerateToken (GenerateTokenReq) returns (GenerateTokenResp)
-
 	// Get User Info
 	@handler GetUserInfo
 	// 返回: UserInfo
 	post /GetUserInfo (GetUserInfoReq) returns (GetUserInfoResp)
+
+	// Get User Security Info
+	@handler GetUserSecurityInfo
+	// 返回: UserInfo
+	post /GetUserSecurityInfo (GetUserSecurityInfoReq) returns (GetUserSecurityInfoResp)
+
+	// Verify Account Token
+	@handler verifyToken
+	post /VerifyToken (VerifyTokenReq) returns (VerifyTokenResp)
+}
+
+// User Account Security
+type (
+	// 生成令牌
+	GenerateSubsystemTokenReq {
+		Name  string  `json:"name"`
+		Scope []int64 `json:"scope" validate:"required"`
+	}
+	GenerateSubsystemTokenResp {
+		BaseResponse
+		GenerateSubsystemTokenData {
+			Token string `json:"token"`
+			Name  string `json:"name"`
+			Date {
+				Year  int64 `json:"year"`
+				Month int64 `json:"month"`
+				Day   int64 `json:"day"`
+			} `json:"date"`
+		} `json:"data"`
+	}
+	// 移除令牌
+	RemoveSubsystemTokenReq {
+		id int64 `json:"id" validate:"required`
+	}
+	RemoveSubsystemTokenResp {
+		BaseResponse
+		RemoveSubsystemTokenData {
+			Ok bool `json:"ok"`
+		} `json:"data"`
+	}
+)
+
+@server (
+	prefix: /v1/account/security
+	group:  account/security
+	jwt:    Auth
+)
+service apollo-api {
+	@handler GenerateSubsystemToken
+	// 返回: Token
+	post /GenerateSubsystemToken (GenerateSubsystemTokenReq) returns (GenerateSubsystemTokenResp)
+
+	// Remove Subsystem Token
+	@handler RemoveSubsystemToken
+	// 返回: ok
+	post /RemoveSubsystemToken (RemoveSubsystemTokenReq) returns (RemoveSubsystemTokenResp)
 }
 
 // Third Party

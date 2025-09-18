@@ -2,7 +2,7 @@
 // goctl 1.9.0
 // Source: apollo-rpc.proto
 
-package thirdparty
+package security
 
 import (
 	"context"
@@ -41,40 +41,40 @@ type (
 	ValidateSubsystemTokenReq     = apollo.ValidateSubsystemTokenReq
 	ValidateSubsystemTokenResp    = apollo.ValidateSubsystemTokenResp
 
-	ThirdParty interface {
-		// 绑定
-		Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
-		// 继续 - 登录或注册
-		Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
-		// HandleCallback 处理第三方回调数据
-		HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+	Security interface {
+		// 生成子系统令牌
+		GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error)
+		// 验证子系统令牌
+		ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error)
+		// 移除子系统令牌
+		RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error)
 	}
 
-	defaultThirdParty struct {
+	defaultSecurity struct {
 		cli zrpc.Client
 	}
 )
 
-func NewThirdParty(cli zrpc.Client) ThirdParty {
-	return &defaultThirdParty{
+func NewSecurity(cli zrpc.Client) Security {
+	return &defaultSecurity{
 		cli: cli,
 	}
 }
 
-// 绑定
-func (m *defaultThirdParty) Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error) {
-	client := apollo.NewThirdPartyClient(m.cli.Conn())
-	return client.Bind(ctx, in, opts...)
+// 生成子系统令牌
+func (m *defaultSecurity) GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error) {
+	client := apollo.NewSecurityClient(m.cli.Conn())
+	return client.GenerateSubsystemToken(ctx, in, opts...)
 }
 
-// 继续 - 登录或注册
-func (m *defaultThirdParty) Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
-	client := apollo.NewThirdPartyClient(m.cli.Conn())
-	return client.Continue(ctx, in, opts...)
+// 验证子系统令牌
+func (m *defaultSecurity) ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error) {
+	client := apollo.NewSecurityClient(m.cli.Conn())
+	return client.ValidateSubsystemToken(ctx, in, opts...)
 }
 
-// HandleCallback 处理第三方回调数据
-func (m *defaultThirdParty) HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
-	client := apollo.NewThirdPartyClient(m.cli.Conn())
-	return client.HandleCallback(ctx, in, opts...)
+// 移除子系统令牌
+func (m *defaultSecurity) RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error) {
+	client := apollo.NewSecurityClient(m.cli.Conn())
+	return client.RemoveSubsystemToken(ctx, in, opts...)
 }

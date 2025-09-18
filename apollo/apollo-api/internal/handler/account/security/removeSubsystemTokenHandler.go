@@ -1,24 +1,24 @@
-package account
+package security
 
 import (
 	"net/http"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
-	"jian-unified-system/apollo/apollo-api/internal/logic/account"
+	"jian-unified-system/apollo/apollo-api/internal/logic/account/security"
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
 )
 
-func GetUserInfoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func RemoveSubsystemTokenHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.GetUserInfoReq
+		var req types.RemoveSubsystemTokenReq
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := account.NewGetUserInfoLogic(r.Context(), svcCtx)
-		resp, err := l.GetUserInfo()
+		l := security.NewRemoveSubsystemTokenLogic(r.Context(), svcCtx)
+		resp, err := l.RemoveSubsystemToken(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

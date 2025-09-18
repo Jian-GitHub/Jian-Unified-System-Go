@@ -32,6 +32,7 @@ func (m *TokenMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 
 		type Claims struct {
 			Scope   int   `json:"scope"`
+			UserId  int64 `json:"id"`
 			TokenId int64 `json:"tokenId"`
 			jwt.RegisteredClaims
 		}
@@ -58,6 +59,7 @@ func (m *TokenMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		isValidated, err := m.jQuantum.ValidateToken(context.Background(), &jquantum.ValidateTokenReq{
+			UserId:  claims.UserId,
 			TokenId: claims.TokenId,
 		})
 		if err != nil || !isValidated.Validated {

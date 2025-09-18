@@ -34,7 +34,7 @@ type (
 		Insert(ctx context.Context, data *Contact) (sql.Result, error)
 		InsertBatch(ctx context.Context, data []*Contact) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*Contact, error)
-		FindByUserID(ctx context.Context, userID int64) ([]*Contact, error)
+		FindByUserID(ctx context.Context, userID int64) (*[]Contact, error)
 		Update(ctx context.Context, data *Contact) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -88,18 +88,16 @@ func (m *defaultContactModel) FindOne(ctx context.Context, id int64) (*Contact, 
 	}
 }
 
-func (m *defaultContactModel) FindByUserID(ctx context.Context, userID int64) ([]*Contact, error) {
-	cacheKey := fmt.Sprintf("%s%v", cacheApolloContactUserPrefix, userID)
+func (m *defaultContactModel) FindByUserID(ctx context.Context, userID int64) (*[]Contact, error) {
+	//cacheKey := fmt.Sprintf("%s%v", cacheApolloContactUserPrefix, userID)
 
-	var resp []*Contact
-	err := m.QueryRowCtx(ctx, &resp, cacheKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `user_id` = ?", contactRows, m.table)
-		return conn.QueryRowsCtx(ctx, v, query, userID)
-	})
+	var resp []Contact
+	query := fmt.Sprintf("select %s from %s where `user_id` = ?", contactRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, userID)
 
 	switch err {
 	case nil:
-		return resp, nil
+		return &resp, nil
 	case sqlx.ErrNotFound:
 		return nil, model.ErrNotFound
 	default:

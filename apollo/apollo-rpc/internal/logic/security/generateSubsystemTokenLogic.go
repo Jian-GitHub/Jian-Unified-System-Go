@@ -1,35 +1,37 @@
-package accountlogic
+package securitylogic
 
 import (
 	"context"
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/jsonx"
-	"jian-unified-system/jus-core/util"
-
-	"github.com/zeromicro/go-zero/core/logx"
-	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"jian-unified-system/apollo/apollo-rpc/internal/svc"
 	ap "jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/system"
+	"jian-unified-system/jus-core/util"
+	"time"
+
+	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/apollo/apollo-rpc/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type GenerateTokenLogic struct {
+type GenerateSubsystemTokenLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewGenerateTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenerateTokenLogic {
-	return &GenerateTokenLogic{
+func NewGenerateSubsystemTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenerateSubsystemTokenLogic {
+	return &GenerateSubsystemTokenLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-// GenerateToken 生成子系统令牌
-func (l *GenerateTokenLogic) GenerateToken(in *apollo.GenerateTokenReq) (*apollo.GenerateTokenResp, error) {
+// 生成子系统令牌
+func (l *GenerateSubsystemTokenLogic) GenerateSubsystemToken(in *apollo.GenerateSubsystemTokenReq) (*apollo.GenerateSubsystemTokenResp, error) {
 	args := make(map[string]interface{})
 	args["id"] = in.UserId
 	scopeNum := 0
@@ -69,7 +71,12 @@ func (l *GenerateTokenLogic) GenerateToken(in *apollo.GenerateTokenReq) (*apollo
 		return nil, err
 	}
 
-	return &apollo.GenerateTokenResp{
+	now := time.Now()
+	return &apollo.GenerateSubsystemTokenResp{
 		Token: token,
+		Name:  in.Name,
+		Year:  int64(now.Year()),
+		Month: int64(now.Month()),
+		Day:   int64(now.Day()),
 	}, nil
 }

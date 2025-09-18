@@ -1,4 +1,4 @@
-package account
+package security
 
 import (
 	"context"
@@ -17,23 +17,23 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type GenerateTokenLogic struct {
+type GenerateSubsystemTokenLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewGenerateTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenerateTokenLogic {
-	return &GenerateTokenLogic{
+func NewGenerateSubsystemTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenerateSubsystemTokenLogic {
+	return &GenerateSubsystemTokenLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *GenerateTokenLogic) GenerateToken(req *types.GenerateTokenReq) (resp *types.GenerateTokenResp, err error) {
+func (l *GenerateSubsystemTokenLogic) GenerateSubsystemToken(req *types.GenerateSubsystemTokenReq) (resp *types.GenerateSubsystemTokenResp, err error) {
 	if len(req.Scope) < 1 {
-		return &types.GenerateTokenResp{
+		return &types.GenerateSubsystemTokenResp{
 			BaseResponse: types.BaseResponse{
 				Code:    -1,
 				Message: "Parameter name or Scope is empty",
@@ -54,7 +54,7 @@ func (l *GenerateTokenLogic) GenerateToken(req *types.GenerateTokenReq) (resp *t
 
 	id, err := l.ctx.Value("id").(json.Number).Int64()
 	if err != nil {
-		return &types.GenerateTokenResp{
+		return &types.GenerateSubsystemTokenResp{
 			BaseResponse: types.BaseResponse{
 				Code:    -2,
 				Message: "Id err",
@@ -65,7 +65,7 @@ func (l *GenerateTokenLogic) GenerateToken(req *types.GenerateTokenReq) (resp *t
 	scopeBytes, err := json.Marshal(req.Scope)
 	if err != nil {
 		fmt.Println("报错")
-		return &types.GenerateTokenResp{
+		return &types.GenerateSubsystemTokenResp{
 			BaseResponse: types.BaseResponse{
 				Code:    -3,
 				Message: "Scope Marshal err",
@@ -73,13 +73,15 @@ func (l *GenerateTokenLogic) GenerateToken(req *types.GenerateTokenReq) (resp *t
 		}, errorx.Wrap(errors.New("scope"), "caller err")
 	}
 
-	rpcResp, err := l.svcCtx.ApolloAccount.GenerateToken(l.ctx, &apollo.GenerateTokenReq{
+	fmt.Println("进入")
+
+	rpcResp, err := l.svcCtx.ApolloSecurity.GenerateSubsystemToken(l.ctx, &apollo.GenerateSubsystemTokenReq{
 		UserId: id,
 		Name:   name,
 		Scope:  scopeBytes,
 	})
 	if err != nil {
-		return &types.GenerateTokenResp{
+		return &types.GenerateSubsystemTokenResp{
 			BaseResponse: types.BaseResponse{
 				Code:    -4,
 				Message: "jus err",
@@ -87,15 +89,31 @@ func (l *GenerateTokenLogic) GenerateToken(req *types.GenerateTokenReq) (resp *t
 		}, errorx.Wrap(err, "system err")
 	}
 
-	return &types.GenerateTokenResp{
+	return &types.GenerateSubsystemTokenResp{
 		BaseResponse: types.BaseResponse{
 			Code:    0,
 			Message: "success",
 		},
-		GenerateTokenData: struct {
+		GenerateSubsystemTokenData: struct {
 			Token string `json:"token"`
+			Name  string `json:"name"`
+			Date  struct {
+				Year  int64 `json:"year"`
+				Month int64 `json:"month"`
+				Day   int64 `json:"day"`
+			} `json:"date"`
 		}{
-			rpcResp.Token,
+			Token: rpcResp.Token,
+			Name:  rpcResp.Name,
+			Date: struct {
+				Year  int64 `json:"year"`
+				Month int64 `json:"month"`
+				Day   int64 `json:"day"`
+			}{
+				Year:  rpcResp.Year,
+				Month: rpcResp.Month,
+				Day:   rpcResp.Day,
+			},
 		},
 	}, nil
 }

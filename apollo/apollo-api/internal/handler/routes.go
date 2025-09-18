@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	account "jian-unified-system/apollo/apollo-api/internal/handler/account"
+	accountsecurity "jian-unified-system/apollo/apollo-api/internal/handler/account/security"
 	passkeys "jian-unified-system/apollo/apollo-api/internal/handler/passkeys"
 	thirdParty "jian-unified-system/apollo/apollo-api/internal/handler/thirdParty"
 	"jian-unified-system/apollo/apollo-api/internal/svc"
@@ -35,13 +36,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/GenerateToken",
-				Handler: account.GenerateTokenHandler(serverCtx),
+				Path:    "/GetUserInfo",
+				Handler: account.GetUserInfoHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/GetUserInfo",
-				Handler: account.GetUserInfoHandler(serverCtx),
+				Path:    "/GetUserSecurityInfo",
+				Handler: account.GetUserSecurityInfoHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -51,6 +52,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/v1/account"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/GenerateSubsystemToken",
+				Handler: accountsecurity.GenerateSubsystemTokenHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/RemoveSubsystemToken",
+				Handler: accountsecurity.RemoveSubsystemTokenHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/v1/account/security"),
 	)
 
 	server.AddRoutes(

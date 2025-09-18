@@ -25,7 +25,7 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 
 // UserInfo 用户信息
 func (l *UserInfoLogic) UserInfo(in *apollo.UserInfoReq) (*apollo.UserInfoResp, error) {
-	user, err := l.svcCtx.UserModel.FindOneUserInfo(l.ctx, in.UserId)
+	user, err := l.svcCtx.UserModel.FindOne(l.ctx, in.UserId)
 	if err != nil {
 		return nil, err
 	}

@@ -15,8 +15,8 @@ import (
 
 type (
 	Empty                         = apollo.Empty
-	GenerateTokenReq              = apollo.GenerateTokenReq
-	GenerateTokenResp             = apollo.GenerateTokenResp
+	GenerateSubsystemTokenReq     = apollo.GenerateSubsystemTokenReq
+	GenerateSubsystemTokenResp    = apollo.GenerateSubsystemTokenResp
 	LoginReq                      = apollo.LoginReq
 	LoginResp                     = apollo.LoginResp
 	PasskeysFinishLoginReq        = apollo.PasskeysFinishLoginReq
@@ -25,14 +25,21 @@ type (
 	PasskeysStartLoginResp        = apollo.PasskeysStartLoginResp
 	PasskeysStartRegistrationReq  = apollo.PasskeysStartRegistrationReq
 	PasskeysStartRegistrationResp = apollo.PasskeysStartRegistrationResp
+	PasswordUpdatedDate           = apollo.PasswordUpdatedDate
 	RegistrationReq               = apollo.RegistrationReq
+	RemoveSubsystemTokenReq       = apollo.RemoveSubsystemTokenReq
+	RemoveSubsystemTokenResp      = apollo.RemoveSubsystemTokenResp
+	ThirdPartyAccounts            = apollo.ThirdPartyAccounts
 	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
+	UserContact                   = apollo.UserContact
 	UserInfoReq                   = apollo.UserInfoReq
 	UserInfoResp                  = apollo.UserInfoResp
-	ValidateTokenReq              = apollo.ValidateTokenReq
-	ValidateTokenResp             = apollo.ValidateTokenResp
+	UserSecurityInfoReq           = apollo.UserSecurityInfoReq
+	UserSecurityInfoResp          = apollo.UserSecurityInfoResp
+	ValidateSubsystemTokenReq     = apollo.ValidateSubsystemTokenReq
+	ValidateSubsystemTokenResp    = apollo.ValidateSubsystemTokenResp
 
 	Account interface {
 		// 注册
@@ -41,10 +48,8 @@ type (
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		// 用户信息
 		UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoResp, error)
-		// 生成子系统令牌
-		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
-		// 验证子系统令牌
-		ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
+		// 用户安全信息
+		UserSecurityInfo(ctx context.Context, in *UserSecurityInfoReq, opts ...grpc.CallOption) (*UserSecurityInfoResp, error)
 	}
 
 	defaultAccount struct {
@@ -76,14 +81,8 @@ func (m *defaultAccount) UserInfo(ctx context.Context, in *UserInfoReq, opts ...
 	return client.UserInfo(ctx, in, opts...)
 }
 
-// 生成子系统令牌
-func (m *defaultAccount) GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error) {
+// 用户安全信息
+func (m *defaultAccount) UserSecurityInfo(ctx context.Context, in *UserSecurityInfoReq, opts ...grpc.CallOption) (*UserSecurityInfoResp, error) {
 	client := apollo.NewAccountClient(m.cli.Conn())
-	return client.GenerateToken(ctx, in, opts...)
-}
-
-// 验证子系统令牌
-func (m *defaultAccount) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
-	client := apollo.NewAccountClient(m.cli.Conn())
-	return client.ValidateToken(ctx, in, opts...)
+	return client.UserSecurityInfo(ctx, in, opts...)
 }

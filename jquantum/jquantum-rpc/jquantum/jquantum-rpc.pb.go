@@ -219,7 +219,8 @@ func (x *RetrieveResultResp) GetResult() []byte {
 
 type ValidateTokenReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TokenId       int64                  `protobuf:"varint,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TokenId       int64                  `protobuf:"varint,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -252,6 +253,13 @@ func (x *ValidateTokenReq) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ValidateTokenReq.ProtoReflect.Descriptor instead.
 func (*ValidateTokenReq) Descriptor() ([]byte, []int) {
 	return file_jquantum_rpc_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ValidateTokenReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
 }
 
 func (x *ValidateTokenReq) GetTokenId() int64 {
@@ -320,9 +328,10 @@ const file_jquantum_rpc_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x15\n" +
 	"\x06job_id\x18\x02 \x01(\tR\x05jobId\",\n" +
 	"\x12RetrieveResultResp\x12\x16\n" +
-	"\x06result\x18\x01 \x01(\fR\x06result\"-\n" +
-	"\x10ValidateTokenReq\x12\x19\n" +
-	"\btoken_id\x18\x01 \x01(\x03R\atokenId\"1\n" +
+	"\x06result\x18\x01 \x01(\fR\x06result\"F\n" +
+	"\x10ValidateTokenReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x19\n" +
+	"\btoken_id\x18\x02 \x01(\x03R\atokenId\"1\n" +
 	"\x11ValidateTokenResp\x12\x1c\n" +
 	"\tvalidated\x18\x01 \x01(\bR\tvalidated2\xd6\x01\n" +
 	"\bJQuantum\x123\n" +
