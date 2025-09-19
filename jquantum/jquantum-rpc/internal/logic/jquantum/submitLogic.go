@@ -70,7 +70,7 @@ func (l *SubmitLogic) Submit(in *jquantum.SubmitReq) (*jquantum.SubmitResp, erro
 }
 
 func (l *SubmitLogic) saveFiles(data io.ReaderAt, size int64, userID int64, jobID string) error {
-	dir := filepath.Join(l.svcCtx.Config.JQuantum.BaseDir, strconv.FormatInt(userID, 10), jobID)
+	dir := filepath.Join(l.svcCtx.Config.JQuantum.BaseUserDir, strconv.FormatInt(userID, 10), jobID)
 
 	// 创建目标目录
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {

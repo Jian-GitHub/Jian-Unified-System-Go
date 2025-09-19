@@ -28,7 +28,10 @@ require (
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
-require github.com/golang/protobuf v1.5.4 // indirect
+require (
+	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
+)
 
 require (
 	cloud.google.com/go/compute/metadata v0.7.0 // indirect

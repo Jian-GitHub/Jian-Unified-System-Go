@@ -1,6 +1,8 @@
 package rabbitMQ
 
 import (
+	"github.com/zeromicro/go-zero/core/errorx"
+
 	//"github.com/streadway/amqp"
 	"github.com/rabbitmq/amqp091-go"
 	"log"
@@ -12,15 +14,15 @@ type Producer struct {
 	rabbitMQ RabbitMQ
 }
 
-func NewProducer(r RabbitMQ) *Producer {
+func NewProducer(r RabbitMQ) (*Producer, error) {
 	conn, err := amqp091.Dial(r.URL)
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+		return nil, errorx.Wrap(err, "Failed to connect to RabbitMQ")
 	}
 
 	channel, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("Failed to open a channel: %v", err)
+		return nil, errorx.Wrap(err, "Failed to open a channel: %v")
 	}
 
 	// 声明交换机
@@ -34,7 +36,7 @@ func NewProducer(r RabbitMQ) *Producer {
 		nil,        // arguments
 	)
 	if err != nil {
-		log.Fatalf("Failed to declare an exchange: %v", err)
+		return nil, errorx.Wrap(err, "Failed to declare an exchange: %v")
 	}
 
 	// 声明队列
@@ -47,7 +49,7 @@ func NewProducer(r RabbitMQ) *Producer {
 		nil,     // arguments
 	)
 	if err != nil {
-		log.Fatalf("Failed to declare a queue: %v", err)
+		return nil, errorx.Wrap(err, "Failed to declare a queue: %v")
 	}
 
 	// 绑定队列到交换机
@@ -66,7 +68,7 @@ func NewProducer(r RabbitMQ) *Producer {
 		conn:     conn,
 		channel:  channel,
 		rabbitMQ: r,
-	}
+	}, nil
 }
 
 func (p *Producer) Publish(message []byte) error {

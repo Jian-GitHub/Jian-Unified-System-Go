@@ -2,11 +2,14 @@ package svc
 
 import (
 	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"jian-unified-system/apollo/apollo-rpc/internal/config"
 	"jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	"jian-unified-system/jus-core/util"
+	"log"
+	"time"
 )
 
 type ServiceContext struct {
@@ -25,20 +28,34 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	// 初始化WebAuthn
-	wa, err := webauthn.New(&webauthn.Config{
-		RPID:          c.WebAuthn.RPID,
-		RPDisplayName: c.WebAuthn.RPDisplayName,
-		RPOrigins:     c.WebAuthn.RPOrigins,
-		// ⚠️ 启用 discoverable login
-		//AuthenticatorSelection: protocol.AuthenticatorSelection{
-		//	ResidentKey:      protocol.ResidentKeyRequirementRequired,
-		//	UserVerification: protocol.VerificationRequired,
-		//},
-	})
-	if err != nil {
-		panic("初始化WebAuthn失败: " + err.Error())
+	var (
+		loop = true
+		err  error
+		wa   *webauthn.WebAuthn
+	)
+	for loop {
+		// 初始化WebAuthn
+		wa, err = webauthn.New(&webauthn.Config{
+			RPID:          c.WebAuthn.RPID,
+			RPDisplayName: c.WebAuthn.RPDisplayName,
+			RPOrigins:     c.WebAuthn.RPOrigins,
+			// ⚠️ 启用 discoverable login
+			//AuthenticatorSelection: protocol.AuthenticatorSelection{
+			//	ResidentKey:      protocol.ResidentKeyRequirementRequired,
+			//	UserVerification: protocol.VerificationRequired,
+			//},
+		})
+		if err != nil {
+			//panic("初始化WebAuthn失败: " + err.Error())
+			logx.Error("初始化WebAuthn失败: " + err.Error())
+			log.Println("30 秒后重试")
+			time.Sleep(time.Second * 30)
+			continue
+		}
+
+		loop = false
 	}
+
 	sqlConn := sqlx.NewMysql(c.DB.DataSource)
 
 	OauthProviders := config.InitOAuthProviders(c)

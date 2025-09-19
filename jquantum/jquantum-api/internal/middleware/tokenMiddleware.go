@@ -2,23 +2,21 @@ package middleware
 
 import (
 	"context"
-	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/zeromicro/go-zero/rest/httpx"
-	"jian-unified-system/jquantum/jquantum-rpc/jquantum"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/types/system"
 	"net/http"
 )
 
 type TokenMiddleware struct {
-	accessSecret string
-	jQuantum     jquantum.JQuantumClient
+	accessSecret          string
+	apolloSecurityAccount apollo.SecurityClient
 }
 
-func NewTokenMiddleware(accessSecret string, jQuantum jquantum.JQuantumClient) *TokenMiddleware {
+func NewTokenMiddleware(accessSecret string, apolloSecurityAccount apollo.SecurityClient) *TokenMiddleware {
 	return &TokenMiddleware{
-		accessSecret: accessSecret,
-		jQuantum:     jQuantum,
+		accessSecret:          accessSecret,
+		apolloSecurityAccount: apolloSecurityAccount,
 	}
 }
 
@@ -54,16 +52,16 @@ func (m *TokenMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		scope := claims.Scope
 
 		if scope&system.SubsystemID.JQuantum == 0 {
-			httpx.Error(w, errors.New("denied"))
+			http.Error(w, "denied", http.StatusUnauthorized)
 			return
 		}
 
-		isValidated, err := m.jQuantum.ValidateToken(context.Background(), &jquantum.ValidateTokenReq{
+		isValidated, err := m.apolloSecurityAccount.ValidateSubsystemToken(context.Background(), &apollo.ValidateSubsystemTokenReq{
 			UserId:  claims.UserId,
 			TokenId: claims.TokenId,
 		})
 		if err != nil || !isValidated.Validated {
-			httpx.Error(w, errors.New("token is invalid"))
+			http.Error(w, "token is invalid", http.StatusUnauthorized)
 			return
 		}
 

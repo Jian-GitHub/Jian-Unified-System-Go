@@ -22,7 +22,10 @@ type Config struct {
 	RabbitMQ  rabbitMQ.RabbitMQ
 	RedisConf redis.RedisConf
 	JQuantum  struct {
-		BaseDir string
+		BaseDir     string
+		BaseUserDir string
+		BaseLibDir  string
+		Namespace   string
 	}
 	DB struct {
 		DataSource string

@@ -2,12 +2,15 @@ package svc
 
 import (
 	"github.com/bwmarrin/snowflake"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/apollo/apollo-api/internal/config"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	"jian-unified-system/jus-core/util"
+	"log"
+	"time"
 )
 
 type ServiceContext struct {
@@ -31,26 +34,59 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	client := zrpc.MustNewClient(c.ApolloRpc)
-	redisClient, err := redis.NewRedis(c.Redis)
-	if err != nil {
-		panic(err)
-	}
-	// 自动初始化雪花节点
-	if err := c.SetupSnowflake(); err != nil {
-		panic("初始化Snowflake失败: " + err.Error())
-	}
+	var (
+		loop        = true
+		err         error
+		client      zrpc.Client
+		redisClient *redis.Redis
+		node        *snowflake.Node
+		gs          *util.GeoService
+	)
+	for loop {
+		client, err = zrpc.NewClient(c.ApolloRpc)
+		if err != nil {
+			logx.Error("NewClient err:", err.Error())
+			log.Println("30 秒后重试")
+			time.Sleep(time.Second * 30)
+			continue
+		}
+		redisClient, err = redis.NewRedis(c.Redis)
+		if err != nil {
+			logx.Error("NewRedis err:", err.Error())
+			log.Println("30 秒后重试")
+			time.Sleep(time.Second * 30)
+			//panic(err)
+			continue
+		}
+		// 自动初始化雪花节点
+		if err := c.SetupSnowflake(); err != nil {
+			logx.Error("SetupSnowflake err:", err.Error())
+			log.Println("30 秒后重试")
+			time.Sleep(time.Second * 30)
+			//panic("初始化Snowflake失败: " + err.Error())
+			continue
+		}
 
-	node, err := snowflake.NewNode(c.Snowflake.NodeID)
-	if err != nil {
-		panic(err)
-	}
+		node, err = snowflake.NewNode(c.Snowflake.NodeID)
+		if err != nil {
+			logx.Error(err)
+			log.Println("30 秒后重试")
+			time.Sleep(time.Second * 30)
+			//panic(err)
+			continue
+		}
 
-	//sqlConn := sqlx.NewMysql(c.DB.DataSource)
+		//sqlConn := sqlx.NewMysql(c.DB.DataSource)
 
-	gs, err := util.NewGeoService()
-	if err != nil {
-		panic("GeoService 加载失败: " + err.Error())
+		gs, err = util.NewGeoService()
+		if err != nil {
+			logx.Error("GeoService 加载失败: " + err.Error())
+			log.Println("30 秒后重试")
+			time.Sleep(time.Second * 30)
+			continue
+		}
+
+		loop = false
 	}
 
 	OauthProviders := config.InitOAuthProviders(c)

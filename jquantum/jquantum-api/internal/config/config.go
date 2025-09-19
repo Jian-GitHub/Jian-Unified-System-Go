@@ -10,6 +10,7 @@ import (
 type Config struct {
 	rest.RestConf
 	JQuantumRpc zrpc.RpcClientConf
+	ApolloRpc   zrpc.RpcClientConf
 	Kafka       struct {
 		Brokers  []string
 		Topic    string

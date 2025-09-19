@@ -3,13 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	jobService "jian-unified-system/jquantum/jquantum-rpc/internal/service/job"
-	"jian-unified-system/jus-hermes/mq/rabbitMQ"
-
 	"jian-unified-system/jquantum/jquantum-rpc/internal/config"
 	jquantumServer "jian-unified-system/jquantum/jquantum-rpc/internal/server/jquantum"
+	jobService "jian-unified-system/jquantum/jquantum-rpc/internal/service/job"
 	"jian-unified-system/jquantum/jquantum-rpc/internal/svc"
 	"jian-unified-system/jquantum/jquantum-rpc/jquantum"
+	"jian-unified-system/jus-hermes/mq/rabbitMQ"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -27,11 +26,6 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
 
-	consumer := rabbitMQ.NewConsumer(c.RabbitMQ, ctx.Redis, jobService.NewExecutor(ctx, c.JQuantum.BaseDir).Process)
-	// 启动消费者
-	consumer.StartConsuming()
-	go ctx.StartKafkaConsumer()
-
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		jquantum.RegisterJQuantumServer(grpcServer, jquantumServer.NewJQuantumServer(ctx))
 
@@ -40,6 +34,11 @@ func main() {
 		}
 	})
 	defer s.Stop()
+
+	consumer := rabbitMQ.NewConsumer(c.RabbitMQ, ctx.Redis, jobService.NewExecutor(ctx).Process)
+	// 启动消费者
+	consumer.StartConsuming()
+	go ctx.StartKafkaConsumer()
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

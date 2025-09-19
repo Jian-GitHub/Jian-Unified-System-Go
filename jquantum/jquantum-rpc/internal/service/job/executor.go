@@ -20,20 +20,25 @@ import (
 )
 
 type Executor struct {
-	UserID  int64
-	JobID   string
-	svc     *svc.ServiceContext
-	baseDir string
-	dir     string
+	UserID int64
+	JobID  string
+	svc    *svc.ServiceContext
+	//baseDir string
+	exeDir            string
+	np                int64
+	codeFileName      string
+	structureFileName string
+	programFileName   string
+	hostsFileName     string
 }
 
-func NewExecutor(svc *svc.ServiceContext, baseDir string) *Executor {
+func NewExecutor(svc *svc.ServiceContext) *Executor {
 	return &Executor{
-		//UserID: userID,
-		//JobID:  jobID,
-		//dir:    filepath.Join(baseDir, strconv.FormatInt(userID, 10), jobID),
-		svc:     svc,
-		baseDir: baseDir,
+		svc:               svc,
+		codeFileName:      "code.cpp",
+		structureFileName: "structure.json",
+		programFileName:   "program",
+		hostsFileName:     "hosts",
 	}
 }
 
@@ -45,7 +50,7 @@ func (e *Executor) Process(body []byte) {
 	}
 	e.UserID = msg.UserID
 	e.JobID = msg.JobID
-	e.dir = filepath.Join(e.baseDir, strconv.FormatInt(msg.UserID, 10), msg.JobID)
+	e.exeDir = filepath.Join(e.svc.Config.JQuantum.BaseUserDir, strconv.FormatInt(msg.UserID, 10), msg.JobID)
 
 	//executor := joblogic.NewExecutor(msg.UserID, msg.JobID, c.config.JQuantum.BaseDir)
 	// Send Email - Notify User Job is processing
@@ -67,11 +72,9 @@ func (e *Executor) Process(body []byte) {
 
 // readJSONFile 读取JSON文件内容
 func (e *Executor) readJSONFile() ([]byte, error) {
-	fileName := "structure.json"
-	filePath := filepath.Join(e.dir, fileName)
-	data, err := os.ReadFile(filePath)
+	data, err := os.ReadFile(filepath.Join(e.exeDir, e.structureFileName))
 	if err != nil {
-		return nil, fmt.Errorf("无法读取JSON文件 %s: %v", fileName, err)
+		return nil, fmt.Errorf("无法读取JSON文件 %s: %v", e.structureFileName, err)
 	}
 	return data, nil
 }
@@ -109,12 +112,28 @@ func (e *Executor) GenerateCode() error {
 		result.Patterns = map[string]jquantum.PatternContent{}
 	}
 
+	// 判断集群可用状态, 内存是否足够
+	resource, err := e.svc.KubernetesDeployService.CollectClusterResource()
+	if err != nil {
+		return errorx.Wrap(err, "集群错误 无法采集集群资源数据")
+	}
+	if resource.MaxQubits < result.NumQubits {
+		return errorx.Wrap(err, fmt.Sprintf("资源不足错误 集群可用内存最大计算 %d 位, 当前任务计算 %d 位", resource.MaxQubits, result.NumQubits))
+	}
+
+	err = e.svc.KubernetesDeployService.GenerateHostsFile(resource, filepath.Join(e.svc.Config.JQuantum.BaseDir, e.hostsFileName))
+	if err != nil {
+		return errorx.Wrap(err, "MPI前置错误 无法生成 hosts 文件")
+	}
+
+	e.np = resource.TotalSlotsPow2
+
 	// 输出解析的信息
 	//fmt.Printf("解析成功: %d 量子比特, %d 模式, %d 序列项\n",
 	//	result.NumQubits, len(result.Patterns), len(result.Sequence))
 
 	// 创建转换器并生成代码
-	converter := code.NewConverter(e.dir, e.JobID)
+	converter := code.NewConverter(e.exeDir, e.JobID)
 	questCode, err := converter.CircuitToQuestJSON(result)
 	if err != nil {
 		//logx.Errorf("生成代码失败: %v", err)
@@ -122,7 +141,7 @@ func (e *Executor) GenerateCode() error {
 	}
 
 	// 输出生成的代码到文件
-	outputFile := filepath.Join(e.dir, "code.cpp")
+	outputFile := filepath.Join(e.exeDir, e.codeFileName)
 	err = os.WriteFile(outputFile, []byte(questCode), 0644)
 	if err != nil {
 		//logx.Errorf("写入输出文件失败: %v", err)
@@ -140,10 +159,10 @@ func (e *Executor) GenerateCode() error {
 // Compile MPICXX 编译可执行文件
 func (e *Executor) Compile() error {
 	cmd := exec.Command("mpicxx",
-		filepath.Join(e.dir, "code.cpp"),
-		"-o", filepath.Join(e.dir, "program"),
-		"-I/harmoniacore/jquantum",
-		"-L/harmoniacore/jquantum/lib",
+		filepath.Join(e.exeDir, e.codeFileName),
+		"-o", filepath.Join(e.exeDir, e.programFileName),
+		"-I"+e.svc.Config.JQuantum.BaseDir,
+		"-L"+e.svc.Config.JQuantum.BaseLibDir,
 		"-lQuEST-fp2+mt+mpi",
 		"-lm",
 		"-lstdc++",
@@ -175,14 +194,14 @@ func (e *Executor) Compile() error {
 
 func (e *Executor) Run() error {
 	cmd := exec.Command("mpirun", "--allow-run-as-root",
-		"--hostfile", "/harmoniacore/jquantum/hosts.txt",
-		"-np", "4",
-		filepath.Join(e.dir, "program"),
+		"--hostfile", filepath.Join(e.svc.Config.JQuantum.BaseDir, e.hostsFileName),
+		"-np", strconv.FormatInt(e.np, 10),
+		filepath.Join(e.exeDir, e.programFileName),
 	)
 	// 继承当前环境变量
 	cmd.Env = os.Environ()
 	// 添加 LD_LIBRARY_PATH
-	cmd.Env = append(cmd.Env, "LD_LIBRARY_PATH=/harmoniacore/jquantum/lib")
+	cmd.Env = append(cmd.Env, "LD_LIBRARY_PATH="+e.svc.Config.JQuantum.BaseLibDir)
 
 	// Send Email
 	//go func() {

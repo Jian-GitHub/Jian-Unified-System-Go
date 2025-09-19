@@ -51,7 +51,7 @@ func (l *RetrieveResultLogic) RetrieveResult(in *jquantum.RetrieveResultReq) (*j
 		panic("unhandled default case")
 	}
 
-	path := filepath.Join(l.svcCtx.Config.JQuantum.BaseDir, strconv.FormatInt(in.UserId, 10), in.JobId, "result.json")
+	path := filepath.Join(l.svcCtx.Config.JQuantum.BaseUserDir, strconv.FormatInt(in.UserId, 10), in.JobId, "result.json")
 	if !fileutil.Exist(path) {
 		return nil, errors.New("file not exist")
 	}
