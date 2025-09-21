@@ -11,11 +11,11 @@ type EmailConfig struct {
 
 func DefaultEmailConfig() *EmailConfig {
 	return &EmailConfig{
-		Host:        "mail.JianUnifiedSystem.com",
+		Host:        "smtp.example.com",
 		Port:        465,
-		DisplayName: "Hermes",
-		Username:    "noreply@jianunifiedsystem.com",
-		Password:    "KsW2MDpfrh",
-		From:        "noreply@jianunifiedsystem.com",
+		DisplayName: "EMAIL_DISPLAY_NAME",
+		Username:    "example@example.com",
+		Password:    "PASSWORD",
+		From:        "example@example.com",
 	}
 }

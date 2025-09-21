@@ -1,0 +1,54 @@
+Name: apollo-api
+Host: 0.0.0.0
+Port: 20100
+Timeout: 10000
+
+ApolloRpc:
+  Target: k8s://harmoniacore/apollo-rpc-svc:30100
+  Timeout: 10000
+
+Auth:
+  AccessSecret: "JWT_SECRET"
+  AccessExpire: 900
+
+SubSystem:
+  AccessSecret: "JWT_SECRET"
+  AccessExpire: 900
+
+Redis:
+  Host: redis.example.com
+  Type: node
+  Pass: REDIS_PASSWORD
+  Key: passkeys.rpc
+DB:
+  DataSource: MYSQL_DATABASE_URL
+Cache:
+  - Host: redis.example.com
+    Pass: REDIS_PASSWORD
+
+Snowflake:
+  NodeID: 1
+
+OAuth:
+  Github:
+    ClientID: GITHUB_CLIENT_ID
+    ClientSecret: GITHUB_CLIENT_SECRET
+    RedirectURL: GITHUB_REDIRECT_URL
+    Scopes:
+      - user
+      - user:email
+    UserInfoURL: https://api.github.com/user
+
+  Google:
+    ClientID: GOOGLE_CLIENT_ID
+    ClientSecret: GOOGLE_SECRET
+    RedirectURL: GOOGLE_REDIRECT_URL
+    Scopes:
+      - profile
+      - email
+      - https://www.googleapis.com/auth/user.birthday.read
+      - https://www.googleapis.com/auth/user.phonenumbers.read
+    UserInfoURL: https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,phoneNumbers,locales
+
+
+
