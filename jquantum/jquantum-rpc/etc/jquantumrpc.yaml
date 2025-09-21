@@ -1,0 +1,43 @@
+Name: jquantum-rpc
+ListenOn: 0.0.0.0:30101
+Timeout: 10000
+
+ApolloRpc:
+  Timeout: 10000
+  Target: k8s://harmoniacore/apollo-rpc-svc:30100
+
+Kafka:
+  Brokers:
+    - "kafka.example.com"
+  Topic: "KAFKA_TOPIC"
+  Username: "USER_NAME"
+  Password: "PASSWORD"
+  SASL: "SCRAM-SHA-512"
+  TLS: false
+
+RabbitMQ:
+  URL: amqp://USERNAME:PASSWORD@IP_ADDRESS:PORT/HOST
+  Exchange: EXCHANGE_NAME
+  Queue: QUEUE_NAME
+  RoutingKey: ROUTING_KEY
+  PrefetchCount: 1
+
+RedisConf:
+  Host: redis.example.com
+  Type: node
+  Pass: PASSWORD
+
+DB:
+  DataSource: MYSQL_DATABASE_URL
+Cache:
+  - Host: redis.example.com
+    Pass: PASSWORD
+
+JQuantum:
+  BaseDir: /harmoniacore/jquantum
+  BaseUserDir: /harmoniacore/jquantum/data/user
+  BaseLibDir: /harmoniacore/jquantum/lib
+  Namespace: harmoniacore
+
+
+
