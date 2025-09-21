@@ -1,0 +1,31 @@
+Name: jquantum-api
+Host: 0.0.0.0
+Port: 20101
+Timeout: 10000
+
+SubSystem:
+  AccessSecret: "<Your_System_Name>"
+  AccessExpire: 900
+
+JQuantumRpc:
+  Timeout: 10000
+  Target: k8s://<namespace>/<jquantum_rpc_service>:<port>
+
+ApolloRpc:
+  Target: k8s://<namespace>/<apollo_rpc_service>:<port>
+  Timeout: 10000
+
+Kafka:
+  Brokers:
+    - "<kafka_host>:<port>"
+  Topic: "<topic_name>"
+  Username: "<username>"
+  Password: "<password>"
+  SASL: "PLAIN"
+  TLS: false
+
+RabbitMQ:
+  URL: amqp://<username>:<password>@<host>:<port>/<vhost>
+  Exchange: <exchange_name>
+  Queue: <queue_name>
+  RoutingKey: <routing_key>

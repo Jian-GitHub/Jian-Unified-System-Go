@@ -1,0 +1,53 @@
+Name: apollo-api
+Host: 0.0.0.0
+Port: 20100
+Timeout: 10000
+
+ApolloRpc:
+  Target: k8s://<namespace>/<service>:<port>
+  Timeout: 10000
+
+Auth:
+  AccessSecret: "<Your_System_Name>"
+  AccessExpire: 900
+
+SubSystem:
+  AccessSecret: "<Your_System_Name>"
+  AccessExpire: 900
+
+Redis:
+  Host: <redis_host>:<port>
+  Type: node
+  Pass: <redis_password>
+  Key: passkeys.rpc
+
+DB:
+  DataSource: <username>:<password>@tcp(<db_host>:<db_port>)/<db_name>?charset=utf8mb4&parseTime=true&loc=<timezone>
+
+Cache:
+  - Host: <redis_host>:<port>
+    Pass: <redis_password>
+
+Snowflake:
+  NodeID: <node_id>
+
+OAuth:
+  Github:
+    ClientID: <github_client_id>
+    ClientSecret: <github_client_secret>
+    RedirectURL: <redirect_url>
+    Scopes:
+      - user
+      - user:email
+    UserInfoURL: https://api.github.com/user
+
+  Google:
+    ClientID: <google_client_id>
+    ClientSecret: <google_client_secret>
+    RedirectURL: <redirect_url>
+    Scopes:
+      - profile
+      - email
+      - https://www.googleapis.com/auth/user.birthday.read
+      - https://www.googleapis.com/auth/user.phonenumbers.read
+    UserInfoURL: https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,phoneNumbers,locales
