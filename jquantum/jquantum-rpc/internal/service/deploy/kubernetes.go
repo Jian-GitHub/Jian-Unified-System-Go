@@ -21,7 +21,7 @@ type ClusterResource struct {
 	TotalMem       int64
 	TotalSlots     int64
 	TotalSlotsPow2 int64
-	MaxQubits      int
+	MaxQubits      int64
 	Nodes          map[string]NodeResource
 }
 
@@ -41,10 +41,6 @@ type K8sDeployService struct {
 
 // NewK8sDeployService 创建 service
 func NewK8sDeployService(namespace string) (K8sDeployService, error) {
-	//cfg, err := rest.InClusterConfig()
-	//if err != nil {
-	//	return K8sDeployService{}, fmt.Errorf("load in-cluster config failed: %v", err)
-	//}
 	clientset, err := GetK8sClient()
 	if err != nil {
 		return K8sDeployService{}, fmt.Errorf("create clientset failed: %v", err)
@@ -170,7 +166,7 @@ func (s *K8sDeployService) CollectClusterResource() (*ClusterResource, error) {
 	if result.TotalMem > 0 {
 		const bytesPerComplex = int64(16)
 		maxStates := float64(result.TotalMem / bytesPerComplex)
-		result.MaxQubits = int(math.Floor(math.Log2(maxStates)))
+		result.MaxQubits = int64(math.Floor(math.Log2(maxStates)))
 	}
 
 	return result, nil

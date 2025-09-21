@@ -34,6 +34,14 @@ type (
 		BaseResponse
 		Result []byte `json:"result"`
 	}
+	ClusterInfoReq  {}
+	ClusterInfoResp {
+		BaseResponse
+		TotalCPU  int64 `json:"totalCpu"`
+		TotalMem  int64 `json:"totalMem"`
+		MaxQubits int64 `json:"maxQubits"`
+		Nodes     int64 `json:"nodes"`
+	}
 )
 
 // Account
@@ -52,5 +60,9 @@ service jquantum-api {
 	@handler RetrieveResult
 	// 返回: Token
 	post /retrieveResult (RetrieveResultReq) returns (RetrieveResultResp)
+
+	@handler ClusterInfo
+	// 返回: Token
+	post /clusterInfo (ClusterInfoReq) returns (ClusterInfoResp)
 }
 

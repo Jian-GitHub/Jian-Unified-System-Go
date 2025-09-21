@@ -19,6 +19,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Route{
 				{
 					Method:  http.MethodPost,
+					Path:    "/clusterInfo",
+					Handler: job.ClusterInfoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
 					Path:    "/retrieveResult",
 					Handler: job.RetrieveResultHandler(serverCtx),
 				},

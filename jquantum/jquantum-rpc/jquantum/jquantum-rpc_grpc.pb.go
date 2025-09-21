@@ -22,6 +22,7 @@ const (
 	JQuantum_Submit_FullMethodName         = "/jquantum.JQuantum/Submit"
 	JQuantum_RetrieveResult_FullMethodName = "/jquantum.JQuantum/RetrieveResult"
 	JQuantum_ValidateToken_FullMethodName  = "/jquantum.JQuantum/ValidateToken"
+	JQuantum_ClusterInfo_FullMethodName    = "/jquantum.JQuantum/ClusterInfo"
 )
 
 // JQuantumClient is the client API for JQuantum service.
@@ -34,7 +35,10 @@ type JQuantumClient interface {
 	Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error)
 	// RetrieveResult 获取计算任务结果
 	RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error)
+	// ValidateToken 验证子系统令牌
 	ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
+	// ClusterInfo 集群信息
+	ClusterInfo(ctx context.Context, in *ClusterInfoReq, opts ...grpc.CallOption) (*ClusterInfoResp, error)
 }
 
 type jQuantumClient struct {
@@ -75,6 +79,16 @@ func (c *jQuantumClient) ValidateToken(ctx context.Context, in *ValidateTokenReq
 	return out, nil
 }
 
+func (c *jQuantumClient) ClusterInfo(ctx context.Context, in *ClusterInfoReq, opts ...grpc.CallOption) (*ClusterInfoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ClusterInfoResp)
+	err := c.cc.Invoke(ctx, JQuantum_ClusterInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JQuantumServer is the server API for JQuantum service.
 // All implementations must embed UnimplementedJQuantumServer
 // for forward compatibility.
@@ -85,7 +99,10 @@ type JQuantumServer interface {
 	Submit(context.Context, *SubmitReq) (*SubmitResp, error)
 	// RetrieveResult 获取计算任务结果
 	RetrieveResult(context.Context, *RetrieveResultReq) (*RetrieveResultResp, error)
+	// ValidateToken 验证子系统令牌
 	ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error)
+	// ClusterInfo 集群信息
+	ClusterInfo(context.Context, *ClusterInfoReq) (*ClusterInfoResp, error)
 	mustEmbedUnimplementedJQuantumServer()
 }
 
@@ -104,6 +121,9 @@ func (UnimplementedJQuantumServer) RetrieveResult(context.Context, *RetrieveResu
 }
 func (UnimplementedJQuantumServer) ValidateToken(context.Context, *ValidateTokenReq) (*ValidateTokenResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
+}
+func (UnimplementedJQuantumServer) ClusterInfo(context.Context, *ClusterInfoReq) (*ClusterInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClusterInfo not implemented")
 }
 func (UnimplementedJQuantumServer) mustEmbedUnimplementedJQuantumServer() {}
 func (UnimplementedJQuantumServer) testEmbeddedByValue()                  {}
@@ -180,6 +200,24 @@ func _JQuantum_ValidateToken_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JQuantum_ClusterInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClusterInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JQuantumServer).ClusterInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: JQuantum_ClusterInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JQuantumServer).ClusterInfo(ctx, req.(*ClusterInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JQuantum_ServiceDesc is the grpc.ServiceDesc for JQuantum service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -198,6 +236,10 @@ var JQuantum_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateToken",
 			Handler:    _JQuantum_ValidateToken_Handler,
+		},
+		{
+			MethodName: "ClusterInfo",
+			Handler:    _JQuantum_ClusterInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

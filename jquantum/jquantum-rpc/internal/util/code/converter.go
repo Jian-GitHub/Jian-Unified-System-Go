@@ -18,11 +18,11 @@ func NewConverter(jobDir, jobId string) *Converter {
 	}
 }
 
-var supportGates = []string{
-	"h", "x", "y", "z", "s", "sdg", "t", "tdg", "sx", "sxdg", "rx", "ry", "rz", "p", "u", "cx",
-	"cz", "cy", "ch", "swap", "iswap", "cu3", "crx", "cry", "crz", "cu1", "rxx", "ryy",
-	"rzz", "rzx", "ccx", "cswap", "cswap", "mcp", "mcx",
-}
+//var supportGates = []string{
+//	"h", "x", "y", "z", "s", "sdg", "t", "tdg", "sx", "sxdg", "rx", "ry", "rz", "p", "u", "cx",
+//	"cz", "cy", "ch", "swap", "iswap", "cu3", "crx", "cry", "crz", "cu1", "rxx", "ryy",
+//	"rzz", "rzx", "ccx", "cswap", "cswap", "mcp", "mcx",
+//}
 
 // 安全的类型断言辅助函数
 func safeGetString(element interface{}) string {
@@ -147,7 +147,7 @@ func (c *Converter) generateSequenceCode(sequenceData []jquantum.Element, patter
 	}
 
 	sequenceCode := ""
-	instructionIndex := 0
+	var instructionIndex int64 = 0
 
 	for _, item := range sequenceData {
 		switch {
@@ -165,9 +165,9 @@ func (c *Converter) generateSequenceCode(sequenceData []jquantum.Element, patter
 				return "", errors.New("错误: 序列项缺少ref字段")
 			}
 
-			count := 1
+			var count int64 = 1
 			if cnt, ok := m["count"].(float64); ok {
-				count = int(cnt)
+				count = int64(cnt)
 			}
 
 			// 检查是否是模式引用

@@ -20,10 +20,9 @@ import (
 )
 
 type Executor struct {
-	UserID int64
-	JobID  string
-	svc    *svc.ServiceContext
-	//baseDir string
+	UserID            int64
+	JobID             string
+	svc               *svc.ServiceContext
 	exeDir            string
 	np                int64
 	codeFileName      string
@@ -52,7 +51,6 @@ func (e *Executor) Process(body []byte) {
 	e.JobID = msg.JobID
 	e.exeDir = filepath.Join(e.svc.Config.JQuantum.BaseUserDir, strconv.FormatInt(msg.UserID, 10), msg.JobID)
 
-	//executor := joblogic.NewExecutor(msg.UserID, msg.JobID, c.config.JQuantum.BaseDir)
 	// Send Email - Notify User Job is processing
 	e.sendEmail("JQuantum Job is Processing", "Your Quantum Computing Job (Job ID: "+e.JobID+") is processing now.")
 	e.updateJobState(1)
@@ -87,8 +85,6 @@ func (e *Executor) GenerateCode() error {
 		logx.Error("错误: %v", err)
 		return errorx.Wrap(err, "GenerateCode Error")
 	}
-
-	//jsonData := "{\"num_qubits\": 18, \"patterns\": {\"pattern_1\": {\"content\": [{\"count\": 18, \"ref\": \"h\"},\n                                        {\"count\": 13, \"ref\": \"x\"},\n                                        \"h\",\n                                        \"mcx\",\n                                        \"h\",\n                                        {\"count\": 26, \"ref\": \"x\"},\n                                        \"h\",\n                                        \"mcx\",\n                                        \"h\",\n                                        {\"count\": 13, \"ref\": \"x\"},\n                                        {\"count\": 18, \"ref\": \"h\"},\n                                        {\"count\": 18, \"ref\": \"x\"},\n                                        \"h\",\n                                        \"mcx\",\n                                        \"h\",\n                                        {\"count\": 18, \"ref\": \"x\"}],\n                            \"count\": 16,\n                            \"total\": 133}},\n \"sequence\": [{\"count\": 284, \"ref\": \"pattern_1\"}, {\"count\": 18, \"ref\": \"h\"}]}"
 
 	// 解析JSON数据
 	var result jquantum.ResultJSON
@@ -128,10 +124,6 @@ func (e *Executor) GenerateCode() error {
 
 	e.np = resource.TotalSlotsPow2
 
-	// 输出解析的信息
-	//fmt.Printf("解析成功: %d 量子比特, %d 模式, %d 序列项\n",
-	//	result.NumQubits, len(result.Patterns), len(result.Sequence))
-
 	// 创建转换器并生成代码
 	converter := code.NewConverter(e.exeDir, e.JobID)
 	questCode, err := converter.CircuitToQuestJSON(result)
@@ -148,11 +140,6 @@ func (e *Executor) GenerateCode() error {
 		return errorx.Wrap(err, "写入输出文件失败")
 	}
 
-	//fmt.Printf("代码已生成到: %s\n", outputFile)
-	//fmt.Printf("量子比特数: %d\n", result.NumQubits)
-	//if len(result.Patterns) == 0 {
-	//	fmt.Println("提示: 电路较小，未检测到重复模式")
-	//}
 	return nil
 }
 
@@ -202,43 +189,6 @@ func (e *Executor) Run() error {
 	cmd.Env = os.Environ()
 	// 添加 LD_LIBRARY_PATH
 	cmd.Env = append(cmd.Env, "LD_LIBRARY_PATH="+e.svc.Config.JQuantum.BaseLibDir)
-
-	// Send Email
-	//go func() {
-	//	fmt.Println("Email Starting")
-	//	resp, err := e.svc.ApolloAccount.UserInfo(context.Background(), &apollo.UserInfoReq{
-	//		UserId: e.UserID,
-	//	})
-	//	if err != nil {
-	//		fmt.Println("Apollo User Account Error: ", err.Error())
-	//		return
-	//	}
-	//	if resp == nil {
-	//		fmt.Println("No notification info email")
-	//		return
-	//	}
-	//
-	//	var user ap.User
-	//	err = json.Unmarshal(resp.UserBytes, &user)
-	//
-	//	name := user.FamilyName + user.MiddleName + user.GivenName
-	//	if name == "" {
-	//		name = "User"
-	//	}
-	//
-	//	err = e.svc.EmailService.Send(
-	//		user.NotificationEmail.String,
-	//		"JQuantum Job is Running",
-	//		"Hello " + name + "\nYour Quantum Computing Job (Job ID: " + e.JobID + ") is running now.",
-	//	)
-	//	if err != nil {
-	//		fmt.Println(err.Error())
-	//		return
-	//	} else {
-	//		fmt.Println("Email: ok")
-	//	}
-	//}()
-	//e.sendEmail("JQuantum Job is Running", "Your Quantum Computing Job (Job ID: "+e.JobID+") is running now.")
 
 	var stdoutBuf, stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf

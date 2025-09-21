@@ -94,8 +94,8 @@ func (l *SubmitLogic) Submit(data []byte) (types.SubmitResp, error) {
 
 	return types.SubmitResp{
 		BaseResponse: types.BaseResponse{
-			Code:    0,
-			Message: "",
+			Code:    200,
+			Message: "success",
 		},
 		JobID: resp.JobId,
 	}, nil

@@ -13,11 +13,7 @@ message SubmitReq {
 }
 
 message SubmitResp {
-//  int64 user_id = 1;
   string job_id = 1;
-//  string password = 3;
-//  string locate = 4;
-//  string language = 5;
 }
 message RetrieveResultReq {
   int64 user_id = 1;
@@ -37,15 +33,14 @@ message ValidateTokenResp {
   bool validated = 1;
 }
 
-//// ========== 登录流程 ==========
-//message LoginReq {
-//  string email = 1;
-//  string password = 2;
-//}
-//
-//message LoginResp {
-//  int64 user_id = 1;
-//}
+message ClusterInfoReq {}
+
+message ClusterInfoResp {
+  int64 totalCPU = 1;
+  int64 totalMem = 2;
+  int64 max_qubits = 3;
+  int64 nodes = 4;
+}
 
 
 // ================= 计算任务定义 =================
@@ -54,6 +49,8 @@ service JQuantum {
   rpc Submit (SubmitReq) returns (SubmitResp);
   // RetrieveResult 获取计算任务结果
   rpc RetrieveResult (RetrieveResultReq) returns (RetrieveResultResp);
-
+  // ValidateToken 验证子系统令牌
   rpc ValidateToken (ValidateTokenReq) returns (ValidateTokenResp);
+  // ClusterInfo 集群信息
+  rpc ClusterInfo (ClusterInfoReq) returns (ClusterInfoResp);
 }

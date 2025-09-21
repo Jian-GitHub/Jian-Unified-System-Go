@@ -14,6 +14,8 @@ import (
 )
 
 type (
+	ClusterInfoReq     = jquantum.ClusterInfoReq
+	ClusterInfoResp    = jquantum.ClusterInfoResp
 	RetrieveResultReq  = jquantum.RetrieveResultReq
 	RetrieveResultResp = jquantum.RetrieveResultResp
 	SubmitReq          = jquantum.SubmitReq
@@ -26,7 +28,10 @@ type (
 		Submit(ctx context.Context, in *SubmitReq, opts ...grpc.CallOption) (*SubmitResp, error)
 		// RetrieveResult 获取计算任务结果
 		RetrieveResult(ctx context.Context, in *RetrieveResultReq, opts ...grpc.CallOption) (*RetrieveResultResp, error)
+		// ValidateToken 验证子系统令牌
 		ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error)
+		// ClusterInfo 集群信息
+		ClusterInfo(ctx context.Context, in *ClusterInfoReq, opts ...grpc.CallOption) (*ClusterInfoResp, error)
 	}
 
 	defaultJQuantum struct {
@@ -52,7 +57,14 @@ func (m *defaultJQuantum) RetrieveResult(ctx context.Context, in *RetrieveResult
 	return client.RetrieveResult(ctx, in, opts...)
 }
 
+// ValidateToken 验证子系统令牌
 func (m *defaultJQuantum) ValidateToken(ctx context.Context, in *ValidateTokenReq, opts ...grpc.CallOption) (*ValidateTokenResp, error) {
 	client := jquantum.NewJQuantumClient(m.cli.Conn())
 	return client.ValidateToken(ctx, in, opts...)
+}
+
+// ClusterInfo 集群信息
+func (m *defaultJQuantum) ClusterInfo(ctx context.Context, in *ClusterInfoReq, opts ...grpc.CallOption) (*ClusterInfoResp, error) {
+	client := jquantum.NewJQuantumClient(m.cli.Conn())
+	return client.ClusterInfo(ctx, in, opts...)
 }

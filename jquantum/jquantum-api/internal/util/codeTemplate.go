@@ -25,7 +25,7 @@ const (
 // numQubits: 量子比特数
 // jobDir: 参数文件路径 - params.json
 // return: C++ 代码字符串
-func MainCodeTemplateBeginning(numQubits int, jobDir string) string {
+func MainCodeTemplateBeginning(numQubits int64, jobDir string) string {
 	return fmt.Sprintf(`// 重复模式-结束==========
 
 int main() {
@@ -53,7 +53,7 @@ int main() {
 // MainCodeTemplateEnding QuEST C++量子电路代码模版 - main - 结尾
 // numQubits: 量子比特数
 // return: C++ 代码字符串
-func MainCodeTemplateEnding(numQubits int) string {
+func MainCodeTemplateEnding(numQubits int64) string {
 	return fmt.Sprintf(`    // 应用量子门-结束==========
 
     // 报告状态

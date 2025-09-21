@@ -20,7 +20,7 @@ type GeoResult struct {
 }
 
 func NewGeoService() (*GeoService, error) {
-	db, err := geoip2.Open("../../jus-core/data/GeoLite2-City.mmdb")
+	db, err := geoip2.Open("/jus-core/data/GeoLite2-City.mmdb")
 	if err != nil {
 		return nil, err
 	}

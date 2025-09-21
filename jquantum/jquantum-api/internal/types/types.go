@@ -8,6 +8,17 @@ type BaseResponse struct {
 	Message string `json:"message"`
 }
 
+type ClusterInfoReq struct {
+}
+
+type ClusterInfoResp struct {
+	BaseResponse
+	TotalCPU  int64 `json:"totalCpu"`
+	TotalMem  int64 `json:"totalMem"`
+	MaxQubits int64 `json:"maxQubits"`
+	Nodes     int64 `json:"nodes"`
+}
+
 type Empty struct {
 }
 

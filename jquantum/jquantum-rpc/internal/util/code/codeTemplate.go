@@ -25,7 +25,7 @@ const (
 // shots: 采样数
 // jobDir: 参数文件路径 - params.json
 // return: C++ 代码字符串
-func MainCodeTemplateBeginning(numQubits, shots int, jobDir string, jobId string) string {
+func MainCodeTemplateBeginning(numQubits, shots int64, jobDir string, jobId string) string {
 	return fmt.Sprintf(`// 重复模式-结束==========
 
 int main() {

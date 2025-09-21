@@ -1,11 +1,8 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"jian-unified-system/jus-core/types/mq/jquantum"
-	"log"
-	"os"
 )
 
 type Converter struct {
@@ -13,11 +10,11 @@ type Converter struct {
 	Params    []interface{}
 }
 
-var supportGates = []string{
-	"h", "x", "y", "z", "s", "sdg", "t", "tdg", "sx", "sxdg", "rx", "ry", "rz", "p", "u", "cx",
-	"cz", "cy", "ch", "swap", "iswap", "cu3", "crx", "cry", "crz", "cu1", "rxx", "ryy",
-	"rzz", "rzx", "ccx", "cswap", "cswap", "mcp", "mcx",
-}
+//var supportGates = []string{
+//	"h", "x", "y", "z", "s", "sdg", "t", "tdg", "sx", "sxdg", "rx", "ry", "rz", "p", "u", "cx",
+//	"cz", "cy", "ch", "swap", "iswap", "cu3", "crx", "cry", "crz", "cu1", "rxx", "ryy",
+//	"rzz", "rzx", "ccx", "cswap", "cswap", "mcp", "mcx",
+//}
 
 // 安全的类型断言辅助函数
 func safeGetString(element interface{}) string {
@@ -140,7 +137,7 @@ func (c *Converter) generateSequenceCode(sequenceData []jquantum.Element, patter
 	}
 
 	sequenceCode := ""
-	instructionIndex := 0
+	var instructionIndex int64 = 0
 
 	for _, item := range sequenceData {
 		switch {
@@ -157,9 +154,9 @@ func (c *Converter) generateSequenceCode(sequenceData []jquantum.Element, patter
 				continue
 			}
 
-			count := 1
+			var count int64 = 1
 			if cnt, ok := m["count"].(float64); ok {
-				count = int(cnt)
+				count = int64(cnt)
 			}
 
 			// 检查是否是模式引用
@@ -218,68 +215,10 @@ func (c *Converter) circuitToQuestJSON(result jquantum.ResultJSON) string {
 }
 
 // 读取JSON文件内容
-func readJSONFile(filename string) ([]byte, error) {
-	data, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, fmt.Errorf("无法读取JSON文件 %s: %v", filename, err)
-	}
-	return data, nil
-}
-
-// 主函数：从JSON文件加载数据并生成代码
-func main() {
-	//if len(os.Args) < 2 {
-	//	fmt.Println("用法: go-program <json文件路径>")
-	//	fmt.Println("示例: go-program circuit.json")
-	//	os.Exit(1)
-	//}
-
-	//jsonFile := os.Args[1]
-
-	// 读取JSON文件
-	//jsonData, err := readJSONFile(jsonFile)
-	//if err != nil {
-	//	log.Fatalf("错误: %v", err)
-	//}
-
-	jsonData := "{\"num_qubits\": 18, \"patterns\": {\"pattern_1\": {\"content\": [{\"count\": 18, \"ref\": \"h\"},\n                                        {\"count\": 13, \"ref\": \"x\"},\n                                        \"h\",\n                                        \"mcx\",\n                                        \"h\",\n                                        {\"count\": 26, \"ref\": \"x\"},\n                                        \"h\",\n                                        \"mcx\",\n                                        \"h\",\n                                        {\"count\": 13, \"ref\": \"x\"},\n                                        {\"count\": 18, \"ref\": \"h\"},\n                                        {\"count\": 18, \"ref\": \"x\"},\n                                        \"h\",\n                                        \"mcx\",\n                                        \"h\",\n                                        {\"count\": 18, \"ref\": \"x\"}],\n                            \"count\": 16,\n                            \"total\": 133}},\n \"sequence\": [{\"count\": 284, \"ref\": \"pattern_1\"}, {\"count\": 18, \"ref\": \"h\"}]}"
-
-	// 解析JSON数据
-	var result jquantum.ResultJSON
-	err := json.Unmarshal([]byte(jsonData), &result)
-	if err != nil {
-		log.Fatalf("解析JSON失败: %v", err)
-	}
-
-	// 设置默认值（如果某些字段缺失）
-	if result.NumQubits == 0 {
-		result.NumQubits = 1 // 默认值
-	}
-	if result.Sequence == nil {
-		result.Sequence = []jquantum.Element{}
-	}
-	if result.Patterns == nil {
-		result.Patterns = map[string]jquantum.PatternContent{}
-	}
-
-	// 输出解析的信息
-	fmt.Printf("解析成功: %d 量子比特, %d 模式, %d 序列项\n",
-		result.NumQubits, len(result.Patterns), len(result.Sequence))
-
-	// 创建转换器并生成代码
-	converter := &Converter{}
-	questCode := converter.circuitToQuestJSON(result)
-
-	// 输出生成的代码到文件
-	outputFile := "generated_quest.cpp"
-	err = os.WriteFile(outputFile, []byte(questCode), 0644)
-	if err != nil {
-		log.Fatalf("写入输出文件失败: %v", err)
-	}
-
-	fmt.Printf("代码已生成到: %s\n", outputFile)
-	fmt.Printf("量子比特数: %d\n", result.NumQubits)
-	if len(result.Patterns) == 0 {
-		fmt.Println("提示: 电路较小，未检测到重复模式")
-	}
-}
+//func readJSONFile(filename string) ([]byte, error) {
+//	data, err := os.ReadFile(filename)
+//	if err != nil {
+//		return nil, fmt.Errorf("无法读取JSON文件 %s: %v", filename, err)
+//	}
+//	return data, nil
+//}

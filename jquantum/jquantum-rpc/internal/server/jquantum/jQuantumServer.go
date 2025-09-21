@@ -35,7 +35,14 @@ func (s *JQuantumServer) RetrieveResult(ctx context.Context, in *jquantum.Retrie
 	return l.RetrieveResult(in)
 }
 
+// ValidateToken 验证子系统令牌
 func (s *JQuantumServer) ValidateToken(ctx context.Context, in *jquantum.ValidateTokenReq) (*jquantum.ValidateTokenResp, error) {
 	l := jquantumlogic.NewValidateTokenLogic(ctx, s.svcCtx)
 	return l.ValidateToken(in)
+}
+
+// ClusterInfo 集群信息
+func (s *JQuantumServer) ClusterInfo(ctx context.Context, in *jquantum.ClusterInfoReq) (*jquantum.ClusterInfoResp, error) {
+	l := jquantumlogic.NewClusterInfoLogic(ctx, s.svcCtx)
+	return l.ClusterInfo(in)
 }

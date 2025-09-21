@@ -77,9 +77,8 @@ func (x *SubmitReq) GetThread() []byte {
 }
 
 type SubmitResp struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// int64 user_id = 1;
-	JobId         string `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	JobId         string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -313,6 +312,110 @@ func (x *ValidateTokenResp) GetValidated() bool {
 	return false
 }
 
+type ClusterInfoReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClusterInfoReq) Reset() {
+	*x = ClusterInfoReq{}
+	mi := &file_jquantum_rpc_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClusterInfoReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterInfoReq) ProtoMessage() {}
+
+func (x *ClusterInfoReq) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterInfoReq.ProtoReflect.Descriptor instead.
+func (*ClusterInfoReq) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{6}
+}
+
+type ClusterInfoResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TotalCPU      int64                  `protobuf:"varint,1,opt,name=totalCPU,proto3" json:"totalCPU,omitempty"`
+	TotalMem      int64                  `protobuf:"varint,2,opt,name=totalMem,proto3" json:"totalMem,omitempty"`
+	MaxQubits     int64                  `protobuf:"varint,3,opt,name=max_qubits,json=maxQubits,proto3" json:"max_qubits,omitempty"`
+	Nodes         int64                  `protobuf:"varint,4,opt,name=nodes,proto3" json:"nodes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClusterInfoResp) Reset() {
+	*x = ClusterInfoResp{}
+	mi := &file_jquantum_rpc_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClusterInfoResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterInfoResp) ProtoMessage() {}
+
+func (x *ClusterInfoResp) ProtoReflect() protoreflect.Message {
+	mi := &file_jquantum_rpc_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterInfoResp.ProtoReflect.Descriptor instead.
+func (*ClusterInfoResp) Descriptor() ([]byte, []int) {
+	return file_jquantum_rpc_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ClusterInfoResp) GetTotalCPU() int64 {
+	if x != nil {
+		return x.TotalCPU
+	}
+	return 0
+}
+
+func (x *ClusterInfoResp) GetTotalMem() int64 {
+	if x != nil {
+		return x.TotalMem
+	}
+	return 0
+}
+
+func (x *ClusterInfoResp) GetMaxQubits() int64 {
+	if x != nil {
+		return x.MaxQubits
+	}
+	return 0
+}
+
+func (x *ClusterInfoResp) GetNodes() int64 {
+	if x != nil {
+		return x.Nodes
+	}
+	return 0
+}
+
 var File_jquantum_rpc_proto protoreflect.FileDescriptor
 
 const file_jquantum_rpc_proto_rawDesc = "" +
@@ -333,11 +436,19 @@ const file_jquantum_rpc_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x19\n" +
 	"\btoken_id\x18\x02 \x01(\x03R\atokenId\"1\n" +
 	"\x11ValidateTokenResp\x12\x1c\n" +
-	"\tvalidated\x18\x01 \x01(\bR\tvalidated2\xd6\x01\n" +
+	"\tvalidated\x18\x01 \x01(\bR\tvalidated\"\x10\n" +
+	"\x0eClusterInfoReq\"~\n" +
+	"\x0fClusterInfoResp\x12\x1a\n" +
+	"\btotalCPU\x18\x01 \x01(\x03R\btotalCPU\x12\x1a\n" +
+	"\btotalMem\x18\x02 \x01(\x03R\btotalMem\x12\x1d\n" +
+	"\n" +
+	"max_qubits\x18\x03 \x01(\x03R\tmaxQubits\x12\x14\n" +
+	"\x05nodes\x18\x04 \x01(\x03R\x05nodes2\x9a\x02\n" +
 	"\bJQuantum\x123\n" +
 	"\x06Submit\x12\x13.jquantum.SubmitReq\x1a\x14.jquantum.SubmitResp\x12K\n" +
 	"\x0eRetrieveResult\x12\x1b.jquantum.RetrieveResultReq\x1a\x1c.jquantum.RetrieveResultResp\x12H\n" +
-	"\rValidateToken\x12\x1a.jquantum.ValidateTokenReq\x1a\x1b.jquantum.ValidateTokenRespB\fZ\n" +
+	"\rValidateToken\x12\x1a.jquantum.ValidateTokenReq\x1a\x1b.jquantum.ValidateTokenResp\x12B\n" +
+	"\vClusterInfo\x12\x18.jquantum.ClusterInfoReq\x1a\x19.jquantum.ClusterInfoRespB\fZ\n" +
 	"./jquantumb\x06proto3"
 
 var (
@@ -352,7 +463,7 @@ func file_jquantum_rpc_proto_rawDescGZIP() []byte {
 	return file_jquantum_rpc_proto_rawDescData
 }
 
-var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_jquantum_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_jquantum_rpc_proto_goTypes = []any{
 	(*SubmitReq)(nil),          // 0: jquantum.SubmitReq
 	(*SubmitResp)(nil),         // 1: jquantum.SubmitResp
@@ -360,16 +471,20 @@ var file_jquantum_rpc_proto_goTypes = []any{
 	(*RetrieveResultResp)(nil), // 3: jquantum.RetrieveResultResp
 	(*ValidateTokenReq)(nil),   // 4: jquantum.ValidateTokenReq
 	(*ValidateTokenResp)(nil),  // 5: jquantum.ValidateTokenResp
+	(*ClusterInfoReq)(nil),     // 6: jquantum.ClusterInfoReq
+	(*ClusterInfoResp)(nil),    // 7: jquantum.ClusterInfoResp
 }
 var file_jquantum_rpc_proto_depIdxs = []int32{
 	0, // 0: jquantum.JQuantum.Submit:input_type -> jquantum.SubmitReq
 	2, // 1: jquantum.JQuantum.RetrieveResult:input_type -> jquantum.RetrieveResultReq
 	4, // 2: jquantum.JQuantum.ValidateToken:input_type -> jquantum.ValidateTokenReq
-	1, // 3: jquantum.JQuantum.Submit:output_type -> jquantum.SubmitResp
-	3, // 4: jquantum.JQuantum.RetrieveResult:output_type -> jquantum.RetrieveResultResp
-	5, // 5: jquantum.JQuantum.ValidateToken:output_type -> jquantum.ValidateTokenResp
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: jquantum.JQuantum.ClusterInfo:input_type -> jquantum.ClusterInfoReq
+	1, // 4: jquantum.JQuantum.Submit:output_type -> jquantum.SubmitResp
+	3, // 5: jquantum.JQuantum.RetrieveResult:output_type -> jquantum.RetrieveResultResp
+	5, // 6: jquantum.JQuantum.ValidateToken:output_type -> jquantum.ValidateTokenResp
+	7, // 7: jquantum.JQuantum.ClusterInfo:output_type -> jquantum.ClusterInfoResp
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -386,7 +501,7 @@ func file_jquantum_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_jquantum_rpc_proto_rawDesc), len(file_jquantum_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
