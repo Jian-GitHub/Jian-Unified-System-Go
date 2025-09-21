@@ -1,0 +1,152 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apollo-api
+  namespace: harmoniacore
+  labels:
+    app: apollo-api
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: apollo-api
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: apollo-api
+        version: v1
+    spec:
+      serviceAccountName: find-endpoints
+      containers:
+        - name: apollo-api
+          image: ikarosu/jian-unified-system-go-apollo-api:v1
+          ports:
+            - containerPort: 20100
+          readinessProbe:
+            tcpSocket:
+              port: 20100
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 20100
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 200m
+              memory: 50Mi
+            limits:
+              cpu: 500m
+              memory: 100Mi
+          volumeMounts:
+            - name: timezone
+              mountPath: /etc/localtime
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apollo-api-svc
+  namespace: harmoniacore
+spec:
+  ports:
+    - port: 20100
+      targetPort: 20100
+      name: apollo-api
+  selector:
+    app: apollo-api
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: apollo-api-hpa-c
+  namespace: harmoniacore
+  labels:
+    app: apollo-api-hpa-c
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: apollo-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: apollo-api-hpa-m
+  namespace: harmoniacore
+  labels:
+    app: apollo-api-hpa-m
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: apollo-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: apollo-api-gateway
+  namespace: harmoniacore
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 20100
+        name: apollo-api
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: apollo-api-vs
+  namespace: harmoniacore
+spec:
+  hosts:
+#    - "account.api.jianunifiedsystem.com"   # 外部域名，生产可改为真实域名
+    - "*"
+  gateways:
+    - apollo-api-gateway  # 默认 Istio ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: "/"  # 所有 / 开头请求
+      route:
+        - destination:
+            host: apollo-api-svc.harmoniacore.svc.cluster.local  # ClusterIP Service
+            port:
+              number: 20100

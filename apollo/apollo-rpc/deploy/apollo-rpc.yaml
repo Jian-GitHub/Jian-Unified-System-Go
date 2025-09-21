@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apollo-rpc
+  namespace: harmoniacore
+  labels:
+    app: apollo-rpc
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: apollo-rpc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: apollo-rpc
+        version: v1
+    spec:
+      serviceAccountName: find-endpoints
+      containers:
+      - name: apollo-rpc
+        image: ikarosu/jian-unified-system-go-apollo-rpc:v1
+        ports:
+        - containerPort: 30100
+        readinessProbe:
+          tcpSocket:
+            port: 30100
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 30100
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 200m
+            memory: 50Mi
+          limits:
+            cpu: 500m
+            memory: 100Mi
+        volumeMounts:
+        - name: timezone
+          mountPath: /etc/localtime
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apollo-rpc-svc
+  namespace: harmoniacore
+spec:
+  ports:
+  - port: 30100
+    targetPort: 30100
+  selector:
+    app: apollo-rpc
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: apollo-rpc-hpa-c
+  namespace: harmoniacore
+  labels:
+    app: apollo-rpc-hpa-c
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: apollo-rpc
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: apollo-rpc-hpa-m
+  namespace: harmoniacore
+  labels:
+    app: apollo-rpc-hpa-m
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: apollo-rpc
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

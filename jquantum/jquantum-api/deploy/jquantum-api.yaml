@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jquantum-api
+  namespace: harmoniacore
+  labels:
+    app: jquantum-api
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: jquantum-api
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: jquantum-api
+        version: v1
+    spec:
+      serviceAccountName: find-endpoints
+      containers:
+      - name: jquantum-api
+        image: ikarosu/jian-unified-system-go-jquantum-api:v1
+        ports:
+        - containerPort: 20101
+        readinessProbe:
+          tcpSocket:
+            port: 20101
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 20101
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 200m
+            memory: 50Mi
+          limits:
+            cpu: 500m
+            memory: 100Mi
+        volumeMounts:
+        - name: timezone
+          mountPath: /etc/localtime
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jquantum-api-svc
+  namespace: harmoniacore
+spec:
+  ports:
+    - port: 20101
+      targetPort: 20101
+      name: jquantum-api
+  selector:
+    app: jquantum-api
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: jquantum-api-hpa-c
+  namespace: harmoniacore
+  labels:
+    app: jquantum-api-hpa-c
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: jquantum-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: jquantum-api-hpa-m
+  namespace: harmoniacore
+  labels:
+    app: jquantum-api-hpa-m
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: jquantum-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: jquantum-api-gateway
+  namespace: harmoniacore
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 20101
+        name: jquantum-api
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jquantum-api-vs
+  namespace: harmoniacore
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - jquantum-api-gateway  # 默认 Istio ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: "/"  # 所有 / 开头请求
+      route:
+        - destination:
+            host: jquantum-api-svc.harmoniacore.svc.cluster.local  # ClusterIP Service
+            port:
+              number: 20101

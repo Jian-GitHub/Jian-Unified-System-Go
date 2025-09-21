@@ -1,0 +1,130 @@
+# ===============================
+# Namespace
+# ===============================
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  name: harmoniacore
+#
+#---
+# ===============================
+# ServiceAccount
+# ===============================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jquantum-rpc-sa
+  namespace: harmoniacore
+
+---
+# ===============================
+# ClusterRole (节点级别 + Pod 发现)
+# ===============================
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: ClusterRole
+#metadata:
+#  name: jquantum-rpc-all
+#rules:
+#  # Pod 级别资源（服务发现）
+#  - apiGroups: [""]
+#    resources: ["pods"]
+#    verbs: ["get", "list", "watch"]
+#  # Node 级别资源（节点权限）
+#  - apiGroups: [""]
+#    resources: ["nodes"]
+#    verbs: ["get", "list", "watch"]
+#
+#---
+# ===============================
+# ClusterRoleBinding
+# ===============================
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: ClusterRoleBinding
+#metadata:
+#  name: jquantum-rpc-all-binding
+#subjects:
+#  - kind: ServiceAccount
+#    name: jquantum-rpc-sa
+#    namespace: harmoniacore
+#roleRef:
+#  kind: ClusterRole
+#  name: jquantum-rpc-all
+#  apiGroup: rbac.authorization.k8s.io
+#
+#---
+# ===============================
+# Service
+# ===============================
+apiVersion: v1
+kind: Service
+metadata:
+  name: jquantum-rpc-svc
+  namespace: harmoniacore
+  labels:
+    app: jquantum-rpc
+    version: v1
+spec:
+  selector:
+    app: jquantum-rpc
+    version: v1
+  ports:
+    - name: rpc
+      port: 30101
+      targetPort: 30101
+  type: ClusterIP
+
+---
+# ===============================
+# DaemonSet
+# ===============================
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: jquantum-rpc
+  namespace: harmoniacore
+  labels:
+    app: jquantum-rpc
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: jquantum-rpc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: jquantum-rpc
+        version: v1
+    spec:
+      serviceAccountName: find-endpoints
+      containers:
+        - name: jquantum-rpc
+          image: ikarosu/jian-unified-system-go-jquantum-rpc:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 30101
+          # 健康检查，保证异常时重启
+          readinessProbe:
+            tcpSocket:
+              port: 30101
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 30101
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          # 时间和数据目录挂载
+          volumeMounts:
+            - name: timezone
+              mountPath: /etc/localtime
+            - name: harmoniacore-jquantum-data
+              mountPath: /harmoniacore/jquantum
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+        - name: harmoniacore-jquantum-data
+          hostPath:
+            path: /harmoniacore/jquantum
+            type: DirectoryOrCreate
