@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/zeromicro/go-zero/core/errorx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
@@ -14,6 +15,8 @@ import (
 	"jian-unified-system/apollo/apollo-rpc/internal/types"
 	passkeyUtil "jian-unified-system/apollo/apollo-rpc/util"
 	ap "jian-unified-system/jus-core/data/mysql/apollo"
+	"strconv"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -33,7 +36,7 @@ func NewFinishRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 // FinishRegistration Passkeys Registration - Step 2
-func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRegistrationReq) (*apollo.Empty, error) {
+func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRegistrationReq) (*apollo.PasskeysFinishRegistrationResp, error) {
 	// 1. Check params
 	if len(in.CredentialJson) == 0 || len(in.SessionData) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "missing required fields")
@@ -50,6 +53,11 @@ func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRe
 		return nil, status.Error(codes.InvalidArgument, "invalid credential format")
 	}
 
+	displayName := in.Name
+	if len(displayName) == 0 {
+		displayName = strconv.FormatInt(in.UserId, 10)
+	}
+
 	webauthnUser := &types.WebauthnUser{ID: in.UserId}
 
 	// 4. Check credential
@@ -59,29 +67,55 @@ func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRe
 		req,
 	)
 	if err != nil {
-		fmt.Println("verify fail: %v", err)
+		fmt.Printf("verify fail: %v \n", err)
 		return nil, status.Error(codes.Unauthenticated, "webauthn verification failed: "+err.Error())
 	}
 
-	_, err = l.svcCtx.UserModel.Insert(
-		l.ctx,
-		&ap.User{
-			Id:       in.UserId,
-			Locate:   in.Locate,
-			Language: in.Language,
+	if in.Type {
+		_, err = l.svcCtx.UserModel.Insert(
+			l.ctx,
+			&ap.User{
+				Id:       in.UserId,
+				Locate:   in.Locate,
+				Language: in.Language,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	transport, err := json.Marshal(credential.Transport)
+	if err != nil {
+		return nil, errorx.Wrap(err, "marshal credential transport failed")
+	}
+
+	_, err = l.svcCtx.PasskeyModel.Insert(l.ctx, &ap.Passkey{
+		CredentialId: base64.RawURLEncoding.EncodeToString(credential.ID),
+		UserId:       webauthnUser.ID,
+		DisplayName:  displayName,
+		PublicKey:    base64.RawURLEncoding.EncodeToString(credential.PublicKey),
+		SignCount:    int64(credential.Authenticator.SignCount),
+		Transports: sql.NullString{
+			String: string(transport),
+			Valid:  true,
 		},
-	)
+	})
 	if err != nil {
-		return nil, err
-	}
-
-	err = l.saveCredential(webauthnUser.ID, credential)
-	if err != nil {
-		_ = l.svcCtx.UserModel.Delete(l.ctx, in.UserId)
-		fmt.Println("save Credential fail: %v", err)
+		if in.Type {
+			_ = l.svcCtx.UserModel.Delete(l.ctx, in.UserId)
+		}
+		fmt.Printf("save Credential fail: %v \n", err)
 		return nil, status.Error(codes.Unauthenticated, "webauthn verification failed: "+err.Error())
 	}
-	return &apollo.Empty{}, nil
+	date := time.Now()
+	return &apollo.PasskeysFinishRegistrationResp{
+		Id:    base64.RawURLEncoding.EncodeToString(credential.ID),
+		Name:  displayName,
+		Year:  int64(date.Year()),
+		Month: int64(date.Month()),
+		Day:   int64(date.Day()),
+	}, nil
 }
 
 func (l *FinishRegistrationLogic) saveCredential(uid int64, credential *webauthn.Credential) error {

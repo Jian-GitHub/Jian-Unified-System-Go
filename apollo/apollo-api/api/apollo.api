@@ -169,6 +169,56 @@ service apollo-api {
 }
 
 type (
+	// 绑定-阶段1 请求
+	BindStartReq {
+		Name string `json:"name" validate:"required"`
+	}
+	// 绑定-阶段1 响应
+	BindStartResp {
+		BaseResponse
+		BindStartRespData {
+			OptionsJson string `json:"options_json"` // WebAuthn注册选项
+			SessionID   string `json:"session_id"` // 会话标识
+		} `json:"data"`
+	}
+	// 绑定-阶段2 请求
+	BindFinishReq {
+		Name       string `json:"name"`
+		SessionID  string `json:"session_id" validate:"required"`
+		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
+	}
+	// 绑定-阶段2 响应
+	BindFinishResp {
+		BaseResponse
+		BindFinishRespData {
+			id   string      `json:"id"`
+			Name string      `json:"name"`
+			Date RespnseDate `json:"date"`
+		} `json:"data"`
+	}
+)
+
+// 注册路由
+@server (
+	prefix: /v1/passkeys
+	group:  passkeys
+	jwt:    Auth
+)
+service apollo-api {
+	// BindStart 绑定通行密钥 - 第一步
+	@handler BindStart
+	// 返回:
+	//   1. WebAuthn 绑定选项 - OptionsJson string `json:"options_json"`
+	//   2. 会话标识 - SessionID   string `json:"session_id"`
+	post /bind/start (BindStartReq) returns (BindStartResp)
+
+	// BindFinish 绑定通行密钥 - 第二步
+	@handler BindFinish
+	// 返回: Passkeys Info
+	post /bind/finish (BindFinishReq) returns (BindFinishResp)
+}
+
+type (
 	// 获取用户信息
 	GetUserInfoReq  {}
 	GetUserInfoResp {

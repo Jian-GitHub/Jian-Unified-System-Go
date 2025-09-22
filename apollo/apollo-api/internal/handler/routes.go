@@ -105,6 +105,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodPost,
+				Path:    "/bind/finish",
+				Handler: passkeys.BindFinishHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/bind/start",
+				Handler: passkeys.BindStartHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/v1/passkeys"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
 				Method:  http.MethodGet,
 				Path:    "/Callback/:provider",
 				Handler: thirdParty.CallbackHandler(serverCtx),

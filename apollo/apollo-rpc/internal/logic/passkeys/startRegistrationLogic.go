@@ -55,7 +55,7 @@ func (l *StartRegistrationLogic) StartRegistration(in *apollo.PasskeysStartRegis
 	// 3. CredentialCreation JSON
 	creationJson, err := json.Marshal(creation)
 	if err != nil {
-		return nil, errorx.Wrap(errors.New("Can not Marshal creation JSON"), "failed to marshal options")
+		return nil, errorx.Wrap(errors.New("can not Marshal creation JSON"), "failed to marshal options")
 	}
 
 	// Serialize SessionData

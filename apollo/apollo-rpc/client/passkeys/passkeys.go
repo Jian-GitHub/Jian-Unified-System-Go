@@ -14,41 +14,42 @@ import (
 )
 
 type (
-	Empty                         = apollo.Empty
-	FindTenSubsystemTokensReq     = apollo.FindTenSubsystemTokensReq
-	FindTenSubsystemTokensResp    = apollo.FindTenSubsystemTokensResp
-	GenerateSubsystemTokenReq     = apollo.GenerateSubsystemTokenReq
-	GenerateSubsystemTokenResp    = apollo.GenerateSubsystemTokenResp
-	LoginReq                      = apollo.LoginReq
-	LoginResp                     = apollo.LoginResp
-	PasskeysFinishLoginReq        = apollo.PasskeysFinishLoginReq
-	PasskeysFinishLoginResp       = apollo.PasskeysFinishLoginResp
-	PasskeysFinishRegistrationReq = apollo.PasskeysFinishRegistrationReq
-	PasskeysStartLoginResp        = apollo.PasskeysStartLoginResp
-	PasskeysStartRegistrationReq  = apollo.PasskeysStartRegistrationReq
-	PasskeysStartRegistrationResp = apollo.PasskeysStartRegistrationResp
-	PasswordUpdatedDate           = apollo.PasswordUpdatedDate
-	RegistrationReq               = apollo.RegistrationReq
-	RemoveSubsystemTokenReq       = apollo.RemoveSubsystemTokenReq
-	RemoveSubsystemTokenResp      = apollo.RemoveSubsystemTokenResp
-	SubsystemToken                = apollo.SubsystemToken
-	ThirdPartyAccounts            = apollo.ThirdPartyAccounts
-	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
-	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
-	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
-	UserContact                   = apollo.UserContact
-	UserInfoReq                   = apollo.UserInfoReq
-	UserInfoResp                  = apollo.UserInfoResp
-	UserSecurityInfoReq           = apollo.UserSecurityInfoReq
-	UserSecurityInfoResp          = apollo.UserSecurityInfoResp
-	ValidateSubsystemTokenReq     = apollo.ValidateSubsystemTokenReq
-	ValidateSubsystemTokenResp    = apollo.ValidateSubsystemTokenResp
+	Empty                          = apollo.Empty
+	FindTenSubsystemTokensReq      = apollo.FindTenSubsystemTokensReq
+	FindTenSubsystemTokensResp     = apollo.FindTenSubsystemTokensResp
+	GenerateSubsystemTokenReq      = apollo.GenerateSubsystemTokenReq
+	GenerateSubsystemTokenResp     = apollo.GenerateSubsystemTokenResp
+	LoginReq                       = apollo.LoginReq
+	LoginResp                      = apollo.LoginResp
+	PasskeysFinishLoginReq         = apollo.PasskeysFinishLoginReq
+	PasskeysFinishLoginResp        = apollo.PasskeysFinishLoginResp
+	PasskeysFinishRegistrationReq  = apollo.PasskeysFinishRegistrationReq
+	PasskeysFinishRegistrationResp = apollo.PasskeysFinishRegistrationResp
+	PasskeysStartLoginResp         = apollo.PasskeysStartLoginResp
+	PasskeysStartRegistrationReq   = apollo.PasskeysStartRegistrationReq
+	PasskeysStartRegistrationResp  = apollo.PasskeysStartRegistrationResp
+	PasswordUpdatedDate            = apollo.PasswordUpdatedDate
+	RegistrationReq                = apollo.RegistrationReq
+	RemoveSubsystemTokenReq        = apollo.RemoveSubsystemTokenReq
+	RemoveSubsystemTokenResp       = apollo.RemoveSubsystemTokenResp
+	SubsystemToken                 = apollo.SubsystemToken
+	ThirdPartyAccounts             = apollo.ThirdPartyAccounts
+	ThirdPartyBindReq              = apollo.ThirdPartyBindReq
+	ThirdPartyContinueReq          = apollo.ThirdPartyContinueReq
+	ThirdPartyContinueResp         = apollo.ThirdPartyContinueResp
+	UserContact                    = apollo.UserContact
+	UserInfoReq                    = apollo.UserInfoReq
+	UserInfoResp                   = apollo.UserInfoResp
+	UserSecurityInfoReq            = apollo.UserSecurityInfoReq
+	UserSecurityInfoResp           = apollo.UserSecurityInfoResp
+	ValidateSubsystemTokenReq      = apollo.ValidateSubsystemTokenReq
+	ValidateSubsystemTokenResp     = apollo.ValidateSubsystemTokenResp
 
 	Passkeys interface {
 		// 注册
 		StartRegistration(ctx context.Context, in *PasskeysStartRegistrationReq, opts ...grpc.CallOption) (*PasskeysStartRegistrationResp, error)
 		// FinishRegistration 注册第二步 - 完成
-		FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*Empty, error)
+		FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*PasskeysFinishRegistrationResp, error)
 		// 登录
 		StartLogin(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PasskeysStartLoginResp, error)
 		// FinishLogin 登陆第二步 - 完成 返回用户id
@@ -73,7 +74,7 @@ func (m *defaultPasskeys) StartRegistration(ctx context.Context, in *PasskeysSta
 }
 
 // FinishRegistration 注册第二步 - 完成
-func (m *defaultPasskeys) FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*Empty, error) {
+func (m *defaultPasskeys) FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*PasskeysFinishRegistrationResp, error) {
 	client := apollo.NewPasskeysClient(m.cli.Conn())
 	return client.FinishRegistration(ctx, in, opts...)
 }

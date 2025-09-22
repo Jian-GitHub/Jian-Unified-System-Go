@@ -30,7 +30,7 @@ func (s *PasskeysServer) StartRegistration(ctx context.Context, in *apollo.Passk
 }
 
 // FinishRegistration 注册第二步 - 完成
-func (s *PasskeysServer) FinishRegistration(ctx context.Context, in *apollo.PasskeysFinishRegistrationReq) (*apollo.Empty, error) {
+func (s *PasskeysServer) FinishRegistration(ctx context.Context, in *apollo.PasskeysFinishRegistrationReq) (*apollo.PasskeysFinishRegistrationResp, error) {
 	l := passkeyslogic.NewFinishRegistrationLogic(ctx, s.svcCtx)
 	return l.FinishRegistration(in)
 }

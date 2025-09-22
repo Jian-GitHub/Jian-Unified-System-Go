@@ -815,6 +815,8 @@ type PasskeysFinishRegistrationReq struct {
 	SessionData    []byte                 `protobuf:"bytes,3,opt,name=session_data,json=sessionData,proto3" json:"session_data,omitempty"`          // 新增：StartRegistration返回的session_data
 	Locate         string                 `protobuf:"bytes,4,opt,name=Locate,proto3" json:"Locate,omitempty"`
 	Language       string                 `protobuf:"bytes,5,opt,name=Language,proto3" json:"Language,omitempty"`
+	Type           bool                   `protobuf:"varint,6,opt,name=type,proto3" json:"type,omitempty"`
+	Name           string                 `protobuf:"bytes,7,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -884,6 +886,96 @@ func (x *PasskeysFinishRegistrationReq) GetLanguage() string {
 	return ""
 }
 
+func (x *PasskeysFinishRegistrationReq) GetType() bool {
+	if x != nil {
+		return x.Type
+	}
+	return false
+}
+
+func (x *PasskeysFinishRegistrationReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type PasskeysFinishRegistrationResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`     // 必须与StartRegistration一致
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"` // 前端返回的完整认证数据
+	Year          int64                  `protobuf:"varint,3,opt,name=year,proto3" json:"year,omitempty"`
+	Month         int64                  `protobuf:"varint,4,opt,name=month,proto3" json:"month,omitempty"`
+	Day           int64                  `protobuf:"varint,5,opt,name=day,proto3" json:"day,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PasskeysFinishRegistrationResp) Reset() {
+	*x = PasskeysFinishRegistrationResp{}
+	mi := &file_apollo_rpc_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PasskeysFinishRegistrationResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PasskeysFinishRegistrationResp) ProtoMessage() {}
+
+func (x *PasskeysFinishRegistrationResp) ProtoReflect() protoreflect.Message {
+	mi := &file_apollo_rpc_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PasskeysFinishRegistrationResp.ProtoReflect.Descriptor instead.
+func (*PasskeysFinishRegistrationResp) Descriptor() ([]byte, []int) {
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *PasskeysFinishRegistrationResp) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PasskeysFinishRegistrationResp) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *PasskeysFinishRegistrationResp) GetYear() int64 {
+	if x != nil {
+		return x.Year
+	}
+	return 0
+}
+
+func (x *PasskeysFinishRegistrationResp) GetMonth() int64 {
+	if x != nil {
+		return x.Month
+	}
+	return 0
+}
+
+func (x *PasskeysFinishRegistrationResp) GetDay() int64 {
+	if x != nil {
+		return x.Day
+	}
+	return 0
+}
+
 // ========== 登录流程 ==========
 type PasskeysStartLoginResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -895,7 +987,7 @@ type PasskeysStartLoginResp struct {
 
 func (x *PasskeysStartLoginResp) Reset() {
 	*x = PasskeysStartLoginResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[14]
+	mi := &file_apollo_rpc_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -907,7 +999,7 @@ func (x *PasskeysStartLoginResp) String() string {
 func (*PasskeysStartLoginResp) ProtoMessage() {}
 
 func (x *PasskeysStartLoginResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[14]
+	mi := &file_apollo_rpc_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -920,7 +1012,7 @@ func (x *PasskeysStartLoginResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysStartLoginResp.ProtoReflect.Descriptor instead.
 func (*PasskeysStartLoginResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{14}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PasskeysStartLoginResp) GetOptionsJson() []byte {
@@ -947,7 +1039,7 @@ type PasskeysFinishLoginReq struct {
 
 func (x *PasskeysFinishLoginReq) Reset() {
 	*x = PasskeysFinishLoginReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[15]
+	mi := &file_apollo_rpc_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -959,7 +1051,7 @@ func (x *PasskeysFinishLoginReq) String() string {
 func (*PasskeysFinishLoginReq) ProtoMessage() {}
 
 func (x *PasskeysFinishLoginReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[15]
+	mi := &file_apollo_rpc_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -972,7 +1064,7 @@ func (x *PasskeysFinishLoginReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysFinishLoginReq.ProtoReflect.Descriptor instead.
 func (*PasskeysFinishLoginReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{15}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PasskeysFinishLoginReq) GetCredentialJson() string {
@@ -998,7 +1090,7 @@ type PasskeysFinishLoginResp struct {
 
 func (x *PasskeysFinishLoginResp) Reset() {
 	*x = PasskeysFinishLoginResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[16]
+	mi := &file_apollo_rpc_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1010,7 +1102,7 @@ func (x *PasskeysFinishLoginResp) String() string {
 func (*PasskeysFinishLoginResp) ProtoMessage() {}
 
 func (x *PasskeysFinishLoginResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[16]
+	mi := &file_apollo_rpc_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1023,7 +1115,7 @@ func (x *PasskeysFinishLoginResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PasskeysFinishLoginResp.ProtoReflect.Descriptor instead.
 func (*PasskeysFinishLoginResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{16}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PasskeysFinishLoginResp) GetUserId() int64 {
@@ -1045,7 +1137,7 @@ type ThirdPartyBindReq struct {
 
 func (x *ThirdPartyBindReq) Reset() {
 	*x = ThirdPartyBindReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[17]
+	mi := &file_apollo_rpc_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1057,7 +1149,7 @@ func (x *ThirdPartyBindReq) String() string {
 func (*ThirdPartyBindReq) ProtoMessage() {}
 
 func (x *ThirdPartyBindReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[17]
+	mi := &file_apollo_rpc_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,7 +1162,7 @@ func (x *ThirdPartyBindReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdPartyBindReq.ProtoReflect.Descriptor instead.
 func (*ThirdPartyBindReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{17}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ThirdPartyBindReq) GetToken() []byte {
@@ -1093,7 +1185,7 @@ type ThirdPartyContinueReq struct {
 
 func (x *ThirdPartyContinueReq) Reset() {
 	*x = ThirdPartyContinueReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[18]
+	mi := &file_apollo_rpc_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1105,7 +1197,7 @@ func (x *ThirdPartyContinueReq) String() string {
 func (*ThirdPartyContinueReq) ProtoMessage() {}
 
 func (x *ThirdPartyContinueReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[18]
+	mi := &file_apollo_rpc_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1118,7 +1210,7 @@ func (x *ThirdPartyContinueReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdPartyContinueReq.ProtoReflect.Descriptor instead.
 func (*ThirdPartyContinueReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{18}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ThirdPartyContinueReq) GetProvider() string {
@@ -1151,7 +1243,7 @@ type ThirdPartyContinueResp struct {
 
 func (x *ThirdPartyContinueResp) Reset() {
 	*x = ThirdPartyContinueResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[19]
+	mi := &file_apollo_rpc_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1163,7 +1255,7 @@ func (x *ThirdPartyContinueResp) String() string {
 func (*ThirdPartyContinueResp) ProtoMessage() {}
 
 func (x *ThirdPartyContinueResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[19]
+	mi := &file_apollo_rpc_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1176,7 +1268,7 @@ func (x *ThirdPartyContinueResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdPartyContinueResp.ProtoReflect.Descriptor instead.
 func (*ThirdPartyContinueResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{19}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ThirdPartyContinueResp) GetUserId() int64 {
@@ -1198,7 +1290,7 @@ type GenerateSubsystemTokenReq struct {
 
 func (x *GenerateSubsystemTokenReq) Reset() {
 	*x = GenerateSubsystemTokenReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[20]
+	mi := &file_apollo_rpc_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1210,7 +1302,7 @@ func (x *GenerateSubsystemTokenReq) String() string {
 func (*GenerateSubsystemTokenReq) ProtoMessage() {}
 
 func (x *GenerateSubsystemTokenReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[20]
+	mi := &file_apollo_rpc_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1315,7 @@ func (x *GenerateSubsystemTokenReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateSubsystemTokenReq.ProtoReflect.Descriptor instead.
 func (*GenerateSubsystemTokenReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{20}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GenerateSubsystemTokenReq) GetUserId() int64 {
@@ -1256,7 +1348,7 @@ type GenerateSubsystemTokenResp struct {
 
 func (x *GenerateSubsystemTokenResp) Reset() {
 	*x = GenerateSubsystemTokenResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[21]
+	mi := &file_apollo_rpc_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1268,7 +1360,7 @@ func (x *GenerateSubsystemTokenResp) String() string {
 func (*GenerateSubsystemTokenResp) ProtoMessage() {}
 
 func (x *GenerateSubsystemTokenResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[21]
+	mi := &file_apollo_rpc_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1281,7 +1373,7 @@ func (x *GenerateSubsystemTokenResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateSubsystemTokenResp.ProtoReflect.Descriptor instead.
 func (*GenerateSubsystemTokenResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{21}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GenerateSubsystemTokenResp) GetToken() *SubsystemToken {
@@ -1306,7 +1398,7 @@ type SubsystemToken struct {
 
 func (x *SubsystemToken) Reset() {
 	*x = SubsystemToken{}
-	mi := &file_apollo_rpc_proto_msgTypes[22]
+	mi := &file_apollo_rpc_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1318,7 +1410,7 @@ func (x *SubsystemToken) String() string {
 func (*SubsystemToken) ProtoMessage() {}
 
 func (x *SubsystemToken) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[22]
+	mi := &file_apollo_rpc_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1331,7 +1423,7 @@ func (x *SubsystemToken) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubsystemToken.ProtoReflect.Descriptor instead.
 func (*SubsystemToken) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{22}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SubsystemToken) GetId() string {
@@ -1387,7 +1479,7 @@ type ValidateSubsystemTokenReq struct {
 
 func (x *ValidateSubsystemTokenReq) Reset() {
 	*x = ValidateSubsystemTokenReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[23]
+	mi := &file_apollo_rpc_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1399,7 +1491,7 @@ func (x *ValidateSubsystemTokenReq) String() string {
 func (*ValidateSubsystemTokenReq) ProtoMessage() {}
 
 func (x *ValidateSubsystemTokenReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[23]
+	mi := &file_apollo_rpc_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1412,7 +1504,7 @@ func (x *ValidateSubsystemTokenReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateSubsystemTokenReq.ProtoReflect.Descriptor instead.
 func (*ValidateSubsystemTokenReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{23}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ValidateSubsystemTokenReq) GetUserId() int64 {
@@ -1438,7 +1530,7 @@ type ValidateSubsystemTokenResp struct {
 
 func (x *ValidateSubsystemTokenResp) Reset() {
 	*x = ValidateSubsystemTokenResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[24]
+	mi := &file_apollo_rpc_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1450,7 +1542,7 @@ func (x *ValidateSubsystemTokenResp) String() string {
 func (*ValidateSubsystemTokenResp) ProtoMessage() {}
 
 func (x *ValidateSubsystemTokenResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[24]
+	mi := &file_apollo_rpc_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1463,7 +1555,7 @@ func (x *ValidateSubsystemTokenResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateSubsystemTokenResp.ProtoReflect.Descriptor instead.
 func (*ValidateSubsystemTokenResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{24}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ValidateSubsystemTokenResp) GetValidated() bool {
@@ -1483,7 +1575,7 @@ type RemoveSubsystemTokenReq struct {
 
 func (x *RemoveSubsystemTokenReq) Reset() {
 	*x = RemoveSubsystemTokenReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[25]
+	mi := &file_apollo_rpc_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1495,7 +1587,7 @@ func (x *RemoveSubsystemTokenReq) String() string {
 func (*RemoveSubsystemTokenReq) ProtoMessage() {}
 
 func (x *RemoveSubsystemTokenReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[25]
+	mi := &file_apollo_rpc_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1508,7 +1600,7 @@ func (x *RemoveSubsystemTokenReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveSubsystemTokenReq.ProtoReflect.Descriptor instead.
 func (*RemoveSubsystemTokenReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{25}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RemoveSubsystemTokenReq) GetTokenId() string {
@@ -1527,7 +1619,7 @@ type RemoveSubsystemTokenResp struct {
 
 func (x *RemoveSubsystemTokenResp) Reset() {
 	*x = RemoveSubsystemTokenResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[26]
+	mi := &file_apollo_rpc_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1539,7 +1631,7 @@ func (x *RemoveSubsystemTokenResp) String() string {
 func (*RemoveSubsystemTokenResp) ProtoMessage() {}
 
 func (x *RemoveSubsystemTokenResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[26]
+	mi := &file_apollo_rpc_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1552,7 +1644,7 @@ func (x *RemoveSubsystemTokenResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveSubsystemTokenResp.ProtoReflect.Descriptor instead.
 func (*RemoveSubsystemTokenResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{26}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *RemoveSubsystemTokenResp) GetValidated() bool {
@@ -1573,7 +1665,7 @@ type FindTenSubsystemTokensReq struct {
 
 func (x *FindTenSubsystemTokensReq) Reset() {
 	*x = FindTenSubsystemTokensReq{}
-	mi := &file_apollo_rpc_proto_msgTypes[27]
+	mi := &file_apollo_rpc_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1585,7 +1677,7 @@ func (x *FindTenSubsystemTokensReq) String() string {
 func (*FindTenSubsystemTokensReq) ProtoMessage() {}
 
 func (x *FindTenSubsystemTokensReq) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[27]
+	mi := &file_apollo_rpc_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1598,7 +1690,7 @@ func (x *FindTenSubsystemTokensReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindTenSubsystemTokensReq.ProtoReflect.Descriptor instead.
 func (*FindTenSubsystemTokensReq) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{27}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *FindTenSubsystemTokensReq) GetUserId() int64 {
@@ -1624,7 +1716,7 @@ type FindTenSubsystemTokensResp struct {
 
 func (x *FindTenSubsystemTokensResp) Reset() {
 	*x = FindTenSubsystemTokensResp{}
-	mi := &file_apollo_rpc_proto_msgTypes[28]
+	mi := &file_apollo_rpc_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1636,7 +1728,7 @@ func (x *FindTenSubsystemTokensResp) String() string {
 func (*FindTenSubsystemTokensResp) ProtoMessage() {}
 
 func (x *FindTenSubsystemTokensResp) ProtoReflect() protoreflect.Message {
-	mi := &file_apollo_rpc_proto_msgTypes[28]
+	mi := &file_apollo_rpc_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1649,7 +1741,7 @@ func (x *FindTenSubsystemTokensResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindTenSubsystemTokensResp.ProtoReflect.Descriptor instead.
 func (*FindTenSubsystemTokensResp) Descriptor() ([]byte, []int) {
-	return file_apollo_rpc_proto_rawDescGZIP(), []int{28}
+	return file_apollo_rpc_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *FindTenSubsystemTokensResp) GetTokens() []*SubsystemToken {
@@ -1720,13 +1812,21 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\"e\n" +
 	"\x1dPasskeysStartRegistrationResp\x12!\n" +
 	"\foptions_json\x18\x01 \x01(\fR\voptionsJson\x12!\n" +
-	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"\xb8\x01\n" +
+	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"\xe0\x01\n" +
 	"\x1dPasskeysFinishRegistrationReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12'\n" +
 	"\x0fcredential_json\x18\x02 \x01(\fR\x0ecredentialJson\x12!\n" +
 	"\fsession_data\x18\x03 \x01(\fR\vsessionData\x12\x16\n" +
 	"\x06Locate\x18\x04 \x01(\tR\x06Locate\x12\x1a\n" +
-	"\bLanguage\x18\x05 \x01(\tR\bLanguage\"^\n" +
+	"\bLanguage\x18\x05 \x01(\tR\bLanguage\x12\x12\n" +
+	"\x04type\x18\x06 \x01(\bR\x04type\x12\x12\n" +
+	"\x04name\x18\a \x01(\tR\x04name\"\x80\x01\n" +
+	"\x1ePasskeysFinishRegistrationResp\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04year\x18\x03 \x01(\x03R\x04year\x12\x14\n" +
+	"\x05month\x18\x04 \x01(\x03R\x05month\x12\x10\n" +
+	"\x03day\x18\x05 \x01(\x03R\x03day\"^\n" +
 	"\x16PasskeysStartLoginResp\x12!\n" +
 	"\foptions_json\x18\x01 \x01(\fR\voptionsJson\x12!\n" +
 	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"m\n" +
@@ -1774,10 +1874,10 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\fRegistration\x12\x17.apollo.RegistrationReq\x1a\r.apollo.Empty\x12,\n" +
 	"\x05Login\x12\x10.apollo.LoginReq\x1a\x11.apollo.LoginResp\x125\n" +
 	"\bUserInfo\x12\x13.apollo.UserInfoReq\x1a\x14.apollo.UserInfoResp\x12M\n" +
-	"\x10UserSecurityInfo\x12\x1b.apollo.UserSecurityInfoReq\x1a\x1c.apollo.UserSecurityInfoResp2\xc5\x02\n" +
+	"\x10UserSecurityInfo\x12\x1b.apollo.UserSecurityInfoReq\x1a\x1c.apollo.UserSecurityInfoResp2\xde\x02\n" +
 	"\bPasskeys\x12`\n" +
-	"\x11StartRegistration\x12$.apollo.PasskeysStartRegistrationReq\x1a%.apollo.PasskeysStartRegistrationResp\x12J\n" +
-	"\x12FinishRegistration\x12%.apollo.PasskeysFinishRegistrationReq\x1a\r.apollo.Empty\x12;\n" +
+	"\x11StartRegistration\x12$.apollo.PasskeysStartRegistrationReq\x1a%.apollo.PasskeysStartRegistrationResp\x12c\n" +
+	"\x12FinishRegistration\x12%.apollo.PasskeysFinishRegistrationReq\x1a&.apollo.PasskeysFinishRegistrationResp\x12;\n" +
 	"\n" +
 	"StartLogin\x12\r.apollo.Empty\x1a\x1e.apollo.PasskeysStartLoginResp\x12N\n" +
 	"\vFinishLogin\x12\x1e.apollo.PasskeysFinishLoginReq\x1a\x1f.apollo.PasskeysFinishLoginResp2\xda\x01\n" +
@@ -1805,44 +1905,45 @@ func file_apollo_rpc_proto_rawDescGZIP() []byte {
 	return file_apollo_rpc_proto_rawDescData
 }
 
-var file_apollo_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_apollo_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_apollo_rpc_proto_goTypes = []any{
-	(*Empty)(nil),                         // 0: apollo.Empty
-	(*RegistrationReq)(nil),               // 1: apollo.RegistrationReq
-	(*LoginReq)(nil),                      // 2: apollo.LoginReq
-	(*LoginResp)(nil),                     // 3: apollo.LoginResp
-	(*UserInfoReq)(nil),                   // 4: apollo.UserInfoReq
-	(*UserInfoResp)(nil),                  // 5: apollo.UserInfoResp
-	(*UserSecurityInfoReq)(nil),           // 6: apollo.UserSecurityInfoReq
-	(*UserContact)(nil),                   // 7: apollo.UserContact
-	(*PasswordUpdatedDate)(nil),           // 8: apollo.PasswordUpdatedDate
-	(*ThirdPartyAccounts)(nil),            // 9: apollo.ThirdPartyAccounts
-	(*UserSecurityInfoResp)(nil),          // 10: apollo.UserSecurityInfoResp
-	(*PasskeysStartRegistrationReq)(nil),  // 11: apollo.PasskeysStartRegistrationReq
-	(*PasskeysStartRegistrationResp)(nil), // 12: apollo.PasskeysStartRegistrationResp
-	(*PasskeysFinishRegistrationReq)(nil), // 13: apollo.PasskeysFinishRegistrationReq
-	(*PasskeysStartLoginResp)(nil),        // 14: apollo.PasskeysStartLoginResp
-	(*PasskeysFinishLoginReq)(nil),        // 15: apollo.PasskeysFinishLoginReq
-	(*PasskeysFinishLoginResp)(nil),       // 16: apollo.PasskeysFinishLoginResp
-	(*ThirdPartyBindReq)(nil),             // 17: apollo.ThirdPartyBindReq
-	(*ThirdPartyContinueReq)(nil),         // 18: apollo.ThirdPartyContinueReq
-	(*ThirdPartyContinueResp)(nil),        // 19: apollo.ThirdPartyContinueResp
-	(*GenerateSubsystemTokenReq)(nil),     // 20: apollo.GenerateSubsystemTokenReq
-	(*GenerateSubsystemTokenResp)(nil),    // 21: apollo.GenerateSubsystemTokenResp
-	(*SubsystemToken)(nil),                // 22: apollo.SubsystemToken
-	(*ValidateSubsystemTokenReq)(nil),     // 23: apollo.ValidateSubsystemTokenReq
-	(*ValidateSubsystemTokenResp)(nil),    // 24: apollo.ValidateSubsystemTokenResp
-	(*RemoveSubsystemTokenReq)(nil),       // 25: apollo.RemoveSubsystemTokenReq
-	(*RemoveSubsystemTokenResp)(nil),      // 26: apollo.RemoveSubsystemTokenResp
-	(*FindTenSubsystemTokensReq)(nil),     // 27: apollo.FindTenSubsystemTokensReq
-	(*FindTenSubsystemTokensResp)(nil),    // 28: apollo.FindTenSubsystemTokensResp
+	(*Empty)(nil),                          // 0: apollo.Empty
+	(*RegistrationReq)(nil),                // 1: apollo.RegistrationReq
+	(*LoginReq)(nil),                       // 2: apollo.LoginReq
+	(*LoginResp)(nil),                      // 3: apollo.LoginResp
+	(*UserInfoReq)(nil),                    // 4: apollo.UserInfoReq
+	(*UserInfoResp)(nil),                   // 5: apollo.UserInfoResp
+	(*UserSecurityInfoReq)(nil),            // 6: apollo.UserSecurityInfoReq
+	(*UserContact)(nil),                    // 7: apollo.UserContact
+	(*PasswordUpdatedDate)(nil),            // 8: apollo.PasswordUpdatedDate
+	(*ThirdPartyAccounts)(nil),             // 9: apollo.ThirdPartyAccounts
+	(*UserSecurityInfoResp)(nil),           // 10: apollo.UserSecurityInfoResp
+	(*PasskeysStartRegistrationReq)(nil),   // 11: apollo.PasskeysStartRegistrationReq
+	(*PasskeysStartRegistrationResp)(nil),  // 12: apollo.PasskeysStartRegistrationResp
+	(*PasskeysFinishRegistrationReq)(nil),  // 13: apollo.PasskeysFinishRegistrationReq
+	(*PasskeysFinishRegistrationResp)(nil), // 14: apollo.PasskeysFinishRegistrationResp
+	(*PasskeysStartLoginResp)(nil),         // 15: apollo.PasskeysStartLoginResp
+	(*PasskeysFinishLoginReq)(nil),         // 16: apollo.PasskeysFinishLoginReq
+	(*PasskeysFinishLoginResp)(nil),        // 17: apollo.PasskeysFinishLoginResp
+	(*ThirdPartyBindReq)(nil),              // 18: apollo.ThirdPartyBindReq
+	(*ThirdPartyContinueReq)(nil),          // 19: apollo.ThirdPartyContinueReq
+	(*ThirdPartyContinueResp)(nil),         // 20: apollo.ThirdPartyContinueResp
+	(*GenerateSubsystemTokenReq)(nil),      // 21: apollo.GenerateSubsystemTokenReq
+	(*GenerateSubsystemTokenResp)(nil),     // 22: apollo.GenerateSubsystemTokenResp
+	(*SubsystemToken)(nil),                 // 23: apollo.SubsystemToken
+	(*ValidateSubsystemTokenReq)(nil),      // 24: apollo.ValidateSubsystemTokenReq
+	(*ValidateSubsystemTokenResp)(nil),     // 25: apollo.ValidateSubsystemTokenResp
+	(*RemoveSubsystemTokenReq)(nil),        // 26: apollo.RemoveSubsystemTokenReq
+	(*RemoveSubsystemTokenResp)(nil),       // 27: apollo.RemoveSubsystemTokenResp
+	(*FindTenSubsystemTokensReq)(nil),      // 28: apollo.FindTenSubsystemTokensReq
+	(*FindTenSubsystemTokensResp)(nil),     // 29: apollo.FindTenSubsystemTokensResp
 }
 var file_apollo_rpc_proto_depIdxs = []int32{
 	7,  // 0: apollo.UserSecurityInfoResp.contacts:type_name -> apollo.UserContact
 	8,  // 1: apollo.UserSecurityInfoResp.password_updated_date:type_name -> apollo.PasswordUpdatedDate
 	9,  // 2: apollo.UserSecurityInfoResp.third_party_accounts:type_name -> apollo.ThirdPartyAccounts
-	22, // 3: apollo.GenerateSubsystemTokenResp.token:type_name -> apollo.SubsystemToken
-	22, // 4: apollo.FindTenSubsystemTokensResp.tokens:type_name -> apollo.SubsystemToken
+	23, // 3: apollo.GenerateSubsystemTokenResp.token:type_name -> apollo.SubsystemToken
+	23, // 4: apollo.FindTenSubsystemTokensResp.tokens:type_name -> apollo.SubsystemToken
 	1,  // 5: apollo.Account.Registration:input_type -> apollo.RegistrationReq
 	2,  // 6: apollo.Account.Login:input_type -> apollo.LoginReq
 	4,  // 7: apollo.Account.UserInfo:input_type -> apollo.UserInfoReq
@@ -1850,29 +1951,29 @@ var file_apollo_rpc_proto_depIdxs = []int32{
 	11, // 9: apollo.Passkeys.StartRegistration:input_type -> apollo.PasskeysStartRegistrationReq
 	13, // 10: apollo.Passkeys.FinishRegistration:input_type -> apollo.PasskeysFinishRegistrationReq
 	0,  // 11: apollo.Passkeys.StartLogin:input_type -> apollo.Empty
-	15, // 12: apollo.Passkeys.FinishLogin:input_type -> apollo.PasskeysFinishLoginReq
-	17, // 13: apollo.ThirdParty.Bind:input_type -> apollo.ThirdPartyBindReq
-	18, // 14: apollo.ThirdParty.Continue:input_type -> apollo.ThirdPartyContinueReq
-	18, // 15: apollo.ThirdParty.HandleCallback:input_type -> apollo.ThirdPartyContinueReq
-	20, // 16: apollo.Security.GenerateSubsystemToken:input_type -> apollo.GenerateSubsystemTokenReq
-	23, // 17: apollo.Security.ValidateSubsystemToken:input_type -> apollo.ValidateSubsystemTokenReq
-	25, // 18: apollo.Security.RemoveSubsystemToken:input_type -> apollo.RemoveSubsystemTokenReq
-	27, // 19: apollo.Security.FindTenSubsystemTokens:input_type -> apollo.FindTenSubsystemTokensReq
+	16, // 12: apollo.Passkeys.FinishLogin:input_type -> apollo.PasskeysFinishLoginReq
+	18, // 13: apollo.ThirdParty.Bind:input_type -> apollo.ThirdPartyBindReq
+	19, // 14: apollo.ThirdParty.Continue:input_type -> apollo.ThirdPartyContinueReq
+	19, // 15: apollo.ThirdParty.HandleCallback:input_type -> apollo.ThirdPartyContinueReq
+	21, // 16: apollo.Security.GenerateSubsystemToken:input_type -> apollo.GenerateSubsystemTokenReq
+	24, // 17: apollo.Security.ValidateSubsystemToken:input_type -> apollo.ValidateSubsystemTokenReq
+	26, // 18: apollo.Security.RemoveSubsystemToken:input_type -> apollo.RemoveSubsystemTokenReq
+	28, // 19: apollo.Security.FindTenSubsystemTokens:input_type -> apollo.FindTenSubsystemTokensReq
 	0,  // 20: apollo.Account.Registration:output_type -> apollo.Empty
 	3,  // 21: apollo.Account.Login:output_type -> apollo.LoginResp
 	5,  // 22: apollo.Account.UserInfo:output_type -> apollo.UserInfoResp
 	10, // 23: apollo.Account.UserSecurityInfo:output_type -> apollo.UserSecurityInfoResp
 	12, // 24: apollo.Passkeys.StartRegistration:output_type -> apollo.PasskeysStartRegistrationResp
-	0,  // 25: apollo.Passkeys.FinishRegistration:output_type -> apollo.Empty
-	14, // 26: apollo.Passkeys.StartLogin:output_type -> apollo.PasskeysStartLoginResp
-	16, // 27: apollo.Passkeys.FinishLogin:output_type -> apollo.PasskeysFinishLoginResp
+	14, // 25: apollo.Passkeys.FinishRegistration:output_type -> apollo.PasskeysFinishRegistrationResp
+	15, // 26: apollo.Passkeys.StartLogin:output_type -> apollo.PasskeysStartLoginResp
+	17, // 27: apollo.Passkeys.FinishLogin:output_type -> apollo.PasskeysFinishLoginResp
 	0,  // 28: apollo.ThirdParty.Bind:output_type -> apollo.Empty
-	19, // 29: apollo.ThirdParty.Continue:output_type -> apollo.ThirdPartyContinueResp
-	19, // 30: apollo.ThirdParty.HandleCallback:output_type -> apollo.ThirdPartyContinueResp
-	21, // 31: apollo.Security.GenerateSubsystemToken:output_type -> apollo.GenerateSubsystemTokenResp
-	24, // 32: apollo.Security.ValidateSubsystemToken:output_type -> apollo.ValidateSubsystemTokenResp
-	26, // 33: apollo.Security.RemoveSubsystemToken:output_type -> apollo.RemoveSubsystemTokenResp
-	28, // 34: apollo.Security.FindTenSubsystemTokens:output_type -> apollo.FindTenSubsystemTokensResp
+	20, // 29: apollo.ThirdParty.Continue:output_type -> apollo.ThirdPartyContinueResp
+	20, // 30: apollo.ThirdParty.HandleCallback:output_type -> apollo.ThirdPartyContinueResp
+	22, // 31: apollo.Security.GenerateSubsystemToken:output_type -> apollo.GenerateSubsystemTokenResp
+	25, // 32: apollo.Security.ValidateSubsystemToken:output_type -> apollo.ValidateSubsystemTokenResp
+	27, // 33: apollo.Security.RemoveSubsystemToken:output_type -> apollo.RemoveSubsystemTokenResp
+	29, // 34: apollo.Security.FindTenSubsystemTokens:output_type -> apollo.FindTenSubsystemTokensResp
 	20, // [20:35] is the sub-list for method output_type
 	5,  // [5:20] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
@@ -1891,7 +1992,7 @@ func file_apollo_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_apollo_rpc_proto_rawDesc), len(file_apollo_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   29,
+			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   4,
 		},

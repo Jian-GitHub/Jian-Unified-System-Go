@@ -14,35 +14,36 @@ import (
 )
 
 type (
-	Empty                         = apollo.Empty
-	FindTenSubsystemTokensReq     = apollo.FindTenSubsystemTokensReq
-	FindTenSubsystemTokensResp    = apollo.FindTenSubsystemTokensResp
-	GenerateSubsystemTokenReq     = apollo.GenerateSubsystemTokenReq
-	GenerateSubsystemTokenResp    = apollo.GenerateSubsystemTokenResp
-	LoginReq                      = apollo.LoginReq
-	LoginResp                     = apollo.LoginResp
-	PasskeysFinishLoginReq        = apollo.PasskeysFinishLoginReq
-	PasskeysFinishLoginResp       = apollo.PasskeysFinishLoginResp
-	PasskeysFinishRegistrationReq = apollo.PasskeysFinishRegistrationReq
-	PasskeysStartLoginResp        = apollo.PasskeysStartLoginResp
-	PasskeysStartRegistrationReq  = apollo.PasskeysStartRegistrationReq
-	PasskeysStartRegistrationResp = apollo.PasskeysStartRegistrationResp
-	PasswordUpdatedDate           = apollo.PasswordUpdatedDate
-	RegistrationReq               = apollo.RegistrationReq
-	RemoveSubsystemTokenReq       = apollo.RemoveSubsystemTokenReq
-	RemoveSubsystemTokenResp      = apollo.RemoveSubsystemTokenResp
-	SubsystemToken                = apollo.SubsystemToken
-	ThirdPartyAccounts            = apollo.ThirdPartyAccounts
-	ThirdPartyBindReq             = apollo.ThirdPartyBindReq
-	ThirdPartyContinueReq         = apollo.ThirdPartyContinueReq
-	ThirdPartyContinueResp        = apollo.ThirdPartyContinueResp
-	UserContact                   = apollo.UserContact
-	UserInfoReq                   = apollo.UserInfoReq
-	UserInfoResp                  = apollo.UserInfoResp
-	UserSecurityInfoReq           = apollo.UserSecurityInfoReq
-	UserSecurityInfoResp          = apollo.UserSecurityInfoResp
-	ValidateSubsystemTokenReq     = apollo.ValidateSubsystemTokenReq
-	ValidateSubsystemTokenResp    = apollo.ValidateSubsystemTokenResp
+	Empty                          = apollo.Empty
+	FindTenSubsystemTokensReq      = apollo.FindTenSubsystemTokensReq
+	FindTenSubsystemTokensResp     = apollo.FindTenSubsystemTokensResp
+	GenerateSubsystemTokenReq      = apollo.GenerateSubsystemTokenReq
+	GenerateSubsystemTokenResp     = apollo.GenerateSubsystemTokenResp
+	LoginReq                       = apollo.LoginReq
+	LoginResp                      = apollo.LoginResp
+	PasskeysFinishLoginReq         = apollo.PasskeysFinishLoginReq
+	PasskeysFinishLoginResp        = apollo.PasskeysFinishLoginResp
+	PasskeysFinishRegistrationReq  = apollo.PasskeysFinishRegistrationReq
+	PasskeysFinishRegistrationResp = apollo.PasskeysFinishRegistrationResp
+	PasskeysStartLoginResp         = apollo.PasskeysStartLoginResp
+	PasskeysStartRegistrationReq   = apollo.PasskeysStartRegistrationReq
+	PasskeysStartRegistrationResp  = apollo.PasskeysStartRegistrationResp
+	PasswordUpdatedDate            = apollo.PasswordUpdatedDate
+	RegistrationReq                = apollo.RegistrationReq
+	RemoveSubsystemTokenReq        = apollo.RemoveSubsystemTokenReq
+	RemoveSubsystemTokenResp       = apollo.RemoveSubsystemTokenResp
+	SubsystemToken                 = apollo.SubsystemToken
+	ThirdPartyAccounts             = apollo.ThirdPartyAccounts
+	ThirdPartyBindReq              = apollo.ThirdPartyBindReq
+	ThirdPartyContinueReq          = apollo.ThirdPartyContinueReq
+	ThirdPartyContinueResp         = apollo.ThirdPartyContinueResp
+	UserContact                    = apollo.UserContact
+	UserInfoReq                    = apollo.UserInfoReq
+	UserInfoResp                   = apollo.UserInfoResp
+	UserSecurityInfoReq            = apollo.UserSecurityInfoReq
+	UserSecurityInfoResp           = apollo.UserSecurityInfoResp
+	ValidateSubsystemTokenReq      = apollo.ValidateSubsystemTokenReq
+	ValidateSubsystemTokenResp     = apollo.ValidateSubsystemTokenResp
 
 	Account interface {
 		// 注册

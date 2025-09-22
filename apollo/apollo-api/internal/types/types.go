@@ -8,6 +8,21 @@ type BaseResponse struct {
 	Message string `json:"message"`
 }
 
+type BindFinishReq struct {
+	Name       string `json:"name"`
+	SessionID  string `json:"session_id" validate:"required"`
+	Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
+}
+
+type BindFinishResp struct {
+	BaseResponse
+	BindFinishRespData struct {
+		Id   string      `json:"id"`
+		Name string      `json:"name"`
+		Date RespnseDate `json:"date"`
+	} `json:"data"`
+}
+
 type BindReq struct {
 	Provider string `json:"provider" validate:"required"`
 }
@@ -16,6 +31,18 @@ type BindResp struct {
 	BaseResponse
 	BindRespData struct {
 		Url string `json:"url"`
+	} `json:"data"`
+}
+
+type BindStartReq struct {
+	Name string `json:"name" validate:"required"`
+}
+
+type BindStartResp struct {
+	BaseResponse
+	BindStartRespData struct {
+		OptionsJson string `json:"options_json"` // WebAuthn注册选项
+		SessionID   string `json:"session_id"`   // 会话标识
 	} `json:"data"`
 }
 

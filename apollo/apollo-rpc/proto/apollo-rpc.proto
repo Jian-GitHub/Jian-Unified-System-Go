@@ -116,6 +116,16 @@ message PasskeysFinishRegistrationReq {
   bytes session_data = 3;     // 新增：StartRegistration返回的session_data
   string Locate = 4;
   string Language = 5;
+  bool type = 6;
+  string name = 7;
+}
+
+message PasskeysFinishRegistrationResp {
+  string id = 1;          // 必须与StartRegistration一致
+  string name = 2;  // 前端返回的完整认证数据
+  int64 year = 3;
+  int64 month = 4;
+  int64 day = 5;
 }
 
 // ========== 登录流程 ==========
@@ -139,7 +149,7 @@ service Passkeys {
   // StartRegistration 注册第一步 - 开始
   rpc StartRegistration (PasskeysStartRegistrationReq) returns (PasskeysStartRegistrationResp);
   // FinishRegistration 注册第二步 - 完成
-  rpc FinishRegistration (PasskeysFinishRegistrationReq) returns (Empty);
+  rpc FinishRegistration (PasskeysFinishRegistrationReq) returns (PasskeysFinishRegistrationResp);
 
   // 登录
   // StartLogin 登陆第一步 - 开始

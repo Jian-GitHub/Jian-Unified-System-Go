@@ -271,7 +271,7 @@ type PasskeysClient interface {
 	// StartRegistration 注册第一步 - 开始
 	StartRegistration(ctx context.Context, in *PasskeysStartRegistrationReq, opts ...grpc.CallOption) (*PasskeysStartRegistrationResp, error)
 	// FinishRegistration 注册第二步 - 完成
-	FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*Empty, error)
+	FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*PasskeysFinishRegistrationResp, error)
 	// 登录
 	// StartLogin 登陆第一步 - 开始
 	StartLogin(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PasskeysStartLoginResp, error)
@@ -297,9 +297,9 @@ func (c *passkeysClient) StartRegistration(ctx context.Context, in *PasskeysStar
 	return out, nil
 }
 
-func (c *passkeysClient) FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*Empty, error) {
+func (c *passkeysClient) FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*PasskeysFinishRegistrationResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
+	out := new(PasskeysFinishRegistrationResp)
 	err := c.cc.Invoke(ctx, Passkeys_FinishRegistration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -337,7 +337,7 @@ type PasskeysServer interface {
 	// StartRegistration 注册第一步 - 开始
 	StartRegistration(context.Context, *PasskeysStartRegistrationReq) (*PasskeysStartRegistrationResp, error)
 	// FinishRegistration 注册第二步 - 完成
-	FinishRegistration(context.Context, *PasskeysFinishRegistrationReq) (*Empty, error)
+	FinishRegistration(context.Context, *PasskeysFinishRegistrationReq) (*PasskeysFinishRegistrationResp, error)
 	// 登录
 	// StartLogin 登陆第一步 - 开始
 	StartLogin(context.Context, *Empty) (*PasskeysStartLoginResp, error)
@@ -356,7 +356,7 @@ type UnimplementedPasskeysServer struct{}
 func (UnimplementedPasskeysServer) StartRegistration(context.Context, *PasskeysStartRegistrationReq) (*PasskeysStartRegistrationResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartRegistration not implemented")
 }
-func (UnimplementedPasskeysServer) FinishRegistration(context.Context, *PasskeysFinishRegistrationReq) (*Empty, error) {
+func (UnimplementedPasskeysServer) FinishRegistration(context.Context, *PasskeysFinishRegistrationReq) (*PasskeysFinishRegistrationResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishRegistration not implemented")
 }
 func (UnimplementedPasskeysServer) StartLogin(context.Context, *Empty) (*PasskeysStartLoginResp, error) {

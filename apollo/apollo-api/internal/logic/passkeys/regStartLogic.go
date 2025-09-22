@@ -29,7 +29,6 @@ func NewRegStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegStart
 }
 
 func (l *RegStartLogic) RegStart() (resp *types.RegStartResp, err error) {
-	// todo: add your logic here and delete this line
 	// 1. user UUID
 	uuid := l.svcCtx.Snowflake.Generate()
 	userID := uuid.Int64()

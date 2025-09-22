@@ -31,7 +31,6 @@ func NewCallbackLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Callback
 }
 
 func (l *CallbackLogic) Callback(req *types.CallbackReq) (resp *types.CallbackResp, err error) {
-	// todo: add your logic here and delete this line
 	if len(strings.TrimSpace(req.Provider)) == 0 || len(req.State) == 0 || len(req.Code) == 0 {
 		return nil, errorx.Wrap(errors.New("param is empty"), "ThirdParty Err")
 	}

@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
 	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
@@ -35,7 +34,6 @@ func NewRegFinishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegFini
 }
 
 func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq, r *http.Request) (resp *types.RegFinishResp, err error) {
-	// todo: add your logic here and delete this line
 	// 1. Check params
 	if len(req.SessionID) == 0 || len(req.Credential) == 0 {
 		return nil, errorx.Wrap(errors.New("session_id or credential is null"), "params error")
@@ -69,13 +67,15 @@ func (l *RegFinishLogic) RegFinish(req *types.RegFinishReq, r *http.Request) (re
 
 	// 4. gRPC -> finish
 	locate := apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup)
-	fmt.Println("locate", locate)
+
 	_, err = l.svcCtx.ApolloPasskeys.FinishRegistration(l.ctx, &apollo.PasskeysFinishRegistrationReq{
 		UserId:         userID,
 		SessionData:    sessionBytes,
 		CredentialJson: []byte(req.Credential),
 		Locate:         locate,
 		Language:       req.Language,
+		Type:           true,
+		Name:           "",
 	})
 	if err != nil {
 		l.Logger.Errorf("gRPC fail: err=%v", err)

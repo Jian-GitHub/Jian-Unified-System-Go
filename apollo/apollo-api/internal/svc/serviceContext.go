@@ -2,15 +2,12 @@ package svc
 
 import (
 	"github.com/bwmarrin/snowflake"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 	"jian-unified-system/apollo/apollo-api/internal/config"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	"jian-unified-system/jus-core/util"
-	"log"
-	"time"
 )
 
 type ServiceContext struct {
@@ -35,58 +32,56 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	var (
-		loop        = true
-		err         error
 		client      zrpc.Client
 		redisClient *redis.Redis
 		node        *snowflake.Node
 		gs          *util.GeoService
 	)
-	for loop {
-		client, err = zrpc.NewClient(c.ApolloRpc)
-		if err != nil {
-			logx.Error("NewClient err:", err.Error())
-			log.Println("30 秒后重试")
-			time.Sleep(time.Second * 30)
-			continue
-		}
-		redisClient, err = redis.NewRedis(c.Redis)
-		if err != nil {
-			logx.Error("NewRedis err:", err.Error())
-			log.Println("30 秒后重试")
-			time.Sleep(time.Second * 30)
-			//panic(err)
-			continue
-		}
-		// 自动初始化雪花节点
-		if err := c.SetupSnowflake(); err != nil {
-			logx.Error("SetupSnowflake err:", err.Error())
-			log.Println("30 秒后重试")
-			time.Sleep(time.Second * 30)
-			//panic("初始化Snowflake失败: " + err.Error())
+	for {
+		// ApolloRpc
+		if err := util.RetryWithBackoff("NewClient(ApolloRpc)", func() error {
+			var err error
+			client, err = zrpc.NewClient(c.ApolloRpc)
+			return err
+		}); err != nil {
 			continue
 		}
 
-		node, err = snowflake.NewNode(c.Snowflake.NodeID)
-		if err != nil {
-			logx.Error(err)
-			log.Println("30 秒后重试")
-			time.Sleep(time.Second * 30)
-			//panic(err)
+		// Redis
+		if err := util.RetryWithBackoff("NewRedis", func() error {
+			var err error
+			redisClient, err = redis.NewRedis(c.Redis)
+			return err
+		}); err != nil {
 			continue
 		}
 
-		//sqlConn := sqlx.NewMysql(c.DB.DataSource)
-
-		gs, err = util.NewGeoService()
-		if err != nil {
-			logx.Error("GeoService 加载失败: " + err.Error())
-			log.Println("30 秒后重试")
-			time.Sleep(time.Second * 30)
+		// Snowflake Setup
+		if err := util.RetryWithBackoff("SetupSnowflake", func() error {
+			return c.SetupSnowflake()
+		}); err != nil {
 			continue
 		}
 
-		loop = false
+		// Snowflake Node
+		if err := util.RetryWithBackoff("NewSnowflakeNode", func() error {
+			var err error
+			node, err = snowflake.NewNode(c.Snowflake.NodeID)
+			return err
+		}); err != nil {
+			continue
+		}
+
+		// GeoService
+		if err := util.RetryWithBackoff("NewGeoService", func() error {
+			var err error
+			gs, err = util.NewGeoService()
+			return err
+		}); err != nil {
+			continue
+		}
+
+		break
 	}
 
 	OauthProviders := config.InitOAuthProviders(c)
