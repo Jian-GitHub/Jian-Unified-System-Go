@@ -9,6 +9,7 @@ import (
 	"jian-unified-system/jquantum/jquantum-rpc/jquantum"
 	"jian-unified-system/jus-core/util"
 	"jian-unified-system/jus-hermes/mq/rabbitMQ"
+	"time"
 )
 
 type ServiceContext struct {
@@ -34,7 +35,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	for {
 		if err := util.RetryWithBackoff("JQuantumClient", func() error {
-			jquantumClient, err = zrpc.NewClient(c.JQuantumRpc)
+			jquantumClient, err = zrpc.NewClient(c.JQuantumRpc, zrpc.WithTimeout(10*time.Second))
 			return err
 		}); err != nil {
 			continue
