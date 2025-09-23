@@ -902,11 +902,13 @@ func (x *PasskeysFinishRegistrationReq) GetName() string {
 
 type PasskeysFinishRegistrationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`     // 必须与StartRegistration一致
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"` // 前端返回的完整认证数据
-	Year          int64                  `protobuf:"varint,3,opt,name=year,proto3" json:"year,omitempty"`
-	Month         int64                  `protobuf:"varint,4,opt,name=month,proto3" json:"month,omitempty"`
-	Day           int64                  `protobuf:"varint,5,opt,name=day,proto3" json:"day,omitempty"`
+	PasskeysId    string                 `protobuf:"bytes,1,opt,name=passkeys_id,json=passkeysId,proto3" json:"passkeys_id,omitempty"`
+	Locale        string                 `protobuf:"bytes,2,opt,name=locale,proto3" json:"locale,omitempty"`
+	Language      string                 `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	PasskeysName  string                 `protobuf:"bytes,4,opt,name=passkeys_name,json=passkeysName,proto3" json:"passkeys_name,omitempty"` // 前端返回的完整认证数据
+	Year          int64                  `protobuf:"varint,5,opt,name=year,proto3" json:"year,omitempty"`
+	Month         int64                  `protobuf:"varint,6,opt,name=month,proto3" json:"month,omitempty"`
+	Day           int64                  `protobuf:"varint,7,opt,name=day,proto3" json:"day,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -941,16 +943,30 @@ func (*PasskeysFinishRegistrationResp) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *PasskeysFinishRegistrationResp) GetId() string {
+func (x *PasskeysFinishRegistrationResp) GetPasskeysId() string {
 	if x != nil {
-		return x.Id
+		return x.PasskeysId
 	}
 	return ""
 }
 
-func (x *PasskeysFinishRegistrationResp) GetName() string {
+func (x *PasskeysFinishRegistrationResp) GetLocale() string {
 	if x != nil {
-		return x.Name
+		return x.Locale
+	}
+	return ""
+}
+
+func (x *PasskeysFinishRegistrationResp) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *PasskeysFinishRegistrationResp) GetPasskeysName() string {
+	if x != nil {
+		return x.PasskeysName
 	}
 	return ""
 }
@@ -1083,7 +1099,16 @@ func (x *PasskeysFinishLoginReq) GetSessionDataJson() string {
 
 type PasskeysFinishLoginResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // JUS User ID
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	GivenName     string                 `protobuf:"bytes,2,opt,name=given_name,json=givenName,proto3" json:"given_name,omitempty"`
+	MiddleName    string                 `protobuf:"bytes,3,opt,name=middle_name,json=middleName,proto3" json:"middle_name,omitempty"`
+	FamilyName    string                 `protobuf:"bytes,4,opt,name=family_name,json=familyName,proto3" json:"family_name,omitempty"`
+	Avatar        string                 `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Locale        string                 `protobuf:"bytes,6,opt,name=locale,proto3" json:"locale,omitempty"`
+	Language      string                 `protobuf:"bytes,7,opt,name=language,proto3" json:"language,omitempty"`
+	BirthdayYear  int64                  `protobuf:"varint,8,opt,name=birthday_year,json=birthdayYear,proto3" json:"birthday_year,omitempty"`
+	BirthdayMonth int64                  `protobuf:"varint,9,opt,name=birthday_month,json=birthdayMonth,proto3" json:"birthday_month,omitempty"`
+	BirthdayDay   int64                  `protobuf:"varint,10,opt,name=birthday_day,json=birthdayDay,proto3" json:"birthday_day,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1121,6 +1146,69 @@ func (*PasskeysFinishLoginResp) Descriptor() ([]byte, []int) {
 func (x *PasskeysFinishLoginResp) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
+	}
+	return 0
+}
+
+func (x *PasskeysFinishLoginResp) GetGivenName() string {
+	if x != nil {
+		return x.GivenName
+	}
+	return ""
+}
+
+func (x *PasskeysFinishLoginResp) GetMiddleName() string {
+	if x != nil {
+		return x.MiddleName
+	}
+	return ""
+}
+
+func (x *PasskeysFinishLoginResp) GetFamilyName() string {
+	if x != nil {
+		return x.FamilyName
+	}
+	return ""
+}
+
+func (x *PasskeysFinishLoginResp) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+func (x *PasskeysFinishLoginResp) GetLocale() string {
+	if x != nil {
+		return x.Locale
+	}
+	return ""
+}
+
+func (x *PasskeysFinishLoginResp) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *PasskeysFinishLoginResp) GetBirthdayYear() int64 {
+	if x != nil {
+		return x.BirthdayYear
+	}
+	return 0
+}
+
+func (x *PasskeysFinishLoginResp) GetBirthdayMonth() int64 {
+	if x != nil {
+		return x.BirthdayMonth
+	}
+	return 0
+}
+
+func (x *PasskeysFinishLoginResp) GetBirthdayDay() int64 {
+	if x != nil {
+		return x.BirthdayDay
 	}
 	return 0
 }
@@ -1820,21 +1908,37 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\x06Locate\x18\x04 \x01(\tR\x06Locate\x12\x1a\n" +
 	"\bLanguage\x18\x05 \x01(\tR\bLanguage\x12\x12\n" +
 	"\x04type\x18\x06 \x01(\bR\x04type\x12\x12\n" +
-	"\x04name\x18\a \x01(\tR\x04name\"\x80\x01\n" +
-	"\x1ePasskeysFinishRegistrationResp\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04year\x18\x03 \x01(\x03R\x04year\x12\x14\n" +
-	"\x05month\x18\x04 \x01(\x03R\x05month\x12\x10\n" +
-	"\x03day\x18\x05 \x01(\x03R\x03day\"^\n" +
+	"\x04name\x18\a \x01(\tR\x04name\"\xd6\x01\n" +
+	"\x1ePasskeysFinishRegistrationResp\x12\x1f\n" +
+	"\vpasskeys_id\x18\x01 \x01(\tR\n" +
+	"passkeysId\x12\x16\n" +
+	"\x06locale\x18\x02 \x01(\tR\x06locale\x12\x1a\n" +
+	"\blanguage\x18\x03 \x01(\tR\blanguage\x12#\n" +
+	"\rpasskeys_name\x18\x04 \x01(\tR\fpasskeysName\x12\x12\n" +
+	"\x04year\x18\x05 \x01(\x03R\x04year\x12\x14\n" +
+	"\x05month\x18\x06 \x01(\x03R\x05month\x12\x10\n" +
+	"\x03day\x18\a \x01(\x03R\x03day\"^\n" +
 	"\x16PasskeysStartLoginResp\x12!\n" +
 	"\foptions_json\x18\x01 \x01(\fR\voptionsJson\x12!\n" +
 	"\fsession_data\x18\x02 \x01(\fR\vsessionData\"m\n" +
 	"\x16PasskeysFinishLoginReq\x12'\n" +
 	"\x0fcredential_json\x18\x01 \x01(\tR\x0ecredentialJson\x12*\n" +
-	"\x11session_data_json\x18\x02 \x01(\tR\x0fsessionDataJson\"2\n" +
+	"\x11session_data_json\x18\x02 \x01(\tR\x0fsessionDataJson\"\xce\x02\n" +
 	"\x17PasskeysFinishLoginResp\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\")\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1d\n" +
+	"\n" +
+	"given_name\x18\x02 \x01(\tR\tgivenName\x12\x1f\n" +
+	"\vmiddle_name\x18\x03 \x01(\tR\n" +
+	"middleName\x12\x1f\n" +
+	"\vfamily_name\x18\x04 \x01(\tR\n" +
+	"familyName\x12\x16\n" +
+	"\x06avatar\x18\x05 \x01(\tR\x06avatar\x12\x16\n" +
+	"\x06locale\x18\x06 \x01(\tR\x06locale\x12\x1a\n" +
+	"\blanguage\x18\a \x01(\tR\blanguage\x12#\n" +
+	"\rbirthday_year\x18\b \x01(\x03R\fbirthdayYear\x12%\n" +
+	"\x0ebirthday_month\x18\t \x01(\x03R\rbirthdayMonth\x12!\n" +
+	"\fbirthday_day\x18\n" +
+	" \x01(\x03R\vbirthdayDay\")\n" +
 	"\x11ThirdPartyBindReq\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\fR\x05token\"q\n" +
 	"\x15ThirdPartyContinueReq\x12\x1a\n" +

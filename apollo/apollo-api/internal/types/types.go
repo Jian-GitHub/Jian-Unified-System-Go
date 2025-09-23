@@ -147,7 +147,13 @@ type LoginFinishReq struct {
 type LoginFinishResp struct {
 	BaseResponse
 	LoginFinishRespData struct {
-		Token string `json:"token"`
+		Token    string      `json:"token"`
+		Id       string      `json:"id"`
+		Name     UserName    `json:"name"`
+		Avatar   string      `json:"avatar"`
+		Locale   string      `json:"locale"`
+		Language string      `json:"language"`
+		Birthday RespnseDate `json:"birthday"`
 	} `json:"data"`
 }
 
@@ -160,21 +166,13 @@ type LoginReq struct {
 type LoginResp struct {
 	BaseResponse
 	LoginData struct {
-		Token string `json:"token"`
-		Id    string `json:"id"`
-		Name  struct {
-			GivenName  string `json:"givenName"`
-			MiddleName string `json:"middleName"`
-			FamilyName string `json:"familyName"`
-		} `json:"name"`
-		Avatar   string `json:"avatar"`
-		Locale   string `json:"locale"`
-		Language string `json:"language"`
-		Birthday struct {
-			Year  int64 `json:"year"`
-			Month int64 `json:"month"`
-			Day   int64 `json:"day"`
-		} `json:"birthday"`
+		Token    string      `json:"token"`
+		Id       string      `json:"id"`
+		Name     UserName    `json:"name"`
+		Avatar   string      `json:"avatar"`
+		Locale   string      `json:"locale"`
+		Language string      `json:"language"`
+		Birthday RespnseDate `json:"birthday"`
 	} `json:"data"`
 }
 
@@ -255,6 +253,12 @@ type UserContact struct {
 	Value       string `json:"value"`
 	Type        int64  `json:"type"`
 	PhoneRegion string `json:"phoneRegion"`
+}
+
+type UserName struct {
+	GivenName  string `json:"givenName"`
+	MiddleName string `json:"middleName"`
+	FamilyName string `json:"familyName"`
 }
 
 type VerifyTokenReq struct {

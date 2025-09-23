@@ -67,8 +67,22 @@ func (l *FinishLoginLogic) FinishLogin(in *apollo.PasskeysFinishLoginReq) (*apol
 		return nil, status.Error(codes.Unauthenticated, "assertion verification failed: "+err.Error())
 	}
 
+	user, err := l.svcCtx.UserModel.FindOne(l.ctx, l.userID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &apollo.PasskeysFinishLoginResp{
-		UserId: l.userID,
+		UserId:        user.Id,
+		GivenName:     user.GivenName,
+		MiddleName:    user.MiddleName,
+		FamilyName:    user.FamilyName,
+		Avatar:        user.Avatar.String,
+		Locale:        user.Language,
+		Language:      user.Language,
+		BirthdayYear:  user.BirthdayYear.Int64,
+		BirthdayMonth: user.BirthdayMonth.Int64,
+		BirthdayDay:   user.BirthdayDay.Int64,
 	}, nil
 }
 

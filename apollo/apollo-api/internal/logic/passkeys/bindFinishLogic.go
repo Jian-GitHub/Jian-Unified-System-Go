@@ -82,8 +82,8 @@ func (l *BindFinishLogic) BindFinish(req *types.BindFinishReq) (resp *types.Bind
 			Name string            `json:"name"`
 			Date types.RespnseDate `json:"date"`
 		}{
-			Id:   passkeysInfo.Id,
-			Name: passkeysInfo.Name,
+			Id:   passkeysInfo.PasskeysId,
+			Name: passkeysInfo.PasskeysName,
 			Date: types.RespnseDate{
 				Year:  passkeysInfo.Year,
 				Month: passkeysInfo.Month,

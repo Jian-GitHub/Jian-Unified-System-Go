@@ -110,11 +110,13 @@ func (l *FinishRegistrationLogic) FinishRegistration(in *apollo.PasskeysFinishRe
 	}
 	date := time.Now()
 	return &apollo.PasskeysFinishRegistrationResp{
-		Id:    base64.RawURLEncoding.EncodeToString(credential.ID),
-		Name:  displayName,
-		Year:  int64(date.Year()),
-		Month: int64(date.Month()),
-		Day:   int64(date.Day()),
+		PasskeysId:   base64.RawURLEncoding.EncodeToString(credential.ID),
+		Locale:       in.Locate,
+		Language:     in.Language,
+		PasskeysName: displayName,
+		Year:         int64(date.Year()),
+		Month:        int64(date.Month()),
+		Day:          int64(date.Day()),
 	}, nil
 }
 

@@ -6,11 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
-	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"jian-unified-system/jus-core/util"
-
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
+	"jian-unified-system/jus-core/util"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -90,9 +90,29 @@ func (l *LoginFinishLogic) LoginFinish(req *types.LoginFinishReq) (resp *types.L
 			Message: "success",
 		},
 		LoginFinishRespData: struct {
-			Token string `json:"token"`
+			Token    string            `json:"token"`
+			Id       string            `json:"id"`
+			Name     types.UserName    `json:"name"`
+			Avatar   string            `json:"avatar"`
+			Locale   string            `json:"locale"`
+			Language string            `json:"language"`
+			Birthday types.RespnseDate `json:"birthday"`
 		}{
 			Token: token,
+			Id:    strconv.FormatInt(response.UserId, 10),
+			Name: types.UserName{
+				GivenName:  response.GivenName,
+				MiddleName: response.MiddleName,
+				FamilyName: response.FamilyName,
+			},
+			Avatar:   response.Avatar,
+			Locale:   response.Locale,
+			Language: response.Language,
+			Birthday: types.RespnseDate{
+				Year:  response.BirthdayYear,
+				Month: response.BirthdayMonth,
+				Day:   response.BirthdayDay,
+			},
 		},
 	}, nil
 }
