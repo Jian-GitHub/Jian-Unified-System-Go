@@ -48,6 +48,11 @@ RUN chmod 600 /root/.ssh/id_rsa && chmod 644 /root/.ssh/authorized_keys \
 COPY --from=builder /app/jquantumrpc /app/jquantumrpc
 COPY jquantum/jquantum-rpc/etc /app/etc
 
+# 拷贝 QuEST
+COPY jquantum/jquantum-cpp/include /harmoniacore/jquantum
+COPY jquantum/jquantum-cpp/lib /harmoniacore/lib
+COPY jquantum/jquantum-cpp/quest /harmoniacore/quest
+
 # 设置工作目录
 WORKDIR /app
 
