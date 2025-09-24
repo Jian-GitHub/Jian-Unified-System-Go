@@ -1,0 +1,59 @@
+name: Build and Push Docker Image by Tag
+
+on:
+  push:
+    tags:
+      # 匹配任意路径 + 下划线 + 镜像名 + 下划线 + 版本号
+      - "**_*_v*.*.*"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1 检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2 解析 tag，得到路径、镜像名、版本号
+      # e.g. jquantum/jquantum-api/deploy_jian-unified-system-go-jquantum-api_v0.1.0
+      - name: Parse tag
+        id: parse
+        run: |
+          RAW_TAG=${GITHUB_REF_NAME}
+          
+          IFS='_' read -r DOCKER_PATH IMAGE_NAME VERSION <<< "$RAW_TAG"
+          
+          echo "RAW_TAG=$RAW_TAG"
+          echo "DOCKER_PATH=$DOCKER_PATH"
+          echo "IMAGE_NAME=$IMAGE_NAME"
+          echo "VERSION=$VERSION"
+
+          echo "DOCKER_PATH=$DOCKER_PATH" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      # 3 登录 DockerHub
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4 Build Docker image
+      - name: Build Docker image
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
+          echo "Building Docker image: $IMAGE:$VERSION and $IMAGE:latest"
+          docker build \
+            -f $DOCKER_PATH/Dockerfile \
+            -t $IMAGE:latest \
+            -t $IMAGE:$VERSION \
+            .
+
+      # 5 Push Docker image
+      - name: Push Docker image
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
+          docker push $IMAGE:latest
+          docker push $IMAGE:$VERSION
