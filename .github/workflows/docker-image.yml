@@ -3,7 +3,7 @@ name: Build and Push Docker Image by Tag
 on:
   push:
     tags:
-      - "*-v*.*.*"   # 只响应形如 */*-vX.Y.Z 的 tag
+      - "**-v*.*.*"
 
 jobs:
   docker:
