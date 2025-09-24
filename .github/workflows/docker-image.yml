@@ -1,9 +1,9 @@
-name: Build and Push Docker Image by Tag
+name: Build and Push Docker Image by Custom Tag
 
 on:
   push:
     tags:
-      - "**-v*.*.*"
+      - "*#*#*"  # 匹配任意格式 path#image#version
 
 jobs:
   docker:
@@ -14,22 +14,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2 解析 tag，得到子系统路径和版本号
-      - name: Parse tag
+      # 2 解析 tag，得到路径、镜像名、版本号
+      # e.g. jquantum/jquantum/api/deploy#jian-unified-system-go-jquantum-api#v0.1.0
+      # 用 # 分割
+      - name: Parse custom tag
         id: parse
         run: |
           RAW_TAG=${GITHUB_REF_NAME}
-          SERVICE_PATH=${RAW_TAG%-v*}
-          VERSION=v${RAW_TAG##*-v}
-          SERVICE_NAME=$(basename $SERVICE_PATH)
-
+          IFS='#' read -r DOCKER_PATH IMAGE_NAME VERSION <<< "$RAW_TAG"
+          
           echo "RAW_TAG=$RAW_TAG"
-          echo "SERVICE_PATH=$SERVICE_PATH"
-          echo "SERVICE_NAME=$SERVICE_NAME"
+          echo "DOCKER_PATH=$DOCKER_PATH"
+          echo "IMAGE_NAME=$IMAGE_NAME"
           echo "VERSION=$VERSION"
-
-          echo "SERVICE_PATH=$SERVICE_PATH" >> $GITHUB_ENV
-          echo "SERVICE_NAME=$SERVICE_NAME" >> $GITHUB_ENV
+          
+          echo "DOCKER_PATH=$DOCKER_PATH" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       # 3 登录 DockerHub
@@ -42,10 +42,10 @@ jobs:
       # 4 Build Docker image
       - name: Build Docker image
         run: |
-          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$SERVICE_NAME
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
           echo "Building Docker image: $IMAGE:$VERSION and $IMAGE:latest"
           docker build \
-            -f $SERVICE_PATH/deploy/Dockerfile \
+            -f $DOCKER_PATH/Dockerfile \
             -t $IMAGE:latest \
             -t $IMAGE:$VERSION \
             .
@@ -53,6 +53,6 @@ jobs:
       # 5 Push Docker image
       - name: Push Docker image
         run: |
-          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$SERVICE_NAME
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
           docker push $IMAGE:latest
           docker push $IMAGE:$VERSION
