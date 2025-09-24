@@ -11,39 +11,40 @@ spec:
   selector:
     matchLabels:
       app: apollo-rpc
-      version: v1
+      version: v0.1.0
   template:
     metadata:
       labels:
         app: apollo-rpc
-        version: v1
+        version: v0.1.0
     spec:
       serviceAccountName: find-endpoints
       containers:
-      - name: apollo-rpc
-        image: ikarosu/jian-unified-system-go-apollo-rpc:v1
-        ports:
-        - containerPort: 30100
-        readinessProbe:
-          tcpSocket:
-            port: 30100
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          tcpSocket:
-            port: 30100
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          requests:
-            cpu: 200m
-            memory: 50Mi
-          limits:
-            cpu: 500m
-            memory: 100Mi
-        volumeMounts:
-        - name: timezone
-          mountPath: /etc/localtime
+        - name: apollo-rpc
+          image: ikarosu/jian-unified-system-go-apollo-rpc:v0.1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 30100
+          readinessProbe:
+            tcpSocket:
+              port: 30100
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 30100
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 200m
+              memory: 50Mi
+            limits:
+              cpu: 500m
+              memory: 100Mi
+          volumeMounts:
+            - name: timezone
+              mountPath: /etc/localtime
       volumes:
         - name: timezone
           hostPath:
@@ -58,8 +59,8 @@ metadata:
   namespace: harmoniacore
 spec:
   ports:
-  - port: 30100
-    targetPort: 30100
+    - port: 30100
+      targetPort: 30100
   selector:
     app: apollo-rpc
 
@@ -80,12 +81,12 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
 
 ---
 
@@ -104,9 +105,9 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

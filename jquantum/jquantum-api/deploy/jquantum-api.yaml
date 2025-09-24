@@ -11,39 +11,40 @@ spec:
   selector:
     matchLabels:
       app: jquantum-api
-      version: v1
+      version: v1.1
   template:
     metadata:
       labels:
         app: jquantum-api
-        version: v1
+        version: v1.1
     spec:
       serviceAccountName: find-endpoints
       containers:
-      - name: jquantum-api
-        image: ikarosu/jian-unified-system-go-jquantum-api:v1
-        ports:
-        - containerPort: 20101
-        readinessProbe:
-          tcpSocket:
-            port: 20101
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          tcpSocket:
-            port: 20101
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          requests:
-            cpu: 200m
-            memory: 50Mi
-          limits:
-            cpu: 500m
-            memory: 100Mi
-        volumeMounts:
-        - name: timezone
-          mountPath: /etc/localtime
+        - name: jquantum-api
+          image: ikarosu/jian-unified-system-go-jquantum-api:v1.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 20101
+          readinessProbe:
+            tcpSocket:
+              port: 20101
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 20101
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 200m
+              memory: 50Mi
+            limits:
+              cpu: 500m
+              memory: 100Mi
+          volumeMounts:
+            - name: timezone
+              mountPath: /etc/localtime
       volumes:
         - name: timezone
           hostPath:
@@ -81,12 +82,12 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
 
 ---
 
@@ -105,12 +106,12 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway

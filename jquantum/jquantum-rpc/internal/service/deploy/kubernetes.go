@@ -131,7 +131,6 @@ func (s *K8sDeployService) CollectClusterResource() (*ClusterResource, error) {
 
 	// 遍历 Pod，获取 IP 并计算 slots
 	for _, pod := range pods.Items {
-		fmt.Println("这里是pod:", pod.Name)
 		if pod.Status.Phase != corev1.PodRunning || pod.Status.PodIP == "" {
 			continue
 		}

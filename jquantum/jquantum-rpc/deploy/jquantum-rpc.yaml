@@ -1,57 +1,4 @@
-# ===============================
-# Namespace
-# ===============================
-#apiVersion: v1
-#kind: Namespace
-#metadata:
-#  name: harmoniacore
-#
-#---
-# ===============================
-# ServiceAccount
-# ===============================
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: jquantum-rpc-sa
-  namespace: harmoniacore
 
----
-# ===============================
-# ClusterRole (节点级别 + Pod 发现)
-# ===============================
-#apiVersion: rbac.authorization.k8s.io/v1
-#kind: ClusterRole
-#metadata:
-#  name: jquantum-rpc-all
-#rules:
-#  # Pod 级别资源（服务发现）
-#  - apiGroups: [""]
-#    resources: ["pods"]
-#    verbs: ["get", "list", "watch"]
-#  # Node 级别资源（节点权限）
-#  - apiGroups: [""]
-#    resources: ["nodes"]
-#    verbs: ["get", "list", "watch"]
-#
-#---
-# ===============================
-# ClusterRoleBinding
-# ===============================
-#apiVersion: rbac.authorization.k8s.io/v1
-#kind: ClusterRoleBinding
-#metadata:
-#  name: jquantum-rpc-all-binding
-#subjects:
-#  - kind: ServiceAccount
-#    name: jquantum-rpc-sa
-#    namespace: harmoniacore
-#roleRef:
-#  kind: ClusterRole
-#  name: jquantum-rpc-all
-#  apiGroup: rbac.authorization.k8s.io
-#
-#---
 # ===============================
 # Service
 # ===============================
@@ -60,18 +7,48 @@ kind: Service
 metadata:
   name: jquantum-rpc-svc
   namespace: harmoniacore
-  labels:
-    app: jquantum-rpc
-    version: v1
 spec:
+  ports:
+    - port: 30101
+      targetPort: 30101
   selector:
     app: jquantum-rpc
-    version: v1
-  ports:
-    - name: rpc
-      port: 30101
-      targetPort: 30101
-  type: ClusterIP
+    version: v0.1.0
+---
+# ===============================
+# PersistentVolume (NFS)
+# ===============================
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jquantum-pv
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 47.91.29.219
+    path: /harmoniacore/jquantum
+  persistentVolumeReclaimPolicy: Retain
+
+---
+# ===============================
+# PersistentVolumeClaim
+# ===============================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jquantum-pvc
+  namespace: harmoniacore
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  volumeName: jquantum-pv
+  storageClassName: ""
 
 ---
 # ===============================
@@ -84,26 +61,29 @@ metadata:
   namespace: harmoniacore
   labels:
     app: jquantum-rpc
-    version: v1
+    version: v0.1.0
 spec:
   selector:
     matchLabels:
       app: jquantum-rpc
-      version: v1
+      version: v0.1.0
   template:
     metadata:
       labels:
         app: jquantum-rpc
-        version: v1
+        version: v0.1.0
+      annotations:
+        sidecar.istio.io/inject: "false"
     spec:
       serviceAccountName: find-endpoints
       containers:
         - name: jquantum-rpc
-          image: ikarosu/jian-unified-system-go-jquantum-rpc:v1
-          imagePullPolicy: IfNotPresent
+          image: ikarosu/jian-unified-system-go-jquantum-rpc:v0.1.0
+          imagePullPolicy: Always
           ports:
             - containerPort: 30101
-          # 健康检查，保证异常时重启
+            - containerPort: 22
+          # 健康检查
           readinessProbe:
             tcpSocket:
               port: 30101
@@ -114,17 +94,16 @@ spec:
               port: 30101
             initialDelaySeconds: 15
             periodSeconds: 20
-          # 时间和数据目录挂载
+          # 挂载 NFS
           volumeMounts:
             - name: timezone
               mountPath: /etc/localtime
-            - name: harmoniacore-jquantum-data
+            - name: jquantum-storage
               mountPath: /harmoniacore/jquantum
       volumes:
         - name: timezone
           hostPath:
             path: /usr/share/zoneinfo/Asia/Shanghai
-        - name: harmoniacore-jquantum-data
-          hostPath:
-            path: /harmoniacore/jquantum
-            type: DirectoryOrCreate
+        - name: jquantum-storage
+          persistentVolumeClaim:
+            claimName: jquantum-pvc

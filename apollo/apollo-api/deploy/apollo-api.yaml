@@ -11,17 +11,18 @@ spec:
   selector:
     matchLabels:
       app: apollo-api
-      version: v1
+      version: v0.1.0
   template:
     metadata:
       labels:
         app: apollo-api
-        version: v1
+        version: v0.1.0
     spec:
       serviceAccountName: find-endpoints
       containers:
         - name: apollo-api
-          image: ikarosu/jian-unified-system-go-apollo-api:v1
+          image: ikarosu/jian-unified-system-go-apollo-api:v0.1.0
+          imagePullPolicy: Always
           ports:
             - containerPort: 20100
           readinessProbe:
@@ -137,7 +138,6 @@ metadata:
   namespace: harmoniacore
 spec:
   hosts:
-#    - "account.api.jianunifiedsystem.com"   # 外部域名，生产可改为真实域名
     - "*"
   gateways:
     - apollo-api-gateway  # 默认 Istio ingressgateway

@@ -161,10 +161,10 @@ func (e *Executor) Compile() error {
 	cmd.Stderr = &stderrBuf
 	if err := cmd.Run(); err != nil {
 		//stdoutStr := stdoutBuf.String()
-		//stderrStr := stderrBuf.String()
+		stderrStr := stderrBuf.String()
 		fmt.Println("MPICXX File Compilation exited with error:", err)
 		//fmt.Println(stdoutStr)
-		//fmt.Println(stderrStr)
+		fmt.Println(stderrStr)
 		//fmt.Println("===================")
 		e.updateJobState(-1)
 		return errorx.Wrap(err, "MPICXX File Compilation exited with error")
@@ -181,6 +181,7 @@ func (e *Executor) Compile() error {
 
 func (e *Executor) Run() error {
 	cmd := exec.Command("mpirun", "--allow-run-as-root",
+		"-x", "LD_LIBRARY_PATH=/harmoniacore/jquantum/lib",
 		"--hostfile", filepath.Join(e.svc.Config.JQuantum.BaseDir, e.hostsFileName),
 		"-np", strconv.FormatInt(e.np, 10),
 		filepath.Join(e.exeDir, e.programFileName),
@@ -194,21 +195,21 @@ func (e *Executor) Run() error {
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 	if err := cmd.Run(); err != nil {
-		//stdoutStr := stdoutBuf.String()
+		stdoutStr := stdoutBuf.String()
 		stderrStr := stderrBuf.String()
 		fmt.Println("MPIRUN job exited with error:", err)
-		//fmt.Println(strings.TrimSpace(stdoutStr))
-		//fmt.Println(strings.TrimSpace(stderrStr))
+		fmt.Println(strings.TrimSpace(stdoutStr))
+		fmt.Println(strings.TrimSpace(stderrStr))
 		fmt.Println("===================")
 		e.sendEmail("JQuantum Job is Finished (Failed)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.\n Error info: \n"+strings.TrimSpace(stderrStr))
 		e.updateJobState(-2)
 		return errorx.Wrap(err, "MPIRUN job exited with error")
 	} else {
-		//stdoutStr := stdoutBuf.String()
-		//stderrStr := stderrBuf.String()
+		stdoutStr := stdoutBuf.String()
+		stderrStr := stderrBuf.String()
 		fmt.Println("MPIRUN job completed.")
-		//fmt.Println(strings.TrimSpace(stdoutStr))
-		//fmt.Println(strings.TrimSpace(stderrStr))
+		fmt.Println(strings.TrimSpace(stdoutStr))
+		fmt.Println(strings.TrimSpace(stderrStr))
 		//fmt.Println("===================")
 		e.sendEmail("JQuantum Job is Finished (Success)", "Your Quantum Computing Job (Job ID: "+e.JobID+") is finished now.")
 		e.updateJobState(2)
