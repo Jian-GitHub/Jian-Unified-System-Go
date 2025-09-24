@@ -125,8 +125,8 @@ func (m *defaultThirdPartyModel) FindOneByThirdID(ctx context.Context, id string
 func (m *defaultThirdPartyModel) Insert(ctx context.Context, data *ThirdParty) (sql.Result, error) {
 	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyIdPrefix, data.Id)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, thirdPartyRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.ThirdId, data.UserId, data.Name, data.RawData)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, thirdPartyRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Provider, data.ThirdId, data.UserId, data.Name, data.RawData)
 	}, apolloThirdPartyIdKey)
 	return ret, err
 }
