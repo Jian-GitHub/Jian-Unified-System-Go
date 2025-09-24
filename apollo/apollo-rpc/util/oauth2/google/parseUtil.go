@@ -5,7 +5,10 @@ import (
 	"jian-unified-system/jus-core/data/mysql/apollo"
 	"jian-unified-system/jus-core/types/oauth2"
 	sqlType "jian-unified-system/jus-core/types/sql"
+	"jian-unified-system/jus-core/util"
 )
+
+var keyManager = util.DefaultMLKEMKeyManager()
 
 func ParseUserProfile(userProfile *oauth2.GoogleUserProfile) (user *apollo.User, contacts []*apollo.Contact, err error) {
 	// 3. Parse SQL User
@@ -70,10 +73,16 @@ func parseContact(userProfile *oauth2.GoogleUserProfile, user *apollo.User, cont
 	for _, email := range userProfile.EmailAddresses {
 		if email.Metadata.Verified {
 			if email.Metadata.Primary {
-				(*user).Email = email.Value
-				(*user).NotificationEmail = sql.NullString{
-					String: email.Value,
-					Valid:  true,
+				if len(email.Value) != 0 {
+					(*user).Email = email.Value
+					notification, err := keyManager.EncryptMessage(email.Value)
+					if err != nil {
+						return err
+					}
+					(*user).NotificationEmail = sql.NullString{
+						String: notification,
+						Valid:  true,
+					}
 				}
 			}
 			contacts = append(contacts, &apollo.Contact{
