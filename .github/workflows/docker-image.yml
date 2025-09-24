@@ -1,9 +1,10 @@
-name: Build and Push Docker Image by Custom Tag
+name: Build and Push Docker Image by Tag
 
 on:
   push:
     tags:
-      - "*#*#*"  # 匹配任意格式 path#image#version
+      # 匹配任意路径 + 下划线 + 镜像名 + 下划线 + 版本号
+      - "**_*_v*.*.*"
 
 jobs:
   docker:
@@ -15,19 +16,19 @@ jobs:
         uses: actions/checkout@v4
 
       # 2 解析 tag，得到路径、镜像名、版本号
-      # e.g. jquantum/jquantum/api/deploy#jian-unified-system-go-jquantum-api#v0.1.0
-      # 用 # 分割
-      - name: Parse custom tag
+      # e.g. jquantum/jquantum-api/deploy_jian-unified-system-go-jquantum-api_v0.1.0
+      - name: Parse tag
         id: parse
         run: |
           RAW_TAG=${GITHUB_REF_NAME}
-          IFS='#' read -r DOCKER_PATH IMAGE_NAME VERSION <<< "$RAW_TAG"
+          
+          IFS='_' read -r DOCKER_PATH IMAGE_NAME VERSION <<< "$RAW_TAG"
           
           echo "RAW_TAG=$RAW_TAG"
           echo "DOCKER_PATH=$DOCKER_PATH"
           echo "IMAGE_NAME=$IMAGE_NAME"
           echo "VERSION=$VERSION"
-          
+
           echo "DOCKER_PATH=$DOCKER_PATH" >> $GITHUB_ENV
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
