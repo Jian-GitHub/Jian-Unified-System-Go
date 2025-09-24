@@ -1,0 +1,47 @@
+name: Build and Push Docker Image by Tag
+
+on:
+  push:
+    tags:
+      - "*-v*.*.*"   # 格式：service-v0.1.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Parse tag
+        id: parse
+        run: |
+          RAW_TAG=${GITHUB_REF_NAME}          # 例如 apollo-api-v0.1.0
+          SERVICE_NAME=${RAW_TAG%-v*}         # 前缀 -> apollo-api
+          VERSION=v${RAW_TAG##*-v}            # 版本号 -> v0.1.0
+          echo "SERVICE_NAME=$SERVICE_NAME" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Raw tag: $RAW_TAG, Service: $SERVICE_NAME, Version: $VERSION"
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$SERVICE_NAME
+          echo "Building $IMAGE:$VERSION and $IMAGE:latest"
+
+          docker build \
+            -f $SERVICE_NAME/deploy/Dockerfile \
+            -t $IMAGE:latest \
+            -t $IMAGE:$VERSION \
+            .
+
+      - name: Push Docker image
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$SERVICE_NAME
+          docker push $IMAGE:latest
+          docker push $IMAGE:$VERSION
