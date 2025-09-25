@@ -1,49 +1,49 @@
-Name: apollo-rpc
-ListenOn: 0.0.0.0:30100
-Timeout: 10000
+Name: ${APOLLO_RPC_NAME}
+ListenOn: ${APOLLO_RPC_LISTEN_ON}
+Timeout: ${APOLLO_RPC_TIMEOUT}
 
 SubSystem:
-  AccessSecret: "<Your_System_Name>"
-  AccessExpire: 900
+  AccessSecret: ${APOLLO_SUBSYSTEM_SECRET}
+  AccessExpire: ${APOLLO_SUBSYSTEM_EXPIRE}
 
-Mode: <dev|prod|test>
+Mode: ${APOLLO_MODE}
 
 Redis:
-  Host: <redis_host>:<port>
-  Type: cluster
-  Pass: <redis_password>
-  Key: passkeys.rpc
+  Host: ${APOLLO_REDIS_HOST}
+  Type: ${APOLLO_REDIS_TYPE}
+  Pass: ${APOLLO_REDIS_PASS}
+  Key: ${APOLLO_REDIS_KEY}
 
 DB:
-  DataSource: <username>:<password>@tcp(<db_host>:<db_port>)/<db_name>?charset=utf8mb4&parseTime=true&loc=<timezone>
+  DataSource: ${APOLLO_DB_DATASOURCE}
 
 Cache:
-  - Host: <redis_host>:<port>
-    Pass: <redis_password>
+  - Host: ${APOLLO_CACHE_HOST}
+    Pass: ${APOLLO_CACHE_PASS}
 
 WebAuthn:
-  RPID: "<Your_Domain>"
-  RPDisplayName: "<Your_System_Name>"
+  RPID: ${APOLLO_WEBAUTHN_RPID}
+  RPDisplayName: ${APOLLO_WEBAUTHN_DISPLAYNAME}
   RPOrigins:
-    - "https://<your_account_domain>"
+    - ${APOLLO_WEBAUTHN_ORIGIN}
 
 OAuth:
   Github:
-    ClientID: <github_client_id>
-    ClientSecret: <github_client_secret>
-    RedirectURL: <redirect_url>
+    ClientID: ${APOLLO_OAUTH_GITHUB_CLIENT_ID}
+    ClientSecret: ${APOLLO_OAUTH_GITHUB_CLIENT_SECRET}
+    RedirectURL: ${APOLLO_OAUTH_GITHUB_REDIRECT_URL}
     Scopes:
-      - user
-      - user:email
-    UserInfoURL: https://api.github.com/user
+      - ${APOLLO_OAUTH_GITHUB_SCOPE1}
+      - ${APOLLO_OAUTH_GITHUB_SCOPE2}
+    UserInfoURL: ${APOLLO_OAUTH_GITHUB_USERINFO_URL}
 
   Google:
-    ClientID: <google_client_id>
-    ClientSecret: <google_client_secret>
-    RedirectURL: <redirect_url>
+    ClientID: ${APOLLO_OAUTH_GOOGLE_CLIENT_ID}
+    ClientSecret: ${APOLLO_OAUTH_GOOGLE_CLIENT_SECRET}
+    RedirectURL: ${APOLLO_OAUTH_GOOGLE_REDIRECT_URL}
     Scopes:
-      - profile
-      - email
-      - https://www.googleapis.com/auth/user.birthday.read
-      - https://www.googleapis.com/auth/user.phonenumbers.read
-    UserInfoURL: https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,phoneNumbers,locales
+      - ${APOLLO_OAUTH_GOOGLE_SCOPE1}
+      - ${APOLLO_OAUTH_GOOGLE_SCOPE2}
+      - ${APOLLO_OAUTH_GOOGLE_SCOPE3}
+      - ${APOLLO_OAUTH_GOOGLE_SCOPE4}
+    UserInfoURL: ${APOLLO_OAUTH_GOOGLE_USERINFO_URL}
