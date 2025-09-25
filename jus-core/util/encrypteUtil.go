@@ -18,8 +18,8 @@ import (
 
 // KeyPairConfig 密钥对结构体 (用于 JSON 序列化)
 type KeyPairConfig struct {
-	publicKey  string `json:"publicKey"`  // Base64 编码
-	privateKey string `json:"privateKey"` // Base64 编码
+	PublicKey  string `json:"PublicKey"`  // Base64 编码
+	PrivateKey string `json:"PrivateKey"` // Base64 编码
 }
 
 // MLKEMKeyManager MLKEM 抗量子 加解密算法管理器
@@ -32,8 +32,8 @@ type MLKEMKeyManager struct {
 // getDefaultKeyPairConfig 默认算法密钥对配置 - JSON
 func getDefaultKeyPairConfig() *KeyPairConfig {
 	return &KeyPairConfig{
-		publicKey:  "",
-		privateKey: "",
+		PublicKey:  "",
+		PrivateKey: "",
 	}
 }
 
@@ -78,8 +78,8 @@ func saveKeyPair(filename string, pub kem.PublicKey, priv kem.PrivateKey) error 
 	privRaw, _ := priv.MarshalBinary()
 
 	keyPair := KeyPairConfig{
-		publicKey:  base64.StdEncoding.EncodeToString(pubRaw),
-		privateKey: base64.StdEncoding.EncodeToString(privRaw),
+		PublicKey:  base64.StdEncoding.EncodeToString(pubRaw),
+		PrivateKey: base64.StdEncoding.EncodeToString(privRaw),
 	}
 
 	data, err := json.MarshalIndent(keyPair, "", "  ")
@@ -102,12 +102,12 @@ func loadKeyPair(filename string) (kem.PublicKey, kem.PrivateKey, error) {
 		return nil, nil, err
 	}
 
-	pubRaw, err := base64.StdEncoding.DecodeString(keyPair.publicKey)
+	pubRaw, err := base64.StdEncoding.DecodeString(keyPair.PublicKey)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	privRaw, err := base64.StdEncoding.DecodeString(keyPair.privateKey)
+	privRaw, err := base64.StdEncoding.DecodeString(keyPair.PrivateKey)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -130,13 +130,13 @@ func loadKeyPair(filename string) (kem.PublicKey, kem.PrivateKey, error) {
 // loadKeys 从 keyPair 密钥对配置 加载密钥
 func (p *KeyPairConfig) loadKeys() (kem.PublicKey, kem.PrivateKey, error) {
 	// 1. 解码公钥
-	pubRaw, err := base64.StdEncoding.DecodeString(p.publicKey)
+	pubRaw, err := base64.StdEncoding.DecodeString(p.PublicKey)
 	if err != nil {
 		return nil, nil, fmt.Errorf("公钥解码失败: %v", err)
 	}
 
 	// 2. 解码私钥
-	privRaw, err := base64.StdEncoding.DecodeString(p.privateKey)
+	privRaw, err := base64.StdEncoding.DecodeString(p.PrivateKey)
 	if err != nil {
 		return nil, nil, fmt.Errorf("私钥解码失败: %v", err)
 	}
