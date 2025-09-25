@@ -4,7 +4,7 @@ Timeout: 10000
 
 SubSystem:
   AccessSecret: ${APOLLO_SUBSYSTEM_SECRET}
-  AccessExpire: ${APOLLO_SUBSYSTEM_EXPIRE}
+  AccessExpire: 31536000
 
 MLKEMKey:
   PublicKey: ${APOLLO_MLKEMKEY_PUBLICKEY}
