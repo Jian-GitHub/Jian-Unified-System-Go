@@ -34,21 +34,21 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       # 3 准备 SSH 密钥
-      - name: Prepare SSH keys
+      - name: Prepare build context
         run: |
-          mkdir -p $DOCKER_PATH/jquantum
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > jquantum/id_rsa
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" > jquantum/id_rsa.pub
-          echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > jquantum/authorized_keys
-          chmod 600 $DOCKER_PATH/jquantum/id_rsa
-          chmod 644 $DOCKER_PATH/jquantum/id_rsa.pub jquantum/authorized_keys
-#      - name: Copy GeoLite2 to build context
-#        run: |
-#          mkdir -p $DOCKER_PATH/jus-core/data
-#          cp jus-core/data/GeoLite2-City.mmdb jus-core/data/
-      - name: Create keypair.json in build context
-        run: |
-          mkdir -p $DOCKER_PATH/jus-core/data
+          # SSH keys
+          mkdir -p jus-core/jquantum
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > jus-core/jquantum/id_rsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > jus-core/jquantum/id_rsa.pub
+          echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > jus-core/jquantum/authorized_keys
+          chmod 600 jus-core/jquantum/id_rsa
+          chmod 644 jus-core/jquantum/id_rsa.pub jus-core/jquantum/authorized_keys
+
+          # GeoLite2 数据
+          mkdir -p jus-core/data
+          cp jus-core/data/GeoLite2-City.mmdb jus-core/data/GeoLite2-City.mmdb
+
+          # keypair.json
           echo "${{ secrets.KEYPAIR_JSON }}" > jus-core/data/keypair.json
     
       # 4 登录 DockerHub
