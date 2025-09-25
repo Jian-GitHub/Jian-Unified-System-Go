@@ -48,8 +48,8 @@ jobs:
           cp jus-core/data/GeoLite2-City.mmdb $DOCKER_PATH/jus-core/data/
       - name: Create keypair.json in build context
         run: |
-          mkdir -p jus-core/data
-          echo '${{ secrets.KEYPAIR_JSON }}' > jus-core/data/keypair.json
+          mkdir -p $DOCKER_PATH/jus-core/data
+          echo "${{ secrets.KEYPAIR_JSON }}" > $DOCKER_PATH/jus-core/data/keypair.json
     
       # 4 登录 DockerHub
       - name: Login to DockerHub
