@@ -43,14 +43,6 @@ jobs:
           echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > jus-core/jquantum/authorized_keys
           chmod 600 jus-core/jquantum/id_rsa
           chmod 644 jus-core/jquantum/id_rsa.pub jus-core/jquantum/authorized_keys
-
-          # GeoLite2 数据
-          # mkdir -p jus-core/data
-          # cp jus-core/data/GeoLite2-City.mmdb jus-core/data/GeoLite2-City.mmdb
-
-          # keypair.json
-          mkdir -p jus-core/data
-          echo "${{ secrets.KEYPAIR_JSON }}" > jus-core/data/keypair.json
     
       # 4 登录 DockerHub
       - name: Login to DockerHub
