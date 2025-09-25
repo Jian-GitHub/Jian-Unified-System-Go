@@ -27,5 +27,6 @@ WORKDIR /app
 COPY --from=builder /app/apollorpc /app/apollorpc
 COPY apollo/apollo-rpc/etc /app/etc
 COPY jus-core/data/GeoLite2-City.mmdb /jus-core/data/GeoLite2-City.mmdb
+COPY jus-core/data/keypair.json /jus-core/data/keypair.json
 
 CMD ["./apollorpc", "-f", "etc/apollorpc.yaml"]
