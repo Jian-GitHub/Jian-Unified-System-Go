@@ -58,12 +58,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Create builder
+        run: |
+          docker buildx create --name mybuilder --use
+          docker buildx inspect --bootstrap
       # 5 Build Docker image
       - name: Build Docker image
         run: |
           IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
           echo "Building Docker image: $IMAGE:$VERSION and $IMAGE:latest"
-          docker build \
+          docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -f $DOCKER_PATH/Dockerfile \
             -t $IMAGE:latest \
