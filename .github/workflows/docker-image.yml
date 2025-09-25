@@ -33,14 +33,24 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      # 3 登录 DockerHub
+      # 3 准备 SSH 密钥
+      - name: Prepare SSH keys
+        run: |
+          mkdir -p $DOCKER_PATH/jquantum
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > $DOCKER_PATH/jquantum/id_rsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > $DOCKER_PATH/jquantum/id_rsa.pub
+          echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > $DOCKER_PATH/jquantum/authorized_keys
+          chmod 600 $DOCKER_PATH/jquantum/id_rsa
+          chmod 644 $DOCKER_PATH/jquantum/id_rsa.pub $DOCKER_PATH/jquantum/authorized_keys
+      
+      # 4 登录 DockerHub
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4 Build Docker image
+      # 5 Build Docker image
       - name: Build Docker image
         run: |
           IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
@@ -51,7 +61,7 @@ jobs:
             -t $IMAGE:$VERSION \
             .
 
-      # 5 Push Docker image
+      # 6 Push Docker image
       - name: Push Docker image
         run: |
           IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
