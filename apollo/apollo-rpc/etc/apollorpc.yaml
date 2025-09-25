@@ -1,31 +1,28 @@
-Name: ${APOLLO_RPC_NAME}
-ListenOn: ${APOLLO_RPC_LISTEN_ON}
-Timeout: ${APOLLO_RPC_TIMEOUT}
+Name: apollo-rpc
+ListenOn: 0.0.0.0:30100
+Timeout: 10000
 
 SubSystem:
   AccessSecret: ${APOLLO_SUBSYSTEM_SECRET}
   AccessExpire: ${APOLLO_SUBSYSTEM_EXPIRE}
 
-Mode: ${APOLLO_MODE}
-
+Mode: dev
 Redis:
   Host: ${APOLLO_REDIS_HOST}
-  Type: ${APOLLO_REDIS_TYPE}
+  Type: cluster
   Pass: ${APOLLO_REDIS_PASS}
-  Key: ${APOLLO_REDIS_KEY}
-
+  Key: passkeys.rpc
 DB:
   DataSource: ${APOLLO_DB_DATASOURCE}
-
 Cache:
   - Host: ${APOLLO_CACHE_HOST}
     Pass: ${APOLLO_CACHE_PASS}
 
 WebAuthn:
-  RPID: ${APOLLO_WEBAUTHN_RPID}
-  RPDisplayName: ${APOLLO_WEBAUTHN_DISPLAYNAME}
+  RPID: "account.jianunifiedsystem.com"
+  RPDisplayName: "Jian Unified System - Apollo"
   RPOrigins:
-    - ${APOLLO_WEBAUTHN_ORIGIN}
+    - "https://account.jianunifiedsystem.com"
 
 OAuth:
   Github:
@@ -33,17 +30,17 @@ OAuth:
     ClientSecret: ${APOLLO_OAUTH_GITHUB_CLIENT_SECRET}
     RedirectURL: ${APOLLO_OAUTH_GITHUB_REDIRECT_URL}
     Scopes:
-      - ${APOLLO_OAUTH_GITHUB_SCOPE1}
-      - ${APOLLO_OAUTH_GITHUB_SCOPE2}
-    UserInfoURL: ${APOLLO_OAUTH_GITHUB_USERINFO_URL}
+      - user
+      - user:email
+    UserInfoURL: https://api.github.com/user
 
   Google:
     ClientID: ${APOLLO_OAUTH_GOOGLE_CLIENT_ID}
     ClientSecret: ${APOLLO_OAUTH_GOOGLE_CLIENT_SECRET}
     RedirectURL: ${APOLLO_OAUTH_GOOGLE_REDIRECT_URL}
     Scopes:
-      - ${APOLLO_OAUTH_GOOGLE_SCOPE1}
-      - ${APOLLO_OAUTH_GOOGLE_SCOPE2}
-      - ${APOLLO_OAUTH_GOOGLE_SCOPE3}
-      - ${APOLLO_OAUTH_GOOGLE_SCOPE4}
-    UserInfoURL: ${APOLLO_OAUTH_GOOGLE_USERINFO_URL}
+      - profile
+      - email
+      - https://www.googleapis.com/auth/user.birthday.read
+      - https://www.googleapis.com/auth/user.phonenumbers.read
+    UserInfoURL: https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos,birthdays,phoneNumbers,locales
