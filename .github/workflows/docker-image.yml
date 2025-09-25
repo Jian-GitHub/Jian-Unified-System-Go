@@ -49,6 +49,7 @@ jobs:
           # cp jus-core/data/GeoLite2-City.mmdb jus-core/data/GeoLite2-City.mmdb
 
           # keypair.json
+          mkdir -p jus-core/data
           echo "${{ secrets.KEYPAIR_JSON }}" > jus-core/data/keypair.json
     
       # 4 登录 DockerHub
