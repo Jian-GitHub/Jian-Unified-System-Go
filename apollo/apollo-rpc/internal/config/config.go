@@ -6,6 +6,7 @@ import (
 	"jian-unified-system/apollo/apollo-rpc/internal/types"
 	"jian-unified-system/jus-core/types/jwt"
 	"jian-unified-system/jus-core/types/oauth2"
+	"jian-unified-system/jus-core/util"
 )
 
 type Config struct {
@@ -17,4 +18,5 @@ type Config struct {
 	}
 	OAuth     oauth2.OAuthProviders
 	SubSystem jwt.TokenConfig
+	MLKEMKey  util.KeyPairConfig
 }

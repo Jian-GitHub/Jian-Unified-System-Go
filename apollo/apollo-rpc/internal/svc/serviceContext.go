@@ -61,7 +61,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ThirdPartyModel: apollo.NewThirdPartyModel(sqlConn, c.Cache),
 		TokenModel:      apollo.NewTokenModel(sqlConn, c.Cache),
 
-		MLKEMKeyManager: util.DefaultMLKEMKeyManager(),
-		OauthProviders:  OauthProviders,
+		MLKEMKeyManager: util.NewMLKEMKeyManager(&util.KeyPairConfig{
+			PublicKey:  c.MLKEMKey.PublicKey,
+			PrivateKey: c.MLKEMKey.PrivateKey,
+		}),
+		OauthProviders: OauthProviders,
 	}
 }
