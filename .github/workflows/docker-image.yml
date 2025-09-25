@@ -37,19 +37,19 @@ jobs:
       - name: Prepare SSH keys
         run: |
           mkdir -p $DOCKER_PATH/jquantum
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > $DOCKER_PATH/jquantum/id_rsa
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" > $DOCKER_PATH/jquantum/id_rsa.pub
-          echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > $DOCKER_PATH/jquantum/authorized_keys
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > jquantum/id_rsa
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > jquantum/id_rsa.pub
+          echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > jquantum/authorized_keys
           chmod 600 $DOCKER_PATH/jquantum/id_rsa
-          chmod 644 $DOCKER_PATH/jquantum/id_rsa.pub $DOCKER_PATH/jquantum/authorized_keys
-      - name: Copy GeoLite2 to build context
-        run: |
-          mkdir -p $DOCKER_PATH/jus-core/data
-          cp jus-core/data/GeoLite2-City.mmdb $DOCKER_PATH/jus-core/data/
+          chmod 644 $DOCKER_PATH/jquantum/id_rsa.pub jquantum/authorized_keys
+#      - name: Copy GeoLite2 to build context
+#        run: |
+#          mkdir -p $DOCKER_PATH/jus-core/data
+#          cp jus-core/data/GeoLite2-City.mmdb jus-core/data/
       - name: Create keypair.json in build context
         run: |
           mkdir -p $DOCKER_PATH/jus-core/data
-          echo "${{ secrets.KEYPAIR_JSON }}" > $DOCKER_PATH/jus-core/data/keypair.json
+          echo "${{ secrets.KEYPAIR_JSON }}" > jus-core/data/keypair.json
     
       # 4 登录 DockerHub
       - name: Login to DockerHub
@@ -67,13 +67,13 @@ jobs:
         run: |
           IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
           echo "Building Docker image: $IMAGE:$VERSION and $IMAGE:latest"
-          docker build \
+          docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -f $DOCKER_PATH/Dockerfile \
             -t $IMAGE:latest \
             -t $IMAGE:$VERSION \
             --push \
-            $DOCKER_PATH
+            .
 
       # 6 Push Docker image
       - name: Push Docker image
