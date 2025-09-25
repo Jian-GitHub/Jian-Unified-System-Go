@@ -42,7 +42,11 @@ jobs:
           echo "${{ secrets.SSH_AUTHORIZED_KEYS }}" > $DOCKER_PATH/jquantum/authorized_keys
           chmod 600 $DOCKER_PATH/jquantum/id_rsa
           chmod 644 $DOCKER_PATH/jquantum/id_rsa.pub $DOCKER_PATH/jquantum/authorized_keys
-      
+      - name: Copy GeoLite2 to build context
+        run: |
+          mkdir -p $DOCKER_PATH/jus-core/data
+          cp jus-core/data/GeoLite2-City.mmdb $DOCKER_PATH/jus-core/data/
+    
       # 4 登录 DockerHub
       - name: Login to DockerHub
         uses: docker/login-action@v3
