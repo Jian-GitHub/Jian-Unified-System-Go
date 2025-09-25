@@ -61,7 +61,7 @@ func (l *ContinueLogic) Continue(in *apollo.ThirdPartyContinueReq) (*apollo.Thir
 		err = json.NewDecoder(resp.Body).Decode(&userProfile)
 
 		//fmt.Println(firstName, lastName)
-		user, contacts, err := googleUtil.ParseUserProfile(userProfile)
+		user, contacts, err := googleUtil.ParseUserProfile(userProfile, l.svcCtx.MLKEMKeyManager)
 		if err != nil {
 			return nil, err
 		}

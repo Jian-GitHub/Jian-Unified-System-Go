@@ -8,9 +8,7 @@ import (
 	"jian-unified-system/jus-core/util"
 )
 
-var keyManager = util.DefaultMLKEMKeyManager()
-
-func ParseUserProfile(userProfile *oauth2.GoogleUserProfile) (user *apollo.User, contacts []*apollo.Contact, err error) {
+func ParseUserProfile(userProfile *oauth2.GoogleUserProfile, keyManager util.MLKEMKeyManager) (user *apollo.User, contacts []*apollo.Contact, err error) {
 	// 3. Parse SQL User
 	err = parseUser(userProfile, user)
 	if err != nil {
@@ -18,7 +16,7 @@ func ParseUserProfile(userProfile *oauth2.GoogleUserProfile) (user *apollo.User,
 	}
 
 	// 4. Parse SQL Contacts (Email)
-	err = parseContact(userProfile, user, contacts)
+	err = parseContact(userProfile, user, contacts, keyManager)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -68,7 +66,7 @@ func parseUser(userProfile *oauth2.GoogleUserProfile, user *apollo.User) error {
 	return nil
 }
 
-func parseContact(userProfile *oauth2.GoogleUserProfile, user *apollo.User, contacts []*apollo.Contact) error {
+func parseContact(userProfile *oauth2.GoogleUserProfile, user *apollo.User, contacts []*apollo.Contact, keyManager util.MLKEMKeyManager) error {
 	// 4. 已验证邮件
 	for _, email := range userProfile.EmailAddresses {
 		if email.Metadata.Verified {
