@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"fmt"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"jian-unified-system/apollo/apollo-rpc/internal/config"
@@ -52,9 +51,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	sqlConn := sqlx.NewMysql(c.DB.DataSource)
 
 	OauthProviders := config.InitOAuthProviders(c)
-	fmt.Println("c.MLKEMKey.PublicKey")
-	fmt.Println(c.MLKEMKey.PublicKey)
-	fmt.Println(c.MLKEMKey.PrivateKey)
 	return &ServiceContext{
 		Config:   c,
 		WebAuthn: wa,
