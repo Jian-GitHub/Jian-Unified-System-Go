@@ -64,6 +64,7 @@ jobs:
           IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
           echo "Building Docker image: $IMAGE:$VERSION and $IMAGE:latest"
           docker build \
+            --platform linux/amd64,linux/arm64 \
             -f $DOCKER_PATH/Dockerfile \
             -t $IMAGE:latest \
             -t $IMAGE:$VERSION \
