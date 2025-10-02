@@ -33,10 +33,14 @@ type (
 	RemoveSubsystemTokenReq        = apollo.RemoveSubsystemTokenReq
 	RemoveSubsystemTokenResp       = apollo.RemoveSubsystemTokenResp
 	SubsystemToken                 = apollo.SubsystemToken
+	ThirdPartyAccountInfo          = apollo.ThirdPartyAccountInfo
 	ThirdPartyAccounts             = apollo.ThirdPartyAccounts
 	ThirdPartyBindReq              = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq          = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp         = apollo.ThirdPartyContinueResp
+	ThirdPartyGetInfoReq           = apollo.ThirdPartyGetInfoReq
+	ThirdPartyGetInfoResp          = apollo.ThirdPartyGetInfoResp
+	ThirdPartyRemoveReq            = apollo.ThirdPartyRemoveReq
 	UserContact                    = apollo.UserContact
 	UserInfoReq                    = apollo.UserInfoReq
 	UserInfoResp                   = apollo.UserInfoResp

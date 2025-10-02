@@ -23,7 +23,13 @@ func NewThirdPartyServer(svcCtx *svc.ServiceContext) *ThirdPartyServer {
 	}
 }
 
-// 绑定
+// GetInfo 获取第三方账号绑定信息
+func (s *ThirdPartyServer) GetInfo(ctx context.Context, in *apollo.ThirdPartyGetInfoReq) (*apollo.ThirdPartyGetInfoResp, error) {
+	l := thirdpartylogic.NewGetInfoLogic(ctx, s.svcCtx)
+	return l.GetInfo(in)
+}
+
+// Bind 绑定第三方账号
 func (s *ThirdPartyServer) Bind(ctx context.Context, in *apollo.ThirdPartyBindReq) (*apollo.Empty, error) {
 	l := thirdpartylogic.NewBindLogic(ctx, s.svcCtx)
 	return l.Bind(in)
@@ -39,4 +45,10 @@ func (s *ThirdPartyServer) Continue(ctx context.Context, in *apollo.ThirdPartyCo
 func (s *ThirdPartyServer) HandleCallback(ctx context.Context, in *apollo.ThirdPartyContinueReq) (*apollo.ThirdPartyContinueResp, error) {
 	l := thirdpartylogic.NewHandleCallbackLogic(ctx, s.svcCtx)
 	return l.HandleCallback(in)
+}
+
+// Remove 移除第三方账号
+func (s *ThirdPartyServer) Remove(ctx context.Context, in *apollo.ThirdPartyRemoveReq) (*apollo.Empty, error) {
+	l := thirdpartylogic.NewRemoveLogic(ctx, s.svcCtx)
+	return l.Remove(in)
 }

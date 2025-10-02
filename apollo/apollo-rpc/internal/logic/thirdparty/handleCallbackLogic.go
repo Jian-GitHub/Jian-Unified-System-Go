@@ -158,7 +158,7 @@ func (l *HandleCallbackLogic) HandleCallback(in *apollo.ThirdPartyContinueReq) (
 				return nil, err
 			}
 			// 存入 third_party
-			err = l.svcCtx.ThirdPartyModel.Update(l.ctx, newThirdParty)
+			_, err = l.svcCtx.ThirdPartyModel.Insert(l.ctx, newThirdParty)
 			if err != nil {
 				return nil, err
 			}

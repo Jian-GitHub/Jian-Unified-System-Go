@@ -25,6 +25,10 @@ func ParseUserAndContacts(thirdPartyUser *oauth2.ThirdPartyUser, user *apollo.Us
 	thirdParty.Name = (*thirdPartyUser).GetDisplayName()
 
 	// generate contacts
+	if contacts == nil {
+		return nil
+	}
+
 	contactsData := (*thirdPartyUser).GenerateEmailContacts()
 	for _, data := range *contactsData {
 		*contacts = append(*contacts, &apollo.Contact{

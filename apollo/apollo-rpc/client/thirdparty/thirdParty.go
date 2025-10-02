@@ -33,10 +33,14 @@ type (
 	RemoveSubsystemTokenReq        = apollo.RemoveSubsystemTokenReq
 	RemoveSubsystemTokenResp       = apollo.RemoveSubsystemTokenResp
 	SubsystemToken                 = apollo.SubsystemToken
+	ThirdPartyAccountInfo          = apollo.ThirdPartyAccountInfo
 	ThirdPartyAccounts             = apollo.ThirdPartyAccounts
 	ThirdPartyBindReq              = apollo.ThirdPartyBindReq
 	ThirdPartyContinueReq          = apollo.ThirdPartyContinueReq
 	ThirdPartyContinueResp         = apollo.ThirdPartyContinueResp
+	ThirdPartyGetInfoReq           = apollo.ThirdPartyGetInfoReq
+	ThirdPartyGetInfoResp          = apollo.ThirdPartyGetInfoResp
+	ThirdPartyRemoveReq            = apollo.ThirdPartyRemoveReq
 	UserContact                    = apollo.UserContact
 	UserInfoReq                    = apollo.UserInfoReq
 	UserInfoResp                   = apollo.UserInfoResp
@@ -46,12 +50,16 @@ type (
 	ValidateSubsystemTokenResp     = apollo.ValidateSubsystemTokenResp
 
 	ThirdParty interface {
-		// 绑定
+		// GetInfo 获取第三方账号绑定信息
+		GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error)
+		// Bind 绑定第三方账号
 		Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
 		// 继续 - 登录或注册
 		Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
 		// HandleCallback 处理第三方回调数据
 		HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+		// Remove 移除第三方账号
+		Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error)
 	}
 
 	defaultThirdParty struct {
@@ -65,7 +73,13 @@ func NewThirdParty(cli zrpc.Client) ThirdParty {
 	}
 }
 
-// 绑定
+// GetInfo 获取第三方账号绑定信息
+func (m *defaultThirdParty) GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error) {
+	client := apollo.NewThirdPartyClient(m.cli.Conn())
+	return client.GetInfo(ctx, in, opts...)
+}
+
+// Bind 绑定第三方账号
 func (m *defaultThirdParty) Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error) {
 	client := apollo.NewThirdPartyClient(m.cli.Conn())
 	return client.Bind(ctx, in, opts...)
@@ -81,4 +95,10 @@ func (m *defaultThirdParty) Continue(ctx context.Context, in *ThirdPartyContinue
 func (m *defaultThirdParty) HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
 	client := apollo.NewThirdPartyClient(m.cli.Conn())
 	return client.HandleCallback(ctx, in, opts...)
+}
+
+// Remove 移除第三方账号
+func (m *defaultThirdParty) Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error) {
+	client := apollo.NewThirdPartyClient(m.cli.Conn())
+	return client.Remove(ctx, in, opts...)
 }

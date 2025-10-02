@@ -25,8 +25,8 @@ var (
 	thirdPartyRowsExpectAutoSet   = strings.Join(stringx.Remove(thirdPartyFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	thirdPartyRowsWithPlaceHolder = strings.Join(stringx.Remove(thirdPartyFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cacheApolloThirdPartyIdPrefix      = "cache:apollo:thirdParty:id:"
-	cacheApolloThirdPartyThirdIdPrefix = "cache:apollo:thirdParty:thirdId:"
+	cacheApolloThirdPartyIdPrefix = "cache:apollo:thirdParty:id:"
+	//cacheApolloThirdPartyThirdIdPrefix = "cache:apollo:thirdParty:thirdId:"
 )
 
 type (
@@ -36,7 +36,7 @@ type (
 		FindBatch(ctx context.Context, userId int64) (*[]ThirdParty, error)
 		FindOneByThirdID(ctx context.Context, id string) (*ThirdParty, error)
 		Update(ctx context.Context, data *ThirdParty) error
-		Delete(ctx context.Context, id int64) error
+		Delete(ctx context.Context, id int64, userId int64) error
 	}
 
 	defaultThirdPartyModel struct {
@@ -63,11 +63,11 @@ func newThirdPartyModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Opti
 	}
 }
 
-func (m *defaultThirdPartyModel) Delete(ctx context.Context, id int64) error {
+func (m *defaultThirdPartyModel) Delete(ctx context.Context, id int64, userId int64) error {
 	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyIdPrefix, id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
+		query := fmt.Sprintf("delete from %s where `id` = ? and `user_id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, id, userId)
 	}, apolloThirdPartyIdKey)
 	return err
 }
@@ -106,12 +106,15 @@ func (m *defaultThirdPartyModel) FindBatch(ctx context.Context, userId int64) (*
 }
 
 func (m *defaultThirdPartyModel) FindOneByThirdID(ctx context.Context, id string) (*ThirdParty, error) {
-	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyThirdIdPrefix, id)
+	//apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyThirdIdPrefix, id)
 	var resp ThirdParty
-	err := m.QueryRowCtx(ctx, &resp, apolloThirdPartyIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `third_id` = ? limit 1", thirdPartyRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
+	//err := m.QueryRowCtx(ctx, &resp, apolloThirdPartyIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+	//	query := fmt.Sprintf("select %s from %s where `third_id` = ? limit 1", thirdPartyRows, m.table)
+	//	return conn.QueryRowCtx(ctx, v, query, id)
+	//})
+
+	query := fmt.Sprintf("select %s from %s where `third_id` = ? limit 1", thirdPartyRows, m.table)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, id)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -135,7 +138,7 @@ func (m *defaultThirdPartyModel) Update(ctx context.Context, data *ThirdParty) e
 	apolloThirdPartyIdKey := fmt.Sprintf("%s%v", cacheApolloThirdPartyIdPrefix, data.Id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, thirdPartyRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.ThirdId, data.UserId, data.Name, data.RawData, data.Id)
+		return conn.ExecCtx(ctx, query, data.ThirdId, data.UserId, data.Name, data.RawData, data.Id, data.RawData)
 	}, apolloThirdPartyIdKey)
 	return err
 }

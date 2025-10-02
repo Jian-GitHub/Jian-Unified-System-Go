@@ -172,6 +172,18 @@ service Passkeys {
 
 
 // Third-Party
+message ThirdPartyAccountInfo {
+  int64 id = 1;
+  string provider = 2;
+  string content = 3;
+}
+// ========== 查询流程 ==========
+message ThirdPartyGetInfoReq {
+  int64 user_id = 1;
+}
+message ThirdPartyGetInfoResp {
+  repeated ThirdPartyAccountInfo accounts = 1;
+}
 // ========== 绑定流程 ==========
 message ThirdPartyBindReq {
 //  int64 user_id = 1;          // API生成
@@ -191,9 +203,15 @@ message ThirdPartyContinueResp {
   int64 user_id = 1;       // API提供
 }
 
+message ThirdPartyRemoveReq {
+  int64 user_id = 1;
+  int64 third_party_id = 2;
+}
+
 // ================= 服务定义 =================
 service ThirdParty {
-  // 绑定
+  // GetInfo 获取第三方账号绑定信息
+  rpc GetInfo (ThirdPartyGetInfoReq) returns (ThirdPartyGetInfoResp);
   // Bind 绑定第三方账号
   rpc Bind (ThirdPartyBindReq) returns (Empty);
   // 继续 - 登录或注册
@@ -202,6 +220,8 @@ service ThirdParty {
 
   // HandleCallback 处理第三方回调数据
   rpc HandleCallback (ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
+  // Remove 移除第三方账号
+  rpc Remove (ThirdPartyRemoveReq) returns (Empty);
 }
 
 // ========== 生成子系统令牌 ==========

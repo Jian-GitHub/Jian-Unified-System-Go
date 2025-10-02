@@ -487,9 +487,11 @@ var Passkeys_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	ThirdParty_GetInfo_FullMethodName        = "/apollo.ThirdParty/GetInfo"
 	ThirdParty_Bind_FullMethodName           = "/apollo.ThirdParty/Bind"
 	ThirdParty_Continue_FullMethodName       = "/apollo.ThirdParty/Continue"
 	ThirdParty_HandleCallback_FullMethodName = "/apollo.ThirdParty/HandleCallback"
+	ThirdParty_Remove_FullMethodName         = "/apollo.ThirdParty/Remove"
 )
 
 // ThirdPartyClient is the client API for ThirdParty service.
@@ -498,7 +500,8 @@ const (
 //
 // ================= 服务定义 =================
 type ThirdPartyClient interface {
-	// 绑定
+	// GetInfo 获取第三方账号绑定信息
+	GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error)
 	// Bind 绑定第三方账号
 	Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
 	// 继续 - 登录或注册
@@ -506,6 +509,8 @@ type ThirdPartyClient interface {
 	Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
 	// HandleCallback 处理第三方回调数据
 	HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+	// Remove 移除第三方账号
+	Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type thirdPartyClient struct {
@@ -514,6 +519,16 @@ type thirdPartyClient struct {
 
 func NewThirdPartyClient(cc grpc.ClientConnInterface) ThirdPartyClient {
 	return &thirdPartyClient{cc}
+}
+
+func (c *thirdPartyClient) GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ThirdPartyGetInfoResp)
+	err := c.cc.Invoke(ctx, ThirdParty_GetInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *thirdPartyClient) Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error) {
@@ -546,13 +561,24 @@ func (c *thirdPartyClient) HandleCallback(ctx context.Context, in *ThirdPartyCon
 	return out, nil
 }
 
+func (c *thirdPartyClient) Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, ThirdParty_Remove_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ThirdPartyServer is the server API for ThirdParty service.
 // All implementations must embed UnimplementedThirdPartyServer
 // for forward compatibility.
 //
 // ================= 服务定义 =================
 type ThirdPartyServer interface {
-	// 绑定
+	// GetInfo 获取第三方账号绑定信息
+	GetInfo(context.Context, *ThirdPartyGetInfoReq) (*ThirdPartyGetInfoResp, error)
 	// Bind 绑定第三方账号
 	Bind(context.Context, *ThirdPartyBindReq) (*Empty, error)
 	// 继续 - 登录或注册
@@ -560,6 +586,8 @@ type ThirdPartyServer interface {
 	Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
 	// HandleCallback 处理第三方回调数据
 	HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
+	// Remove 移除第三方账号
+	Remove(context.Context, *ThirdPartyRemoveReq) (*Empty, error)
 	mustEmbedUnimplementedThirdPartyServer()
 }
 
@@ -570,6 +598,9 @@ type ThirdPartyServer interface {
 // pointer dereference when methods are called.
 type UnimplementedThirdPartyServer struct{}
 
+func (UnimplementedThirdPartyServer) GetInfo(context.Context, *ThirdPartyGetInfoReq) (*ThirdPartyGetInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInfo not implemented")
+}
 func (UnimplementedThirdPartyServer) Bind(context.Context, *ThirdPartyBindReq) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
 }
@@ -578,6 +609,9 @@ func (UnimplementedThirdPartyServer) Continue(context.Context, *ThirdPartyContin
 }
 func (UnimplementedThirdPartyServer) HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleCallback not implemented")
+}
+func (UnimplementedThirdPartyServer) Remove(context.Context, *ThirdPartyRemoveReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
 }
 func (UnimplementedThirdPartyServer) mustEmbedUnimplementedThirdPartyServer() {}
 func (UnimplementedThirdPartyServer) testEmbeddedByValue()                    {}
@@ -598,6 +632,24 @@ func RegisterThirdPartyServer(s grpc.ServiceRegistrar, srv ThirdPartyServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&ThirdParty_ServiceDesc, srv)
+}
+
+func _ThirdParty_GetInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyGetInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).GetInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_GetInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).GetInfo(ctx, req.(*ThirdPartyGetInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ThirdParty_Bind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -654,6 +706,24 @@ func _ThirdParty_HandleCallback_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ThirdParty_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyRemoveReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).Remove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_Remove_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).Remove(ctx, req.(*ThirdPartyRemoveReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ThirdParty_ServiceDesc is the grpc.ServiceDesc for ThirdParty service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -661,6 +731,10 @@ var ThirdParty_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "apollo.ThirdParty",
 	HandlerType: (*ThirdPartyServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetInfo",
+			Handler:    _ThirdParty_GetInfo_Handler,
+		},
 		{
 			MethodName: "Bind",
 			Handler:    _ThirdParty_Bind_Handler,
@@ -672,6 +746,10 @@ var ThirdParty_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandleCallback",
 			Handler:    _ThirdParty_HandleCallback_Handler,
+		},
+		{
+			MethodName: "Remove",
+			Handler:    _ThirdParty_Remove_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

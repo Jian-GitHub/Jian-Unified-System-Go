@@ -18,7 +18,7 @@ func BindHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := thirdParty.NewBindLogic(r.Context(), svcCtx)
-		resp, err := l.Bind(&req, w, r)
+		resp, err := l.Bind(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
