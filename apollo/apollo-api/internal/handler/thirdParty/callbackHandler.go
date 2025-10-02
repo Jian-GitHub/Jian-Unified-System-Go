@@ -23,8 +23,8 @@ func CallbackHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
-			//frontendRedirectUrl := fmt.Sprintf("https://account.jianunifiedsystem.com/login?token=%s", resp.CallbackRespData.Token)
-			frontendRedirectUrl := fmt.Sprintf("http://dev.jian.nz:20551/login?token=%s", resp.CallbackRespData.Token)
+			frontendRedirectUrl := fmt.Sprintf("https://account.jianunifiedsystem.com/login?token=%s", resp.CallbackRespData.Token)
+			//frontendRedirectUrl := fmt.Sprintf("http://dev.jian.nz:20551/login?token=%s", resp.CallbackRespData.Token)
 
 			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 			w.Header().Set("Pragma", "no-cache")
