@@ -362,6 +362,18 @@ service apollo-api {
 
 // Third Party
 type (
+	ThirdPartyAccount {
+		Id       int64  `json:"id"`
+		Provider string `json:"provider"`
+		Content  string `json:"content"`
+	}
+	GetInfoReq  {}
+	GetInfoResp {
+		BaseResponse
+		GetInfoRespData {
+			Accounts []ThirdPartyAccount `json:"accounts"`
+		} `json:"data"`
+	}
 	ContinueReq {
 		Provider string `json:"provider" validate:"required"`
 	}
@@ -391,6 +403,15 @@ type (
 			Token string `json:"token"`
 		} `json:"data"`
 	}
+	RemoveReq {
+		ThirdPartyId int64 `json:"thirdPartyId" validate:"required`
+	}
+	RemoveResp {
+		BaseResponse
+		RemoveRespData {
+			Ok bool `json:"ok"`
+		} `json:"data"`
+	}
 )
 
 @server (
@@ -415,8 +436,16 @@ service apollo-api {
 	jwt:    Auth
 )
 service apollo-api {
+	@handler GetInfo
+	// Return: []ThirdPartyAccount
+	post /GetInfo (Empty) returns (GetInfoResp)
+
 	@handler Bind
 	// Return: Redirect URL
-	post /BindReq (BindReq) returns (BindResp)
+	post /Bind (BindReq) returns (BindResp)
+
+	@handler Remove
+	// Return: status
+	post /Remove (RemoveReq) returns (RemoveResp)
 }
 

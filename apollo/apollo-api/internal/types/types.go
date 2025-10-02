@@ -85,6 +85,16 @@ type GenerateSubsystemTokenResp struct {
 	} `json:"data"`
 }
 
+type GetInfoReq struct {
+}
+
+type GetInfoResp struct {
+	BaseResponse
+	GetInfoRespData struct {
+		Accounts []ThirdPartyAccount `json:"accounts"`
+	} `json:"data"`
+}
+
 type GetTenSubsystemTokensReq struct {
 	Page int64 `json:"page"`
 }
@@ -224,6 +234,17 @@ type RegStartResp struct {
 	} `json:"data"`
 }
 
+type RemoveReq struct {
+	ThirdPartyId int64 `json:"thirdPartyId" validate:"required`
+}
+
+type RemoveResp struct {
+	BaseResponse
+	RemoveRespData struct {
+		Ok bool `json:"ok"`
+	} `json:"data"`
+}
+
 type RemoveSubsystemTokenReq struct {
 	Id int64 `json:"id" validate:"required`
 }
@@ -246,6 +267,12 @@ type SubsystemToken struct {
 	Value string      `json:"value"`
 	Name  string      `json:"name"`
 	Date  RespnseDate `json:"date"`
+}
+
+type ThirdPartyAccount struct {
+	Id       int64  `json:"id"`
+	Provider string `json:"provider"`
+	Content  string `json:"content"`
 }
 
 type UserContact struct {

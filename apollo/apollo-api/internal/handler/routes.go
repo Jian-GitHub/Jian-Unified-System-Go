@@ -139,8 +139,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/BindReq",
+				Path:    "/Bind",
 				Handler: thirdParty.BindHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/GetInfo",
+				Handler: thirdParty.GetInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/Remove",
+				Handler: thirdParty.RemoveHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

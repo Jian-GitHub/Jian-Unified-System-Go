@@ -2,12 +2,12 @@ package thirdParty
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/errorx"
 	apolloUtil "jian-unified-system/apollo/apollo-api/util"
 	redisUtil "jian-unified-system/jus-core/util/oauth2/redis"
-	"net/http"
 	"strconv"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
@@ -30,7 +30,7 @@ func NewBindLogic(ctx context.Context, svcCtx *svc.ServiceContext) *BindLogic {
 	}
 }
 
-func (l *BindLogic) Bind(req *types.BindReq, w http.ResponseWriter, r *http.Request) (resp *types.BindResp, err error) {
+func (l *BindLogic) Bind(req *types.BindReq) (resp *types.BindResp, err error) {
 	// todo: add your logic here and delete this line
 	if len(req.Provider) == 0 {
 		return &types.BindResp{
@@ -40,9 +40,14 @@ func (l *BindLogic) Bind(req *types.BindReq, w http.ResponseWriter, r *http.Requ
 			},
 		}, errorx.Wrap(errors.New("no provider"), "ThirdParty Continue Err")
 	}
-	id, ok := l.ctx.Value("id").(int64)
-	if !ok {
-		return nil, err
+	id, err := l.ctx.Value("id").(json.Number).Int64()
+	if err != nil {
+		return &types.BindResp{
+			BaseResponse: types.BaseResponse{
+				Code:    -1,
+				Message: "no provider",
+			},
+		}, errorx.Wrap(err, "token err")
 	}
 	fmt.Println(id)
 
@@ -55,10 +60,20 @@ func (l *BindLogic) Bind(req *types.BindReq, w http.ResponseWriter, r *http.Requ
 		return nil, err
 	}
 
-	_, err = apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key)
+	url, err := apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key)
 	if err != nil {
 		return nil, err
 	}
 
-	return
+	return &types.BindResp{
+		BaseResponse: types.BaseResponse{
+			Code:    200,
+			Message: "success",
+		},
+		BindRespData: struct {
+			Url string `json:"url"`
+		}{
+			Url: url,
+		},
+	}, nil
 }
