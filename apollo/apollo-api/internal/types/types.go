@@ -253,7 +253,7 @@ type RegStartResp struct {
 }
 
 type RemovePasskeyReq struct {
-	Id int64 `json:"id" validate:"required`
+	Id string `json:"id" validate:"required`
 }
 
 type RemovePasskeyResp struct {

@@ -34,7 +34,7 @@ func (l *FindTenPasskeysLogic) FindTenPasskeys(in *apollo.FindTenPasskeysReq) (*
 	// 整理 Passkeys
 	var apolloPasskeys []*apollo.Passkey
 	if passkeys != nil {
-		apolloPasskeys = make([]*apollo.Passkey, len(*passkeys))
+		apolloPasskeys = make([]*apollo.Passkey, 0, len(*passkeys))
 		for _, passkey := range *passkeys {
 			apolloPasskeys = append(apolloPasskeys, &apollo.Passkey{
 				Id:        passkey.CredentialId,

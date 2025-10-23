@@ -1398,7 +1398,8 @@ func (x *FindTenPasskeysResp) GetPasskeys() []*Passkey {
 // ========== 移除 Passkey ==========
 type RemovePasskeyReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TokenId       string                 `protobuf:"bytes,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PasskeyId     string                 `protobuf:"bytes,2,opt,name=passkey_id,json=passkeyId,proto3" json:"passkey_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1433,16 +1434,23 @@ func (*RemovePasskeyReq) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{21}
 }
 
-func (x *RemovePasskeyReq) GetTokenId() string {
+func (x *RemovePasskeyReq) GetUserId() int64 {
 	if x != nil {
-		return x.TokenId
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *RemovePasskeyReq) GetPasskeyId() string {
+	if x != nil {
+		return x.PasskeyId
 	}
 	return ""
 }
 
 type RemovePasskeyResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Validated     bool                   `protobuf:"varint,1,opt,name=validated,proto3" json:"validated,omitempty"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1477,9 +1485,9 @@ func (*RemovePasskeyResp) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{22}
 }
 
-func (x *RemovePasskeyResp) GetValidated() bool {
+func (x *RemovePasskeyResp) GetSuccess() bool {
 	if x != nil {
-		return x.Validated
+		return x.Success
 	}
 	return false
 }
@@ -2423,11 +2431,13 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\x03R\x04page\"B\n" +
 	"\x13FindTenPasskeysResp\x12+\n" +
-	"\bpasskeys\x18\x01 \x03(\v2\x0f.apollo.PasskeyR\bpasskeys\"-\n" +
-	"\x10RemovePasskeyReq\x12\x19\n" +
-	"\btoken_id\x18\x01 \x01(\tR\atokenId\"1\n" +
-	"\x11RemovePasskeyResp\x12\x1c\n" +
-	"\tvalidated\x18\x01 \x01(\bR\tvalidated\"]\n" +
+	"\bpasskeys\x18\x01 \x03(\v2\x0f.apollo.PasskeyR\bpasskeys\"J\n" +
+	"\x10RemovePasskeyReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1d\n" +
+	"\n" +
+	"passkey_id\x18\x02 \x01(\tR\tpasskeyId\"-\n" +
+	"\x11RemovePasskeyResp\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"]\n" +
 	"\x15ThirdPartyAccountInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\bprovider\x18\x02 \x01(\tR\bprovider\x12\x18\n" +

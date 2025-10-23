@@ -38,7 +38,7 @@ func (s *PasskeysServer) FinishRegistration(ctx context.Context, in *apollo.Pass
 // 登录
 func (s *PasskeysServer) StartLogin(ctx context.Context, in *apollo.Empty) (*apollo.PasskeysStartLoginResp, error) {
 	l := passkeyslogic.NewStartLoginLogic(ctx, s.svcCtx)
-	return l.StartLogin(in)
+	return l.StartLogin()
 }
 
 // FinishLogin 登陆第二步 - 完成 返回用户id

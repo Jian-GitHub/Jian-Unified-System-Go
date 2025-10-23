@@ -355,7 +355,7 @@ type (
 	}
 	// 移除 Passkey
 	RemovePasskeyReq {
-		id int64 `json:"id" validate:"required`
+		id string `json:"id" validate:"required`
 	}
 	RemovePasskeyResp {
 		BaseResponse

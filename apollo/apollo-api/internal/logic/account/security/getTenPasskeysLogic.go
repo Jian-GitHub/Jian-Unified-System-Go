@@ -32,7 +32,7 @@ func (l *GetTenPasskeysLogic) GetTenPasskeys(req *types.GetTenPasskeysReq) (resp
 	if err != nil {
 		return &types.GetTenPasskeysResp{
 			BaseResponse: types.BaseResponse{
-				Code:    -2,
+				Code:    -1,
 				Message: "Id err",
 			},
 		}, errorx.Wrap(errors.New("id"), "caller err")

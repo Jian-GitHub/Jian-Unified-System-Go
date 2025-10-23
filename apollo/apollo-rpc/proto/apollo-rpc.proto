@@ -176,11 +176,12 @@ message FindTenPasskeysResp {
 
 // ========== 移除 Passkey ==========
 message RemovePasskeyReq {
-  string token_id = 1;
+  int64 user_id = 1;
+  string passkey_id = 2;
 }
 
 message RemovePasskeyResp {
-  bool validated = 1;
+  bool success = 1;
 }
 // ================= 服务定义 =================
 service Passkeys {
