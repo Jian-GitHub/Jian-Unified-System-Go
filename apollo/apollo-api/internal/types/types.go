@@ -95,6 +95,17 @@ type GetInfoResp struct {
 	} `json:"data"`
 }
 
+type GetTenPasskeysReq struct {
+	Page int64 `json:"page"`
+}
+
+type GetTenPasskeysResp struct {
+	BaseResponse
+	GetTenPasskeysData struct {
+		Passkeys []Passkey `json:"passkeys"`
+	} `json:"data"`
+}
+
 type GetTenSubsystemTokensReq struct {
 	Page int64 `json:"page"`
 }
@@ -194,6 +205,13 @@ type LoginStartResp struct {
 	} `json:"data"`
 }
 
+type Passkey struct {
+	Id        string      `json:"id"`
+	Name      string      `json:"name"`
+	Date      RespnseDate `json:"date"`
+	IsEnabled bool        `json:"isEnabled"`
+}
+
 type RegFinishReq struct {
 	SessionID  string `json:"session_id" validate:"required"`
 	Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
@@ -231,6 +249,17 @@ type RegStartResp struct {
 	RegStartRespData struct {
 		OptionsJson string `json:"options_json"` // WebAuthn注册选项
 		SessionID   string `json:"session_id"`   // 会话标识
+	} `json:"data"`
+}
+
+type RemovePasskeyReq struct {
+	Id int64 `json:"id" validate:"required`
+}
+
+type RemovePasskeyResp struct {
+	BaseResponse
+	RemovePasskeyData struct {
+		Ok bool `json:"ok"`
 	} `json:"data"`
 }
 

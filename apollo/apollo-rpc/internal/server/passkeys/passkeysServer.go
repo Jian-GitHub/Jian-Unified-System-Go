@@ -38,11 +38,23 @@ func (s *PasskeysServer) FinishRegistration(ctx context.Context, in *apollo.Pass
 // 登录
 func (s *PasskeysServer) StartLogin(ctx context.Context, in *apollo.Empty) (*apollo.PasskeysStartLoginResp, error) {
 	l := passkeyslogic.NewStartLoginLogic(ctx, s.svcCtx)
-	return l.StartLogin()
+	return l.StartLogin(in)
 }
 
 // FinishLogin 登陆第二步 - 完成 返回用户id
 func (s *PasskeysServer) FinishLogin(ctx context.Context, in *apollo.PasskeysFinishLoginReq) (*apollo.PasskeysFinishLoginResp, error) {
 	l := passkeyslogic.NewFinishLoginLogic(ctx, s.svcCtx)
 	return l.FinishLogin(in)
+}
+
+// FindTenPasskeys 查询 10 个Passkeys
+func (s *PasskeysServer) FindTenPasskeys(ctx context.Context, in *apollo.FindTenPasskeysReq) (*apollo.FindTenPasskeysResp, error) {
+	l := passkeyslogic.NewFindTenPasskeysLogic(ctx, s.svcCtx)
+	return l.FindTenPasskeys(in)
+}
+
+// RemovePasskey 移除 Passkey
+func (s *PasskeysServer) RemovePasskey(ctx context.Context, in *apollo.RemovePasskeyReq) (*apollo.RemovePasskeyResp, error) {
+	l := passkeyslogic.NewRemovePasskeyLogic(ctx, s.svcCtx)
+	return l.RemovePasskey(in)
 }

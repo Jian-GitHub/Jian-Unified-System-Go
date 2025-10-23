@@ -15,12 +15,15 @@ import (
 
 type (
 	Empty                          = apollo.Empty
+	FindTenPasskeysReq             = apollo.FindTenPasskeysReq
+	FindTenPasskeysResp            = apollo.FindTenPasskeysResp
 	FindTenSubsystemTokensReq      = apollo.FindTenSubsystemTokensReq
 	FindTenSubsystemTokensResp     = apollo.FindTenSubsystemTokensResp
 	GenerateSubsystemTokenReq      = apollo.GenerateSubsystemTokenReq
 	GenerateSubsystemTokenResp     = apollo.GenerateSubsystemTokenResp
 	LoginReq                       = apollo.LoginReq
 	LoginResp                      = apollo.LoginResp
+	Passkey                        = apollo.Passkey
 	PasskeysFinishLoginReq         = apollo.PasskeysFinishLoginReq
 	PasskeysFinishLoginResp        = apollo.PasskeysFinishLoginResp
 	PasskeysFinishRegistrationReq  = apollo.PasskeysFinishRegistrationReq
@@ -30,6 +33,8 @@ type (
 	PasskeysStartRegistrationResp  = apollo.PasskeysStartRegistrationResp
 	PasswordUpdatedDate            = apollo.PasswordUpdatedDate
 	RegistrationReq                = apollo.RegistrationReq
+	RemovePasskeyReq               = apollo.RemovePasskeyReq
+	RemovePasskeyResp              = apollo.RemovePasskeyResp
 	RemoveSubsystemTokenReq        = apollo.RemoveSubsystemTokenReq
 	RemoveSubsystemTokenResp       = apollo.RemoveSubsystemTokenResp
 	SubsystemToken                 = apollo.SubsystemToken

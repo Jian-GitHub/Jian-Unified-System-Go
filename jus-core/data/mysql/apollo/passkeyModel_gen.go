@@ -32,6 +32,7 @@ type (
 	passkeyModel interface {
 		Insert(ctx context.Context, data *Passkey) (sql.Result, error)
 		FindOne(ctx context.Context, credentialId string) (*Passkey, error)
+		FindBatch(ctx context.Context, userId int64, page int64) (*[]Passkey, error)
 		CountPasskeys(ctx context.Context, userId int64) (int64, error)
 		Update(ctx context.Context, data *Passkey) error
 		Delete(ctx context.Context, credentialId string) error
@@ -51,6 +52,8 @@ type (
 		Transports   sql.NullString `db:"transports"`
 		CreatedAt    time.Time      `db:"created_at"`
 		LastUsedAt   time.Time      `db:"last_used_at"`
+		IsEnabled    int64          `db:"is_enabled"` // 0: disabled; 1: enabled
+		IsDeleted    int64          `db:"is_deleted"`
 	}
 )
 
@@ -74,9 +77,24 @@ func (m *defaultPasskeyModel) FindOne(ctx context.Context, credentialId string) 
 	apolloPasskeyCredentialIdKey := fmt.Sprintf("%s%v", cacheApolloPasskeyCredentialIdPrefix, credentialId)
 	var resp Passkey
 	err := m.QueryRowCtx(ctx, &resp, apolloPasskeyCredentialIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `credential_id` = ? limit 1", passkeyRows, m.table)
+		query := fmt.Sprintf("select %s from %s where `credential_id` = ? and `is_deleted` = 0 limit 1", passkeyRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, credentialId)
 	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, model.ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultPasskeyModel) FindBatch(ctx context.Context, userId int64, page int64) (*[]Passkey, error) {
+	var resp []Passkey
+	offset := (page - 1) * 10
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? /*and `is_enabled` = 1*/ and `is_deleted` = 0 ORDER BY `create_time` DESC limit 10 OFFSET ?", passkeyRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, userId, offset)
 	switch err {
 	case nil:
 		return &resp, nil

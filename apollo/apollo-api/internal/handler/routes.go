@@ -63,8 +63,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/GetTenPasskeys",
+				Handler: accountsecurity.GetTenPasskeysHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/GetTenSubsystemTokens",
 				Handler: accountsecurity.GetTenSubsystemTokensHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/RemovePasskey",
+				Handler: accountsecurity.RemovePasskeyHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,

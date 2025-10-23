@@ -259,6 +259,8 @@ const (
 	Passkeys_FinishRegistration_FullMethodName = "/apollo.Passkeys/FinishRegistration"
 	Passkeys_StartLogin_FullMethodName         = "/apollo.Passkeys/StartLogin"
 	Passkeys_FinishLogin_FullMethodName        = "/apollo.Passkeys/FinishLogin"
+	Passkeys_FindTenPasskeys_FullMethodName    = "/apollo.Passkeys/FindTenPasskeys"
+	Passkeys_RemovePasskey_FullMethodName      = "/apollo.Passkeys/RemovePasskey"
 )
 
 // PasskeysClient is the client API for Passkeys service.
@@ -277,6 +279,10 @@ type PasskeysClient interface {
 	StartLogin(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PasskeysStartLoginResp, error)
 	// FinishLogin 登陆第二步 - 完成 返回用户id
 	FinishLogin(ctx context.Context, in *PasskeysFinishLoginReq, opts ...grpc.CallOption) (*PasskeysFinishLoginResp, error)
+	// FindTenPasskeys 查询 10 个Passkeys
+	FindTenPasskeys(ctx context.Context, in *FindTenPasskeysReq, opts ...grpc.CallOption) (*FindTenPasskeysResp, error)
+	// RemovePasskey 移除 Passkey
+	RemovePasskey(ctx context.Context, in *RemovePasskeyReq, opts ...grpc.CallOption) (*RemovePasskeyResp, error)
 }
 
 type passkeysClient struct {
@@ -327,6 +333,26 @@ func (c *passkeysClient) FinishLogin(ctx context.Context, in *PasskeysFinishLogi
 	return out, nil
 }
 
+func (c *passkeysClient) FindTenPasskeys(ctx context.Context, in *FindTenPasskeysReq, opts ...grpc.CallOption) (*FindTenPasskeysResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindTenPasskeysResp)
+	err := c.cc.Invoke(ctx, Passkeys_FindTenPasskeys_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *passkeysClient) RemovePasskey(ctx context.Context, in *RemovePasskeyReq, opts ...grpc.CallOption) (*RemovePasskeyResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RemovePasskeyResp)
+	err := c.cc.Invoke(ctx, Passkeys_RemovePasskey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PasskeysServer is the server API for Passkeys service.
 // All implementations must embed UnimplementedPasskeysServer
 // for forward compatibility.
@@ -343,6 +369,10 @@ type PasskeysServer interface {
 	StartLogin(context.Context, *Empty) (*PasskeysStartLoginResp, error)
 	// FinishLogin 登陆第二步 - 完成 返回用户id
 	FinishLogin(context.Context, *PasskeysFinishLoginReq) (*PasskeysFinishLoginResp, error)
+	// FindTenPasskeys 查询 10 个Passkeys
+	FindTenPasskeys(context.Context, *FindTenPasskeysReq) (*FindTenPasskeysResp, error)
+	// RemovePasskey 移除 Passkey
+	RemovePasskey(context.Context, *RemovePasskeyReq) (*RemovePasskeyResp, error)
 	mustEmbedUnimplementedPasskeysServer()
 }
 
@@ -364,6 +394,12 @@ func (UnimplementedPasskeysServer) StartLogin(context.Context, *Empty) (*Passkey
 }
 func (UnimplementedPasskeysServer) FinishLogin(context.Context, *PasskeysFinishLoginReq) (*PasskeysFinishLoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishLogin not implemented")
+}
+func (UnimplementedPasskeysServer) FindTenPasskeys(context.Context, *FindTenPasskeysReq) (*FindTenPasskeysResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindTenPasskeys not implemented")
+}
+func (UnimplementedPasskeysServer) RemovePasskey(context.Context, *RemovePasskeyReq) (*RemovePasskeyResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePasskey not implemented")
 }
 func (UnimplementedPasskeysServer) mustEmbedUnimplementedPasskeysServer() {}
 func (UnimplementedPasskeysServer) testEmbeddedByValue()                  {}
@@ -458,6 +494,42 @@ func _Passkeys_FinishLogin_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Passkeys_FindTenPasskeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindTenPasskeysReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PasskeysServer).FindTenPasskeys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Passkeys_FindTenPasskeys_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PasskeysServer).FindTenPasskeys(ctx, req.(*FindTenPasskeysReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Passkeys_RemovePasskey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemovePasskeyReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PasskeysServer).RemovePasskey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Passkeys_RemovePasskey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PasskeysServer).RemovePasskey(ctx, req.(*RemovePasskeyReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Passkeys_ServiceDesc is the grpc.ServiceDesc for Passkeys service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -480,6 +552,14 @@ var Passkeys_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinishLogin",
 			Handler:    _Passkeys_FinishLogin_Handler,
+		},
+		{
+			MethodName: "FindTenPasskeys",
+			Handler:    _Passkeys_FindTenPasskeys_Handler,
+		},
+		{
+			MethodName: "RemovePasskey",
+			Handler:    _Passkeys_RemovePasskey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

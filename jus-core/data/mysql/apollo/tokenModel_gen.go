@@ -75,7 +75,7 @@ func (m *defaultTokenModel) FindOne(ctx context.Context, id int64, userId int64)
 	apolloTokenIdKey := fmt.Sprintf("%s%v", cacheApolloTokenIdPrefix, id)
 	var resp Token
 	err := m.QueryRowCtx(ctx, &resp, apolloTokenIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? and `user_id` = ? and `is_enabled` = 1 and `is_deleted` = 0 limit 1", tokenRows, m.table)
+		query := fmt.Sprintf("select %s from %s where `id` = ? and `user_id` = ? /*and `is_enabled` = 1*/ and `is_deleted` = 0 limit 1", tokenRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id, userId)
 	})
 	switch err {
@@ -92,7 +92,7 @@ func (m *defaultTokenModel) FindBatch(ctx context.Context, userId int64, page in
 	//apolloTokenIdKey := fmt.Sprintf("%s%v", cacheApolloTokenIdPrefix, id)
 	var resp []Token
 	offset := (page - 1) * 10
-	query := fmt.Sprintf("select %s from %s where `user_id` = ? and `is_enabled` = 1 and `is_deleted` = 0 ORDER BY `create_time` DESC limit 10 OFFSET ?", tokenRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? /*and `is_enabled` = 1*/ and `is_deleted` = 0 ORDER BY `create_time` DESC limit 10 OFFSET ?", tokenRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, userId, offset)
 	switch err {
 	case nil:

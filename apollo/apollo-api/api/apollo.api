@@ -337,6 +337,32 @@ type (
 			Ok bool `json:"ok"`
 		} `json:"data"`
 	}
+	Passkey {
+		Id        string      `json:"id"`
+		Name      string      `json:"name"`
+		Date      RespnseDate `json:"date"`
+		IsEnabled bool        `json:"isEnabled"`
+	}
+	// 查询 10 个 Passkeys
+	GetTenPasskeysReq {
+		Page int64 `json:"page"`
+	}
+	GetTenPasskeysResp {
+		BaseResponse
+		GetTenPasskeysData {
+			Passkeys []Passkey `json:"passkeys"`
+		} `json:"data"`
+	}
+	// 移除 Passkey
+	RemovePasskeyReq {
+		id int64 `json:"id" validate:"required`
+	}
+	RemovePasskeyResp {
+		BaseResponse
+		RemovePasskeyData {
+			Ok bool `json:"ok"`
+		} `json:"data"`
+	}
 )
 
 @server (
@@ -356,8 +382,18 @@ service apollo-api {
 
 	// Get 10 Subsystem Tokens
 	@handler GetTenSubsystemTokens
-	// 返回: ok
+	// 返回: tokens
 	post /GetTenSubsystemTokens (GetTenSubsystemTokensReq) returns (GetTenSubsystemTokensResp)
+
+	// Remove Passkey
+	@handler RemovePasskey
+	// 返回: ok
+	post /RemovePasskey (RemovePasskeyReq) returns (RemovePasskeyResp)
+
+	// Get 10 Subsystem Tokens
+	@handler GetTenPasskeys
+	// 返回: Passkeys
+	post /GetTenPasskeys (GetTenPasskeysReq) returns (GetTenPasskeysResp)
 }
 
 // Third Party

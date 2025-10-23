@@ -15,12 +15,15 @@ import (
 
 type (
 	Empty                          = apollo.Empty
+	FindTenPasskeysReq             = apollo.FindTenPasskeysReq
+	FindTenPasskeysResp            = apollo.FindTenPasskeysResp
 	FindTenSubsystemTokensReq      = apollo.FindTenSubsystemTokensReq
 	FindTenSubsystemTokensResp     = apollo.FindTenSubsystemTokensResp
 	GenerateSubsystemTokenReq      = apollo.GenerateSubsystemTokenReq
 	GenerateSubsystemTokenResp     = apollo.GenerateSubsystemTokenResp
 	LoginReq                       = apollo.LoginReq
 	LoginResp                      = apollo.LoginResp
+	Passkey                        = apollo.Passkey
 	PasskeysFinishLoginReq         = apollo.PasskeysFinishLoginReq
 	PasskeysFinishLoginResp        = apollo.PasskeysFinishLoginResp
 	PasskeysFinishRegistrationReq  = apollo.PasskeysFinishRegistrationReq
@@ -30,6 +33,8 @@ type (
 	PasskeysStartRegistrationResp  = apollo.PasskeysStartRegistrationResp
 	PasswordUpdatedDate            = apollo.PasswordUpdatedDate
 	RegistrationReq                = apollo.RegistrationReq
+	RemovePasskeyReq               = apollo.RemovePasskeyReq
+	RemovePasskeyResp              = apollo.RemovePasskeyResp
 	RemoveSubsystemTokenReq        = apollo.RemoveSubsystemTokenReq
 	RemoveSubsystemTokenResp       = apollo.RemoveSubsystemTokenResp
 	SubsystemToken                 = apollo.SubsystemToken
@@ -58,6 +63,10 @@ type (
 		StartLogin(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PasskeysStartLoginResp, error)
 		// FinishLogin 登陆第二步 - 完成 返回用户id
 		FinishLogin(ctx context.Context, in *PasskeysFinishLoginReq, opts ...grpc.CallOption) (*PasskeysFinishLoginResp, error)
+		// FindTenPasskeys 查询 10 个Passkeys
+		FindTenPasskeys(ctx context.Context, in *FindTenPasskeysReq, opts ...grpc.CallOption) (*FindTenPasskeysResp, error)
+		// RemovePasskey 移除 Passkey
+		RemovePasskey(ctx context.Context, in *RemovePasskeyReq, opts ...grpc.CallOption) (*RemovePasskeyResp, error)
 	}
 
 	defaultPasskeys struct {
@@ -93,4 +102,16 @@ func (m *defaultPasskeys) StartLogin(ctx context.Context, in *Empty, opts ...grp
 func (m *defaultPasskeys) FinishLogin(ctx context.Context, in *PasskeysFinishLoginReq, opts ...grpc.CallOption) (*PasskeysFinishLoginResp, error) {
 	client := apollo.NewPasskeysClient(m.cli.Conn())
 	return client.FinishLogin(ctx, in, opts...)
+}
+
+// FindTenPasskeys 查询 10 个Passkeys
+func (m *defaultPasskeys) FindTenPasskeys(ctx context.Context, in *FindTenPasskeysReq, opts ...grpc.CallOption) (*FindTenPasskeysResp, error) {
+	client := apollo.NewPasskeysClient(m.cli.Conn())
+	return client.FindTenPasskeys(ctx, in, opts...)
+}
+
+// RemovePasskey 移除 Passkey
+func (m *defaultPasskeys) RemovePasskey(ctx context.Context, in *RemovePasskeyReq, opts ...grpc.CallOption) (*RemovePasskeyResp, error) {
+	client := apollo.NewPasskeysClient(m.cli.Conn())
+	return client.RemovePasskey(ctx, in, opts...)
 }
