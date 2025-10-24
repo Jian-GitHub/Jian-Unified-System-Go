@@ -6,6 +6,11 @@
   </a>
 </div>
 
+## ✨ Prototype
+> 🎨 [Excalidraw Concept Sketch](https://excalidraw.com/#json=gCBY0DUzchj9_EF4D4sVE,4mHCbDYDcreajP3QkCGnFw)
+
+#### =====
+
 <p>🚧 Work in Progress...</p>
 
 ## Star History
