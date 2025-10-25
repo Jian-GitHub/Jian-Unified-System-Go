@@ -329,7 +329,7 @@ type (
 	}
 	// 移除令牌
 	RemoveSubsystemTokenReq {
-		id int64 `json:"id" validate:"required`
+		id string `json:"id" validate:"required`
 	}
 	RemoveSubsystemTokenResp {
 		BaseResponse

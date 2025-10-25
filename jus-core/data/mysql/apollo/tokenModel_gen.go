@@ -27,6 +27,11 @@ var (
 
 	cacheApolloTokenIdPrefix      = "cache:apollo:token:id:"
 	cacheApolloTokenIdBatchPrefix = "cache:apollo:token:batch:id:"
+
+	SUBSYSTEM_TOKEN_DELETE  int64 = 1
+	SUBSYSTEM_TOKEN_RESTORE int64 = 0
+	SUBSYSTEM_TOKEN_ENABLE  int64 = 1
+	SUBSYSTEM_TOKEN_DISABLE int64 = 0
 )
 
 type (
@@ -37,6 +42,7 @@ type (
 		CountTokens(ctx context.Context, userId int64) (int64, error)
 		Update(ctx context.Context, data *Token) error
 		Delete(ctx context.Context, id int64) error
+		DeleteOrRestoreToken(ctx context.Context, data *Token) error
 	}
 
 	defaultTokenModel struct {
@@ -133,6 +139,15 @@ func (m *defaultTokenModel) Update(ctx context.Context, data *Token) error {
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tokenRowsWithPlaceHolder)
 		return conn.ExecCtx(ctx, query, data.UserId, data.Name, data.Value, data.IsEnabled, data.IsDeleted, data.Id)
+	}, apolloTokenIdKey)
+	return err
+}
+
+func (m *defaultTokenModel) DeleteOrRestoreToken(ctx context.Context, data *Token) error {
+	apolloTokenIdKey := fmt.Sprintf("%s%v", cacheApolloTokenIdPrefix, data.Id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `is_deleted` = ? where `id` = ? and `user_id` = ? ", m.table)
+		return conn.ExecCtx(ctx, query, data.IsDeleted, data.Id, data.UserId)
 	}, apolloTokenIdKey)
 	return err
 }

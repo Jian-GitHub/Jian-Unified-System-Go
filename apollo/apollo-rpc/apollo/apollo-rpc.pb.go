@@ -2136,7 +2136,8 @@ func (x *ValidateSubsystemTokenResp) GetValidated() bool {
 // ========== 移除子系统令牌 ==========
 type RemoveSubsystemTokenReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TokenId       string                 `protobuf:"bytes,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TokenId       int64                  `protobuf:"varint,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2171,11 +2172,18 @@ func (*RemoveSubsystemTokenReq) Descriptor() ([]byte, []int) {
 	return file_apollo_rpc_proto_rawDescGZIP(), []int{35}
 }
 
-func (x *RemoveSubsystemTokenReq) GetTokenId() string {
+func (x *RemoveSubsystemTokenReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *RemoveSubsystemTokenReq) GetTokenId() int64 {
 	if x != nil {
 		return x.TokenId
 	}
-	return ""
+	return 0
 }
 
 type RemoveSubsystemTokenResp struct {
@@ -2474,9 +2482,10 @@ const file_apollo_rpc_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x19\n" +
 	"\btoken_id\x18\x02 \x01(\x03R\atokenId\":\n" +
 	"\x1aValidateSubsystemTokenResp\x12\x1c\n" +
-	"\tvalidated\x18\x01 \x01(\bR\tvalidated\"4\n" +
-	"\x17RemoveSubsystemTokenReq\x12\x19\n" +
-	"\btoken_id\x18\x01 \x01(\tR\atokenId\"8\n" +
+	"\tvalidated\x18\x01 \x01(\bR\tvalidated\"M\n" +
+	"\x17RemoveSubsystemTokenReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x19\n" +
+	"\btoken_id\x18\x02 \x01(\x03R\atokenId\"8\n" +
 	"\x18RemoveSubsystemTokenResp\x12\x1c\n" +
 	"\tvalidated\x18\x01 \x01(\bR\tvalidated\"H\n" +
 	"\x19FindTenSubsystemTokensReq\x12\x17\n" +
