@@ -29,7 +29,6 @@ func NewRemoveSubsystemTokenLogic(ctx context.Context, svcCtx *svc.ServiceContex
 }
 
 func (l *RemoveSubsystemTokenLogic) RemoveSubsystemToken(req *types.RemoveSubsystemTokenReq) (resp *types.RemoveSubsystemTokenResp, err error) {
-	// todo: add your logic here and delete this line
 	id, err := l.ctx.Value("id").(json.Number).Int64()
 	if err != nil {
 		return &types.RemoveSubsystemTokenResp{
