@@ -7,7 +7,7 @@
 </div>
 
 ## ✨ Prototype
-> 🎨 [Excalidraw Concept Sketch](https://excalidraw.com/#json=gCBY0DUzchj9_EF4D4sVE,4mHCbDYDcreajP3QkCGnFw)
+> 🎨 [Excalidraw Concept Sketch](https://excalidraw.com/#json=RgtulBzQifhCgScE2CES-,p-0YAriCu_qE712OWTSWvQ)
 
 ---
 
