@@ -22,3 +22,7 @@
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Jian-GitHub/Jian-Unified-System-Go&type=Date" />
  </picture>
 </a>
+
+## Stats
+
+![Alt](https://repobeats.axiom.co/api/embed/62d3047f9991186059fe32a41b899a343daa6ccc.svg "Repobeats analytics image")
