@@ -1,4 +1,4 @@
-# Apollo RPC
+# Apollo RPC - v0.2.0
 
 Apollo 的完整账户与身份业务实现：Account 14、Passkeys 6、Security 4、ThirdParty 6，共 30 个 RPC 方法。领域规则和事务边界见 [重构说明](../../docs/apollo-refactoring.md)。原工程保留，未切换流量。
 
