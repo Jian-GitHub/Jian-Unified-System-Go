@@ -8,7 +8,7 @@ WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -ldflags="-s -w" -o /app/apollo ./apollo/apollo-api-ddd
+RUN go build -ldflags="-s -w" -o /app/apollo ./apollo/apollo-api
 
 FROM scratch
 
@@ -18,7 +18,7 @@ ENV TZ=Asia/Shanghai
 
 WORKDIR /app
 COPY --from=builder /app/apollo /app/apollo
-COPY apollo/apollo-api-ddd/etc /app/etc
+COPY apollo/apollo-api/etc /app/etc
 COPY jus-core/data/GeoLite2-City.mmdb /jus-core/data/GeoLite2-City.mmdb
 
 CMD ["./apollo", "-f", "etc/apollo-api.yaml"]
