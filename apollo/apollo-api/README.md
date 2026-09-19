@@ -1,4 +1,4 @@
-# Apollo API
+# Apollo API - v0.2.0
 
 Apollo 的完整 HTTP 接入实现，共 30 个路由：账户资料与安全设置、Passkey、子系统令牌和 GitHub/Google 身份。新目录独立运行，未替换原有服务。实现和兼容差异见 [重构说明](../../docs/apollo-refactoring.md)。
 
