@@ -2,11 +2,13 @@ package accountlogic
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"github.com/zeromicro/go-zero/core/logx"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
+
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type UserInfoLogic struct {
@@ -23,35 +25,17 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 	}
 }
 
-// UserInfo 用户信息
 func (l *UserInfoLogic) UserInfo(in *apollo.UserInfoReq) (*apollo.UserInfoResp, error) {
-	user, err := l.svcCtx.UserModel.FindOne(l.ctx, in.UserId)
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
+	}
+	u, err := l.svcCtx.Account.User(l.ctx, in.UserId)
 	if err != nil {
-		return nil, err
+		return nil, response.Error(err)
 	}
-	if user == nil {
-		return nil, errors.New("no user")
-	}
-
-	//if !user.NotificationEmail.Valid {
-	//	return &apollo.UserInfoResp{
-	//		UserBytes: nil,
-	//	}, nil
-	//}
-	if user.NotificationEmail.Valid {
-		email, err := l.svcCtx.MLKEMKeyManager.DecryptMessage(user.NotificationEmail.String)
-		if err != nil {
-			return nil, err
-		}
-
-		user.NotificationEmail.String = email
-	}
-
-	userBytes, err := json.Marshal(user)
+	body, err := response.LegacyUser(u)
 	if err != nil {
-		return nil, err
+		return nil, response.Error(err)
 	}
-	return &apollo.UserInfoResp{
-		UserBytes: userBytes,
-	}, nil
+	return &apollo.UserInfoResp{UserBytes: body, Profile: response.Profile(u)}, nil
 }

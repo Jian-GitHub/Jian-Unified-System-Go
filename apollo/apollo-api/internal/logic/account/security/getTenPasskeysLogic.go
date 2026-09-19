@@ -1,14 +1,15 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package security
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"github.com/zeromicro/go-zero/core/errorx"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
-	"jian-unified-system/apollo/apollo-rpc/apollo"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,50 +28,18 @@ func NewGetTenPasskeysLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 	}
 }
 
-func (l *GetTenPasskeysLogic) GetTenPasskeys(req *types.GetTenPasskeysReq) (resp *types.GetTenPasskeysResp, err error) {
-	id, err := l.ctx.Value("id").(json.Number).Int64()
-	if err != nil {
-		return &types.GetTenPasskeysResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "Id err",
-			},
-		}, errorx.Wrap(errors.New("id"), "caller err")
-	}
-
-	passkeysResp, err := l.svcCtx.ApolloPasskeys.FindTenPasskeys(l.ctx, &apollo.FindTenPasskeysReq{
-		UserId: id,
-		Page:   req.Page,
-	})
+func (l *GetTenPasskeysLogic) GetTenPasskeys(req *types.PageReq) (resp *types.PasskeysResp, err error) {
+	id, err := response.Subject(l.ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	passkeys := make([]types.Passkey, 0)
-	if len(passkeysResp.Passkeys) != 0 {
-		for _, passkey := range passkeysResp.Passkeys {
-			passkeys = append(passkeys, types.Passkey{
-				Id:   passkey.Id,
-				Name: passkey.Name,
-				Date: types.RespnseDate{
-					Year:  passkey.Year,
-					Month: passkey.Month,
-					Day:   passkey.Day,
-				},
-				IsEnabled: passkey.IsEnabled,
-			})
-		}
+	r, err := l.svcCtx.Passkeys.FindTenPasskeys(l.ctx, &apollo.FindTenPasskeysReq{UserId: id, Page: req.Page})
+	if err != nil {
+		return nil, err
 	}
-
-	return &types.GetTenPasskeysResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		GetTenPasskeysData: struct {
-			Passkeys []types.Passkey `json:"passkeys"`
-		}{
-			Passkeys: passkeys,
-		},
-	}, nil
+	items := make([]types.Passkey, 0, len(r.Passkeys))
+	for _, p := range r.Passkeys {
+		items = append(items, types.Passkey{Id: p.Id, Name: p.Name, Date: types.Birthday{Year: p.Year, Month: p.Month, Day: p.Day}, IsEnabled: p.IsEnabled})
+	}
+	return &types.PasskeysResp{BaseResponse: response.OK(), Data: types.PasskeysData{Passkeys: items}}, nil
 }

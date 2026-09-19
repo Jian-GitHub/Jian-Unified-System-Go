@@ -1,14 +1,14 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package account
 
 import (
 	"context"
-	"fmt"
-	"github.com/zeromicro/go-zero/core/errorx"
+	"strconv"
+
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
-	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"jian-unified-system/jus-core/util"
-	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,66 +27,13 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 	}
 }
 
-func (l *LoginLogic) Login(req *types.LoginReq /*, r *http.Request*/) (resp *types.LoginResp, err error) {
-	// Check params
-	if len(req.Email) == 0 || len(req.Password) == 0 {
-		return &types.LoginResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "params",
-			},
-		}, errorx.Wrap(err, "params")
-	}
-	//println(apolloUtil.GetRealIP(r))
-	//println(apolloUtil.GetLocate(r, l.svcCtx.GeoService.Lookup))
-
-	// Login
-	loginResp, err := l.svcCtx.ApolloAccount.Login(l.ctx, &apollo.LoginReq{
-		Email:    req.Email,
-		Password: req.Password,
-	})
+func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
+	p, token, err := l.svcCtx.Sessions.Login(l.ctx, req.Email, req.Password, req.CloudflareToken)
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, errorx.Wrap(err, "login fail")
-	}
-
-	// All done -> Generate JWT
-	args := make(map[string]interface{})
-	args["id"] = loginResp.UserId
-	token, err := util.GenToken(l.svcCtx.Config.Auth.AccessSecret, l.svcCtx.Config.Auth.AccessExpire, args)
-	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
-	return &types.LoginResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		LoginData: struct {
-			Token    string            `json:"token"`
-			Id       string            `json:"id"`
-			Name     types.UserName    `json:"name"`
-			Avatar   string            `json:"avatar"`
-			Locale   string            `json:"locale"`
-			Language string            `json:"language"`
-			Birthday types.RespnseDate `json:"birthday"`
-		}{
-			Token: token,
-			Id:    strconv.FormatInt(loginResp.UserId, 10),
-			Name: types.UserName{
-				GivenName:  loginResp.GivenName,
-				MiddleName: loginResp.MiddleName,
-				FamilyName: loginResp.FamilyName,
-			},
-			Avatar:   loginResp.Avatar,
-			Locale:   loginResp.Locale,
-			Language: loginResp.Language,
-			Birthday: types.RespnseDate{
-				Year:  loginResp.BirthdayYear,
-				Month: loginResp.BirthdayMonth,
-				Day:   loginResp.BirthdayDay,
-			},
-		},
-	}, nil
+	return &types.LoginResp{BaseResponse: types.BaseResponse{Code: 200, Message: "success"}, Data: types.LoginData{
+		Token: token, Id: strconv.FormatInt(p.ID, 10), Name: types.UserName{GivenName: p.GivenName, MiddleName: p.MiddleName, FamilyName: p.FamilyName},
+		Avatar: p.Avatar, Locale: p.Locale, Language: p.Language, Birthday: types.Birthday{Year: p.BirthdayYear, Month: p.BirthdayMonth, Day: p.BirthdayDay},
+	}}, nil
 }

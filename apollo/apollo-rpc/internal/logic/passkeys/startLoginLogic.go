@@ -2,10 +2,8 @@ package passkeyslogic
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -27,30 +25,13 @@ func NewStartLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StartL
 	}
 }
 
-func (l *StartLoginLogic) StartLogin() (*apollo.PasskeysStartLoginResp, error) {
-	// todo: add your logic here and delete this line
-	options, session, err := l.svcCtx.WebAuthn.BeginDiscoverableLogin(
-	//webauthn.WithUserVerification(protocol.VerificationRequired),
-	)
-	if err != nil {
-		l.Logger.Errorf("BeginLogin error: %v", err)
-		return nil, status.Error(codes.Internal, err.Error())
+func (l *StartLoginLogic) StartLogin(in *apollo.Empty) (*apollo.PasskeysStartLoginResp, error) {
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
 	}
-
-	// 5. Deserialize response data
-	optionsJson, err := json.Marshal(options)
+	options, session, err := l.svcCtx.Passkey.StartLogin(l.ctx)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to marshal options")
+		return nil, response.Error(err)
 	}
-
-	sessionData, err := json.Marshal(session)
-	fmt.Println("1 sessionData:", string(sessionData))
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to marshal session")
-	}
-
-	return &apollo.PasskeysStartLoginResp{
-		OptionsJson: optionsJson,
-		SessionData: sessionData,
-	}, nil
+	return &apollo.PasskeysStartLoginResp{OptionsJson: options, SessionData: []byte(session)}, nil
 }

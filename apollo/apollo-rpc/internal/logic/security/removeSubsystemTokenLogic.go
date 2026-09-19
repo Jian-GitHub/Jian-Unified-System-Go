@@ -2,7 +2,8 @@ package securitylogic
 
 import (
 	"context"
-	ap "jian-unified-system/jus-core/data/mysql/apollo"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -24,20 +25,12 @@ func NewRemoveSubsystemTokenLogic(ctx context.Context, svcCtx *svc.ServiceContex
 	}
 }
 
-// RemoveSubsystemToken 移除子系统令牌
 func (l *RemoveSubsystemTokenLogic) RemoveSubsystemToken(in *apollo.RemoveSubsystemTokenReq) (*apollo.RemoveSubsystemTokenResp, error) {
-	err := l.svcCtx.TokenModel.DeleteOrRestoreToken(l.ctx, &ap.Token{
-		Id:        in.TokenId,
-		UserId:    in.UserId,
-		IsDeleted: ap.SUBSYSTEM_TOKEN_DELETE,
-	})
-	if err != nil {
-		return &apollo.RemoveSubsystemTokenResp{
-			Validated: false,
-		}, err
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
 	}
-
-	return &apollo.RemoveSubsystemTokenResp{
-		Validated: true,
-	}, nil
+	if err := l.svcCtx.Grant.Remove(l.ctx, in.UserId, in.TokenId); err != nil {
+		return nil, response.Error(err)
+	}
+	return &apollo.RemoveSubsystemTokenResp{Validated: true}, nil
 }

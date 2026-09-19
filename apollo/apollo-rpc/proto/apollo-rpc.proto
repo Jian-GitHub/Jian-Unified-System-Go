@@ -1,13 +1,37 @@
 syntax = "proto3";
 
 package apollo;
-
 option go_package = "./apollo";
+
+message GoogleSheetsReq {
+ string client_id = 1; string client_secret = 2; string token = 3;
+ string action = 4; string state = 5; string code = 6; string spreadsheet = 7; string range = 8;
+}
+message GoogleSheetRow { repeated string cells = 1; }
+message GoogleSheetsResp { string url = 1; bool bound = 2; bool connected = 3; repeated GoogleSheetRow rows = 4; }
+
+// Apollo 完整账户、凭据与授权协议。
+// 保持既有方法路径与字段号；新增能力先扩展协议再执行 gorpcgn。
+service Account {
+  rpc Registration(RegistrationReq) returns (Empty);
+  rpc Login(LoginReq) returns (LoginResp);
+  rpc UserInfo(UserInfoReq) returns (UserInfoResp);
+  rpc UserSecurityInfo(UserSecurityInfoReq) returns (UserSecurityInfoResp);
+  rpc SessionVersion(SessionVersionReq) returns (SessionVersionResp);
+  rpc UpdateName(UpdateNameReq) returns (Empty);
+  rpc UpdateBirthday(UpdateBirthdayReq) returns (Empty);
+  rpc UpdateLanguage(UpdateLanguageReq) returns (Empty);
+  rpc AddContact(AddContactReq) returns (AddContactResp);
+  rpc RemoveContact(RemoveContactReq) returns (Empty);
+  rpc ChangePassword(ChangePasswordReq) returns (Empty);
+  rpc ChangeNotificationEmail(ChangeNotificationEmailReq) returns (Empty);
+  rpc RemoveNotificationEmail(RemoveNotificationEmailReq) returns (Empty);
+  rpc DeleteAccount(DeleteAccountReq) returns (Empty);
+}
 
 message Empty {}
 
-// Account
-// ========== 注册流程 ==========
+// ID 由 API 分配；RPC 是账户校验和持久化的权威入口。
 message RegistrationReq {
   int64 user_id = 1;
   string email = 2;
@@ -16,12 +40,12 @@ message RegistrationReq {
   string language = 5;
 }
 
-// ========== 登录流程 ==========
 message LoginReq {
   string email = 1;
   string password = 2;
 }
 
+// 登录只返回公开资料，不返回密码散列或通知邮箱密文。
 message LoginResp {
   int64 user_id = 1;
   string given_name = 2;
@@ -33,296 +57,140 @@ message LoginResp {
   int64 birthday_year = 8;
   int64 birthday_month = 9;
   int64 birthday_day = 10;
+  int64 auth_version = 11;
 }
 
-// ========== 用户信息 ==========
-message UserInfoReq {
-  int64 user_id = 1;
+// 查询使用明确的公开资料 DTO；user_bytes 保留调用方的历史读取形态。
+message UserInfoReq { int64 user_id = 1; }
+message AccountProfile {
+  int64 user_id = 1; string given_name = 2; string middle_name = 3; string family_name = 4;
+  string avatar = 5; string locale = 6; string language = 7;
+  int64 birthday_year = 8; int64 birthday_month = 9; int64 birthday_day = 10;
+  string notification_email = 11; string create_time = 12; string last_login_time = 13;
+  int64 auth_version = 14;
 }
-
-message UserInfoResp {
-  bytes user_bytes = 1;
-}
-
-// ========== 用户安全信息 ==========
-message UserSecurityInfoReq {
-  int64 user_id = 1;
-}
-
-message UserContact {
-  string id = 1;
-  string value = 2;
-  int64 type = 3;
-  string phone_region = 4;
-}
-message PasswordUpdatedDate {
-  int64 year = 1;
-  int64 month = 2;
-  int64 day = 3;
-}
-message ThirdPartyAccounts {
-  bool github = 1;
-  bool google = 2;
-}
+message UserInfoResp { bytes user_bytes = 1; AccountProfile profile = 2; }
+message SessionVersionReq { int64 user_id = 1; }
+message SessionVersionResp { int64 auth_version = 1; }
+message UserSecurityInfoReq { int64 user_id = 1; }
+message UserContact { string id = 1; string value = 2; int64 type = 3; string phone_region = 4; bool primary = 5; }
+message PasswordUpdatedDate { int64 year = 1; int64 month = 2; int64 day = 3; }
+message ThirdPartyAccounts { bool github = 1; bool google = 2; }
 message UserSecurityInfoResp {
-  repeated UserContact contacts = 1;
-  PasswordUpdatedDate password_updated_date = 2;
-  int64 account_security_token_num = 3;
-  int64 passkeys_num = 4;
-  ThirdPartyAccounts third_party_accounts = 5;
+  repeated UserContact contacts = 1; PasswordUpdatedDate password_updated_date = 2;
+  int64 account_security_token_num = 3; int64 passkeys_num = 4; ThirdPartyAccounts third_party_accounts = 5;
 }
 
-
-
-
-
-
-// ================= 服务定义 =================
-service Account {
-  // 注册
-  // Registration 注册
-  rpc Registration (RegistrationReq) returns (Empty);
-
-  // 登录
-  // Login 登陆
-  rpc Login (LoginReq) returns (LoginResp);
-
-  // 用户信息
-  // UserInfo 查询用户通知联系方式
-  rpc UserInfo (UserInfoReq) returns (UserInfoResp);
-
-  // 用户安全信息
-  // UserSecurityInfo 查询用户通知联系方式
-  rpc UserSecurityInfo (UserSecurityInfoReq) returns (UserSecurityInfoResp);
-
+message UpdateNameReq {
+  int64 user_id = 1; string given_name = 2; string middle_name = 3; string family_name = 4;
 }
+message UpdateBirthdayReq { int64 user_id = 1; int64 year = 2; int64 month = 3; int64 day = 4; }
+message UpdateLanguageReq { int64 user_id = 1; string language = 2; }
+message AddContactReq {
+  int64 user_id = 1; string value = 2; int64 type = 3; string phone_region = 4;
+}
+message AddContactResp { UserContact contact = 1; }
+message RemoveContactReq { int64 user_id = 1; int64 contact_id = 2; }
+message ChangePasswordReq {
+  int64 user_id = 1; string current_password = 2; string new_password = 3; bool sign_out_everywhere = 4;
+}
+message ChangeNotificationEmailReq { int64 user_id = 1; string email = 2; }
+message RemoveNotificationEmailReq { int64 user_id = 1; }
+message DeleteAccountReq { int64 user_id = 1; string current_password = 2; string confirmation = 3; }
 
-// Passkeys
-// ========== 注册流程 ==========
+// session_data 是服务端一次性会话的 opaque ID，不接受客户端构造的 WebAuthn SessionData。
 message PasskeysStartRegistrationReq {
-  int64 user_id = 1;          // API生成
-  string user_name = 2;       // API提供
-  string display_name = 3;    // API提供
+  int64 user_id = 1; string user_name = 2; string display_name = 3;
+  bool bind = 4; string locale = 5; string language = 6;
 }
-
-message PasskeysStartRegistrationResp {
-  bytes options_json = 1;     // WebAuthn标准选项
-  bytes session_data = 2;     // 序列化的SessionData（API需存储）
-}
-
+message PasskeysStartRegistrationResp { bytes options_json = 1; bytes session_data = 2; }
 message PasskeysFinishRegistrationReq {
-  int64 user_id = 1;          // 必须与StartRegistration一致
-  bytes credential_json = 2;  // 前端返回的完整认证数据
-  bytes session_data = 3;     // 新增：StartRegistration返回的session_data
-  string Locate = 4;
-  string Language = 5;
-  bool type = 6;
-  string name = 7;
+  int64 user_id = 1; bytes credential_json = 2; bytes session_data = 3;
+  string locate = 4; string language = 5; bool type = 6; string name = 7;
 }
-
 message PasskeysFinishRegistrationResp {
-  string passkeys_id = 1;
-  string locale = 2;
-  string language = 3;
-  string passkeys_name = 4;  // 前端返回的完整认证数据
-  int64 year = 5;
-  int64 month = 6;
-  int64 day = 7;
+  string passkeys_id = 1; string locale = 2; string language = 3; string passkeys_name = 4;
+  int64 year = 5; int64 month = 6; int64 day = 7; int64 user_id = 8;
 }
-
-// ========== 登录流程 ==========
-message PasskeysStartLoginResp {
-  bytes options_json = 1;
-  bytes session_data = 2; // 必须返回给API存储
-}
-
-message PasskeysFinishLoginReq {
-  string credential_json = 1;  // 前端原始JSON
-  string session_data_json = 2;    // StartLogin返回的session_data
-}
-
+message PasskeysStartLoginResp { bytes options_json = 1; bytes session_data = 2; }
+message PasskeysFinishLoginReq { string credential_json = 1; string session_data_json = 2; }
 message PasskeysFinishLoginResp {
-  int64 user_id = 1;
-  string given_name = 2;
-  string middle_name = 3;
-  string family_name = 4;
-  string avatar = 5;
-  string locale = 6;
-  string language = 7;
-  int64 birthday_year = 8;
-  int64 birthday_month = 9;
-  int64 birthday_day = 10;
+  int64 user_id = 1; string given_name = 2; string middle_name = 3; string family_name = 4;
+  string avatar = 5; string locale = 6; string language = 7;
+  int64 birthday_year = 8; int64 birthday_month = 9; int64 birthday_day = 10;
 }
-
-// Passkey
-message Passkey {
-  string id = 1;
-  string name = 2;
-  int64 year = 3;
-  int64 month = 4;
-  int64 day = 5;
-  bool is_enabled = 6;
-}
-
-// ========== 查询 Passkeys ==========
-message FindTenPasskeysReq {
-  int64 user_id = 1;
-  int64 page = 2;
-}
-
-message FindTenPasskeysResp {
-  repeated Passkey passkeys = 1;
-}
-
-// ========== 移除 Passkey ==========
-message RemovePasskeyReq {
-  int64 user_id = 1;
-  string passkey_id = 2;
-}
-
-message RemovePasskeyResp {
-  bool success = 1;
-}
-// ================= 服务定义 =================
+message Passkey { string id = 1; string name = 2; int64 year = 3; int64 month = 4; int64 day = 5; bool is_enabled = 6; }
+message FindTenPasskeysReq { int64 user_id = 1; int64 page = 2; }
+message FindTenPasskeysResp { repeated Passkey passkeys = 1; }
+message RemovePasskeyReq { int64 user_id = 1; string passkey_id = 2; }
+message RemovePasskeyResp { bool success = 1; }
 service Passkeys {
-  // 注册
-  // StartRegistration 注册第一步 - 开始
-  rpc StartRegistration (PasskeysStartRegistrationReq) returns (PasskeysStartRegistrationResp);
-  // FinishRegistration 注册第二步 - 完成
-  rpc FinishRegistration (PasskeysFinishRegistrationReq) returns (PasskeysFinishRegistrationResp);
-
-  // 登录
-  // StartLogin 登陆第一步 - 开始
-  rpc StartLogin (Empty) returns (PasskeysStartLoginResp);
-  // FinishLogin 登陆第二步 - 完成 返回用户id
-  rpc FinishLogin (PasskeysFinishLoginReq) returns (PasskeysFinishLoginResp);
-
-  // FindTenPasskeys 查询 10 个Passkeys
-  rpc FindTenPasskeys (FindTenPasskeysReq) returns (FindTenPasskeysResp);
-
-  // RemovePasskey 移除 Passkey
-  rpc RemovePasskey (RemovePasskeyReq) returns (RemovePasskeyResp);
+  rpc StartRegistration(PasskeysStartRegistrationReq) returns (PasskeysStartRegistrationResp);
+  rpc FinishRegistration(PasskeysFinishRegistrationReq) returns (PasskeysFinishRegistrationResp);
+  rpc StartLogin(Empty) returns (PasskeysStartLoginResp);
+  rpc FinishLogin(PasskeysFinishLoginReq) returns (PasskeysFinishLoginResp);
+  rpc FindTenPasskeys(FindTenPasskeysReq) returns (FindTenPasskeysResp);
+  rpc RemovePasskey(RemovePasskeyReq) returns (RemovePasskeyResp);
 }
 
-
-
-// Third-Party
-message ThirdPartyAccountInfo {
-  int64 id = 1;
-  string provider = 2;
-  string content = 3;
-}
-// ========== 查询流程 ==========
-message ThirdPartyGetInfoReq {
-  int64 user_id = 1;
-}
-message ThirdPartyGetInfoResp {
-  repeated ThirdPartyAccountInfo accounts = 1;
-}
-// ========== 绑定流程 ==========
-message ThirdPartyBindReq {
-//  int64 user_id = 1;          // API生成
-  bytes token = 1;
-//  string raw_data_json = 2;       // API提供
-}
-
-// ========== 继续流程 ==========
-message ThirdPartyContinueReq {
-//  int64 id = 1;
-  string provider = 1;
-  bytes token = 2;
-  string redis_data_json = 3;
-}
-
-message ThirdPartyContinueResp {
-  int64 user_id = 1;       // API提供
-}
-
-message ThirdPartyRemoveReq {
-  int64 user_id = 1;
-  int64 third_party_id = 2;
-}
-
-// ================= 服务定义 =================
-service ThirdParty {
-  // GetInfo 获取第三方账号绑定信息
-  rpc GetInfo (ThirdPartyGetInfoReq) returns (ThirdPartyGetInfoResp);
-  // Bind 绑定第三方账号
-  rpc Bind (ThirdPartyBindReq) returns (Empty);
-  // 继续 - 登录或注册
-  // Continue 使用第三方账号继续 - 登录或注册 返回用户id
-  rpc Continue (ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
-
-  // HandleCallback 处理第三方回调数据
-  rpc HandleCallback (ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
-  // Remove 移除第三方账号
-  rpc Remove (ThirdPartyRemoveReq) returns (Empty);
-}
-
-// ========== 生成子系统令牌 ==========
-message GenerateSubsystemTokenReq {
-  int64 user_id = 1;
-  string name = 2;
-  bytes scope = 3;
-}
-
-message GenerateSubsystemTokenResp {
-  SubsystemToken token = 1;
-}
-
-// 子系统令牌
-message SubsystemToken {
-  string id = 1;
-  string value = 2;
-  string name = 3;
-  int64 year = 4;
-  int64 month = 5;
-  int64 day = 6;
-}
-
-// ========== 验证子系统令牌 ==========
-message ValidateSubsystemTokenReq {
-  int64 user_id = 1;
-  int64 token_id = 2;
-}
-
-message ValidateSubsystemTokenResp {
-  bool validated = 1;
-}
-
-// ========== 移除子系统令牌 ==========
-message RemoveSubsystemTokenReq {
-  int64 user_id = 1;
-  int64 token_id = 2;
-}
-
-message RemoveSubsystemTokenResp {
-  bool validated = 1;
-}
-
-// ========== 查询子系统令牌 ==========
-message FindTenSubsystemTokensReq {
-  int64 user_id = 1;
-  int64 page = 2;
-}
-
-message FindTenSubsystemTokensResp {
-  repeated SubsystemToken tokens = 1;
-}
-
+// scope is a JSON array of individual flags: 1=JQuantum, 2=Argus, 4=Hephaestus.
+// Empty names are generated as the first five uppercase UUID characters.
+// Argus and Hephaestus reserve future project access; they do not enable services.
+message GenerateSubsystemTokenReq { int64 user_id = 1; string name = 2; bytes scope = 3; }
+message SubsystemToken { string id = 1; string value = 2; string name = 3; int64 year = 4; int64 month = 5; int64 day = 6; }
+message GenerateSubsystemTokenResp { SubsystemToken token = 1; }
+message ValidateSubsystemTokenReq { int64 user_id = 1; int64 token_id = 2; }
+message ValidateSubsystemTokenResp { bool validated = 1; }
+message RemoveSubsystemTokenReq { int64 user_id = 1; int64 token_id = 2; }
+message RemoveSubsystemTokenResp { bool validated = 1; }
+message FindTenSubsystemTokensReq { int64 user_id = 1; int64 page = 2; }
+message FindTenSubsystemTokensResp { repeated SubsystemToken tokens = 1; }
 service Security {
-  // GenerateSubsystemToken 生成子系统令牌
-  // GenerateSubsystemToken 生成可调用子系统的令牌
-  rpc GenerateSubsystemToken (GenerateSubsystemTokenReq) returns (GenerateSubsystemTokenResp);
+  rpc GenerateSubsystemToken(GenerateSubsystemTokenReq) returns (GenerateSubsystemTokenResp);
+  rpc ValidateSubsystemToken(ValidateSubsystemTokenReq) returns (ValidateSubsystemTokenResp);
+  rpc RemoveSubsystemToken(RemoveSubsystemTokenReq) returns (RemoveSubsystemTokenResp);
+  rpc FindTenSubsystemTokens(FindTenSubsystemTokensReq) returns (FindTenSubsystemTokensResp);
+}
 
-  // ValidateSubsystemToken 验证子系统令牌
-  // ValidateToken 验证可调用子系统的令牌
-  rpc ValidateSubsystemToken (ValidateSubsystemTokenReq) returns (ValidateSubsystemTokenResp);
+message ThirdPartyAccountInfo { int64 id = 1; string provider = 2; string content = 3; }
+message ThirdPartyGetInfoReq { int64 user_id = 1; }
+message ThirdPartyGetInfoResp { repeated ThirdPartyAccountInfo accounts = 1; }
+// 旧 token/redis_data_json 字段保留编号但不再作为可信身份输入，改由 RPC 交换 code 和消费服务端 state。
+message ThirdPartyContinueReq {
+  string provider = 1; bytes token = 2 [deprecated=true]; string redis_data_json = 3 [deprecated=true];
+  string code = 4; string state = 5;
+}
+message ThirdPartyContinueResp { int64 user_id = 1; }
+message ThirdPartyBindReq {
+  bytes token = 1 [deprecated=true]; string provider = 2; string code = 3; string state = 4; int64 user_id = 5;
+}
+message ThirdPartyRemoveReq { int64 user_id = 1; int64 third_party_id = 2; }
+message StartAuthorizationReq {
+  string provider = 1; int64 user_id = 2; bool bind = 3; string locale = 4; string language = 5;
+}
+message StartAuthorizationResp { string url = 1; }
+service ThirdParty {
+  rpc StartAuthorization(StartAuthorizationReq) returns (StartAuthorizationResp);
+  rpc GetInfo(ThirdPartyGetInfoReq) returns (ThirdPartyGetInfoResp);
+  rpc Bind(ThirdPartyBindReq) returns (Empty);
+  rpc Continue(ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
+  rpc HandleCallback(ThirdPartyContinueReq) returns (ThirdPartyContinueResp);
+  rpc Remove(ThirdPartyRemoveReq) returns (Empty);
+}
 
-  // RemoveSubsystemToken 移除子系统令牌
-  // RemoveSubsystemToken 验证可调用子系统的令牌
-  rpc RemoveSubsystemToken (RemoveSubsystemTokenReq) returns (RemoveSubsystemTokenResp);
-
-  // FindTenSubsystemTokens 查询 10 个子系统令牌
-  rpc FindTenSubsystemTokens (FindTenSubsystemTokensReq) returns (FindTenSubsystemTokensResp);
+// Browser SSO. Only Apollo API may call this service (authenticated RPC metadata).
+message SSOAuthorizeReq { int64 user_id = 1; int64 auth_version = 2; string client_id = 3; string redirect_uri = 4; string code_challenge = 5; }
+message SSOCodeResp { string code = 1; }
+message SSOExchangeReq { string client_id = 1; string client_secret = 2; string code = 3; string redirect_uri = 4; string code_verifier = 5; }
+message SSOTokenReq { string client_id = 1; string client_secret = 2; string token = 3; }
+message SSOSessionResp { string token = 1; string subject = 2; string display_name = 3; string csrf_token = 4; string expires_at = 5; int64 scope = 6; }
+message SSOLogoutReq { int64 user_id = 1; }
+service Sso {
+  // Authenticated server-to-server Sheets broker; Google credentials never leave Apollo.
+  rpc GoogleSheets(GoogleSheetsReq) returns (GoogleSheetsResp);
+ rpc Logout(SSOLogoutReq) returns (Empty);
+ rpc Authorize(SSOAuthorizeReq) returns (SSOCodeResp);
+ rpc Exchange(SSOExchangeReq) returns (SSOSessionResp);
+ rpc Introspect(SSOTokenReq) returns (SSOSessionResp);
+ rpc Revoke(SSOTokenReq) returns (Empty);
 }

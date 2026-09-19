@@ -2,6 +2,8 @@ package thirdpartylogic
 
 import (
 	"context"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -23,23 +25,17 @@ func NewGetInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetInfoLo
 	}
 }
 
-// GetInfo 获取第三方账号绑定信息
 func (l *GetInfoLogic) GetInfo(in *apollo.ThirdPartyGetInfoReq) (*apollo.ThirdPartyGetInfoResp, error) {
-	accounts, err := l.svcCtx.ThirdPartyModel.FindBatch(l.ctx, in.UserId)
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
+	}
+	items, err := l.svcCtx.OAuth.ExternalAccounts(l.ctx, in.UserId)
 	if err != nil {
-		return nil, err
+		return nil, response.Error(err)
 	}
-	resp := make([]*apollo.ThirdPartyAccountInfo, 0)
-	if len(*accounts) > 0 {
-		for _, v := range *accounts {
-			resp = append(resp, &apollo.ThirdPartyAccountInfo{
-				Id:       v.Id,
-				Provider: v.Provider,
-				Content:  v.Name,
-			})
-		}
+	out := make([]*apollo.ThirdPartyAccountInfo, 0, len(items))
+	for _, a := range items {
+		out = append(out, &apollo.ThirdPartyAccountInfo{Id: a.ID(), Provider: a.Provider(), Content: a.Content()})
 	}
-	return &apollo.ThirdPartyGetInfoResp{
-		Accounts: resp,
-	}, nil
+	return &apollo.ThirdPartyGetInfoResp{Accounts: out}, nil
 }

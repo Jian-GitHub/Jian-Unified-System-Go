@@ -2,8 +2,8 @@ package securitylogic
 
 import (
 	"context"
-	"errors"
-	"jian-unified-system/jus-core/data/mysql/model"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -25,29 +25,13 @@ func NewValidateSubsystemTokenLogic(ctx context.Context, svcCtx *svc.ServiceCont
 	}
 }
 
-// 验证子系统令牌
 func (l *ValidateSubsystemTokenLogic) ValidateSubsystemToken(in *apollo.ValidateSubsystemTokenReq) (*apollo.ValidateSubsystemTokenResp, error) {
-	// resp		err
-	// 1		0	-> system ok
-	// 0		1	-> system err
-	// 1		1	-> system ok	not exists
-	token, err := l.svcCtx.TokenModel.FindOne(l.ctx, in.TokenId, in.UserId)
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
+	}
+	valid, err := l.svcCtx.Grant.Validate(l.ctx, in.UserId, in.TokenId)
 	if err != nil {
-		if errors.Is(err, model.ErrNotFound) {
-			return &apollo.ValidateSubsystemTokenResp{
-				Validated: false,
-			}, err
-		}
-		return nil, err
+		return nil, response.Error(err)
 	}
-
-	if token.IsEnabled == 0 || token.IsDeleted == 1 {
-		return &apollo.ValidateSubsystemTokenResp{
-			Validated: false,
-		}, nil
-	}
-
-	return &apollo.ValidateSubsystemTokenResp{
-		Validated: true,
-	}, nil
+	return &apollo.ValidateSubsystemTokenResp{Validated: valid}, nil
 }

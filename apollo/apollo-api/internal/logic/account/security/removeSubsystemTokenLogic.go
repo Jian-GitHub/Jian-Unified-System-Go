@@ -1,12 +1,12 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package security
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"github.com/zeromicro/go-zero/core/errorx"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"strconv"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
@@ -28,48 +28,18 @@ func NewRemoveSubsystemTokenLogic(ctx context.Context, svcCtx *svc.ServiceContex
 	}
 }
 
-func (l *RemoveSubsystemTokenLogic) RemoveSubsystemToken(req *types.RemoveSubsystemTokenReq) (resp *types.RemoveSubsystemTokenResp, err error) {
-	id, err := l.ctx.Value("id").(json.Number).Int64()
+func (l *RemoveSubsystemTokenLogic) RemoveSubsystemToken(req *types.RemoveCredentialReq) (resp *types.OkResp, err error) {
+	id, err := response.Subject(l.ctx)
 	if err != nil {
-		return &types.RemoveSubsystemTokenResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "Id err",
-			},
-		}, errorx.Wrap(errors.New("id"), "caller err")
+		return nil, err
 	}
-
-	tokenId, err := strconv.ParseInt(req.Id, 10, 64)
+	key, err := response.ID(req.Id)
 	if err != nil {
-		return &types.RemoveSubsystemTokenResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -2,
-				Message: "tokenId err",
-			},
-		}, errorx.Wrap(errors.New("tokenId"), "caller err")
+		return nil, err
 	}
-
-	removeSubsystemTokenResp, err := l.svcCtx.ApolloSecurity.RemoveSubsystemToken(l.ctx, &apollo.RemoveSubsystemTokenReq{
-		UserId:  id,
-		TokenId: tokenId,
-	})
+	r, err := l.svcCtx.Security.RemoveSubsystemToken(l.ctx, &apollo.RemoveSubsystemTokenReq{UserId: id, TokenId: key})
 	if err != nil {
-		return &types.RemoveSubsystemTokenResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -3,
-				Message: "rpc error",
-			},
-		}, err
+		return nil, err
 	}
-	return &types.RemoveSubsystemTokenResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		RemoveSubsystemTokenData: struct {
-			Ok bool `json:"ok"`
-		}{
-			Ok: removeSubsystemTokenResp.Validated,
-		},
-	}, nil
+	return &types.OkResp{BaseResponse: response.OK(), Data: types.OkData{Ok: r.Validated}}, nil
 }

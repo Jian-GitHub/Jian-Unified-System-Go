@@ -1,9 +1,11 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package thirdParty
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/zeromicro/go-zero/core/errorx"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
@@ -26,44 +28,18 @@ func NewGetInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetInfoLo
 	}
 }
 
-func (l *GetInfoLogic) GetInfo() (resp *types.GetInfoResp, err error) {
-	id, err := l.ctx.Value("id").(json.Number).Int64()
-	if err != nil {
-		return &types.GetInfoResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "id err",
-			},
-		}, errorx.Wrap(err, "token err")
-	}
-
-	rpcResp, err := l.svcCtx.ApolloThirdParty.GetInfo(l.ctx, &apollo.ThirdPartyGetInfoReq{
-		UserId: id,
-	})
+func (l *GetInfoLogic) GetInfo(req *types.Empty) (resp *types.ThirdPartyResp, err error) {
+	id, err := response.Subject(l.ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	accounts := make([]types.ThirdPartyAccount, 0)
-	if len(rpcResp.Accounts) > 0 {
-		for _, account := range rpcResp.Accounts {
-			accounts = append(accounts, types.ThirdPartyAccount{
-				Id:       account.Id,
-				Provider: account.Provider,
-				Content:  account.Content,
-			})
-		}
+	r, err := l.svcCtx.ThirdParty.GetInfo(l.ctx, &apollo.ThirdPartyGetInfoReq{UserId: id})
+	if err != nil {
+		return nil, err
 	}
-
-	return &types.GetInfoResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		GetInfoRespData: struct {
-			Accounts []types.ThirdPartyAccount `json:"accounts"`
-		}{
-			Accounts: accounts,
-		},
-	}, nil
+	items := make([]types.ThirdPartyAccount, 0, len(r.Accounts))
+	for _, a := range r.Accounts {
+		items = append(items, types.ThirdPartyAccount{Id: a.Id, Provider: a.Provider, Content: a.Content})
+	}
+	return &types.ThirdPartyResp{BaseResponse: response.OK(), Data: types.ThirdPartyData{Accounts: items}}, nil
 }

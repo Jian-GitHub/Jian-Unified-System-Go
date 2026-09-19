@@ -2,13 +2,10 @@ package accountlogic
 
 import (
 	"context"
-	"database/sql"
-	"errors"
-	"fmt"
-	"github.com/zeromicro/go-zero/core/jsonx"
-	ap "jian-unified-system/jus-core/data/mysql/apollo"
-	"jian-unified-system/jus-core/util"
-	"time"
+	accountapp "jian-unified-system/apollo/apollo-rpc/internal/application/account"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -30,73 +27,13 @@ func NewRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Regi
 	}
 }
 
-// Registration 注册
 func (l *RegistrationLogic) Registration(in *apollo.RegistrationReq) (*apollo.Empty, error) {
-	// todo: add your logic here and delete this line
-	//fmt.Println("enter Reg RPC")
-	email := util.HashSHA512(in.Email, in.Email)
-	// Check if the email exists
-	_, err := l.svcCtx.UserModel.FindOneByEmail(l.ctx, email)
-	if err == nil {
-		return nil, errors.New("user exists")
+	if in == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid input")
 	}
-
-	// All params are validated
-	// Generate new user
-	pwd, err := util.HashPasswordBcrypt(in.Password)
+	err := l.svcCtx.Account.Register(l.ctx, accountapp.Registration{ID: in.UserId, Email: in.Email, Password: in.Password, Locale: in.Locate, Language: in.Language})
 	if err != nil {
-		return nil, err
+		return nil, transportError(err)
 	}
-	//encryptedEmail, err := l.svcCtx.MLKEMKeyManager.EncryptMessage(in.Email)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//fmt.Println("encryptedEmail")
-	//fmt.Println(encryptedEmail)
-	//fmt.Println("decryptedEmail")
-	//
-	//decryptedEmail, err := l.svcCtx.MLKEMKeyManager.DecryptMessage(encryptedEmail)
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//	return nil, err
-	//}
-	//fmt.Println(decryptedEmail)
-
-	NotificationEmail, err := l.svcCtx.MLKEMKeyManager.EncryptMessage(in.Email)
-	if err != nil {
-		return nil, err
-	}
-
-	//fmt.Println(email)
-	user := &ap.User{
-		Id:       in.UserId,
-		Email:    email,
-		Password: pwd,
-		PasswordUpdateTime: sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-		Locate:   in.Locate,
-		Language: in.Language,
-		NotificationEmail: sql.NullString{
-			String: NotificationEmail,
-			Valid:  NotificationEmail != "",
-		},
-	}
-
-	//user, err := l.svcCtx.UserModel.FindOne(l.ctx, in.UserId)
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//	return nil, err
-	//}
-	_, err = l.svcCtx.UserModel.Insert(l.ctx, user)
-	if err != nil {
-		return nil, err
-	}
-	toString, err := jsonx.MarshalToString(user)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(toString)
 	return &apollo.Empty{}, nil
 }

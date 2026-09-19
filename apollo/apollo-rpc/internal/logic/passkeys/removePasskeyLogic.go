@@ -2,7 +2,8 @@ package passkeyslogic
 
 import (
 	"context"
-	ap "jian-unified-system/jus-core/data/mysql/apollo"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -24,23 +25,12 @@ func NewRemovePasskeyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Rem
 	}
 }
 
-// RemovePasskey 移除 Passkey
 func (l *RemovePasskeyLogic) RemovePasskey(in *apollo.RemovePasskeyReq) (*apollo.RemovePasskeyResp, error) {
-	// todo: add your logic here and delete this line
-	err := l.svcCtx.PasskeyModel.DeleteOrRestorePasskey(
-		l.ctx,
-		&ap.Passkey{
-			CredentialId: in.PasskeyId,
-			UserId:       in.UserId,
-			IsDeleted:    1,
-		})
-	if err != nil {
-		return &apollo.RemovePasskeyResp{
-			Success: false,
-		}, err
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
 	}
-
-	return &apollo.RemovePasskeyResp{
-		Success: true,
-	}, nil
+	if err := l.svcCtx.Passkey.Remove(l.ctx, in.UserId, in.PasskeyId); err != nil {
+		return nil, response.Error(err)
+	}
+	return &apollo.RemovePasskeyResp{Success: true}, nil
 }

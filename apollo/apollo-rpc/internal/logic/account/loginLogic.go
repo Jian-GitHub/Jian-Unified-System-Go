@@ -2,10 +2,9 @@ package accountlogic
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"github.com/zeromicro/go-zero/core/errorx"
-	"jian-unified-system/jus-core/util"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -27,32 +26,13 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 	}
 }
 
-// Login 登录
 func (l *LoginLogic) Login(in *apollo.LoginReq) (*apollo.LoginResp, error) {
-	email := util.HashSHA512(in.Email, in.Email)
-	fmt.Println(email)
-	user, err := l.svcCtx.UserModel.FindOneByEmail(l.ctx, email)
+	if in == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid input")
+	}
+	p, err := l.svcCtx.Account.Login(l.ctx, in.Email, in.Password)
 	if err != nil {
-		return nil, errorx.Wrap(errors.New("no user found"), "login sql err")
+		return nil, transportError(err)
 	}
-	//fmt.Println(user)
-	if user == nil {
-		return nil, errorx.Wrap(errors.New("null user"), "login sql err")
-	}
-	if !util.VerifyPasswordBcrypt(in.Password, user.Password) {
-		return nil, errorx.Wrap(errors.New("password Error"), "Login Error")
-	}
-
-	return &apollo.LoginResp{
-		UserId:        user.Id,
-		GivenName:     user.GivenName,
-		MiddleName:    user.MiddleName,
-		FamilyName:    user.FamilyName,
-		Avatar:        user.Avatar.String,
-		Locale:        user.Locate,
-		Language:      user.Language,
-		BirthdayYear:  user.BirthdayYear.Int64,
-		BirthdayMonth: user.BirthdayMonth.Int64,
-		BirthdayDay:   user.BirthdayDay.Int64,
-	}, nil
+	return &apollo.LoginResp{UserId: p.ID(), GivenName: p.GivenName(), MiddleName: p.MiddleName(), FamilyName: p.FamilyName(), Avatar: p.Avatar(), Locale: p.Locale(), Language: p.Language(), BirthdayYear: p.BirthdayYear(), BirthdayMonth: p.BirthdayMonth(), BirthdayDay: p.BirthdayDay(), AuthVersion: p.AuthVersion()}, nil
 }

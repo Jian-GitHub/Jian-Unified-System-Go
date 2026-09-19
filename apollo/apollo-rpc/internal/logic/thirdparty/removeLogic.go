@@ -2,6 +2,9 @@ package thirdpartylogic
 
 import (
 	"context"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
+
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
 
@@ -22,12 +25,12 @@ func NewRemoveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RemoveLogi
 	}
 }
 
-// Remove 移除第三方账号
 func (l *RemoveLogic) Remove(in *apollo.ThirdPartyRemoveReq) (*apollo.Empty, error) {
-	err := l.svcCtx.ThirdPartyModel.Delete(l.ctx, in.ThirdPartyId, in.UserId)
-	if err != nil {
-		return nil, err
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
 	}
-
+	if err := l.svcCtx.OAuth.RemoveIdentity(l.ctx, in.UserId, in.ThirdPartyId); err != nil {
+		return nil, response.Error(err)
+	}
 	return &apollo.Empty{}, nil
 }

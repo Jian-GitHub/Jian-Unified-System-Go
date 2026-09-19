@@ -19,30 +19,43 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Account_Registration_FullMethodName     = "/apollo.Account/Registration"
-	Account_Login_FullMethodName            = "/apollo.Account/Login"
-	Account_UserInfo_FullMethodName         = "/apollo.Account/UserInfo"
-	Account_UserSecurityInfo_FullMethodName = "/apollo.Account/UserSecurityInfo"
+	Account_Registration_FullMethodName            = "/apollo.Account/Registration"
+	Account_Login_FullMethodName                   = "/apollo.Account/Login"
+	Account_UserInfo_FullMethodName                = "/apollo.Account/UserInfo"
+	Account_UserSecurityInfo_FullMethodName        = "/apollo.Account/UserSecurityInfo"
+	Account_SessionVersion_FullMethodName          = "/apollo.Account/SessionVersion"
+	Account_UpdateName_FullMethodName              = "/apollo.Account/UpdateName"
+	Account_UpdateBirthday_FullMethodName          = "/apollo.Account/UpdateBirthday"
+	Account_UpdateLanguage_FullMethodName          = "/apollo.Account/UpdateLanguage"
+	Account_AddContact_FullMethodName              = "/apollo.Account/AddContact"
+	Account_RemoveContact_FullMethodName           = "/apollo.Account/RemoveContact"
+	Account_ChangePassword_FullMethodName          = "/apollo.Account/ChangePassword"
+	Account_ChangeNotificationEmail_FullMethodName = "/apollo.Account/ChangeNotificationEmail"
+	Account_RemoveNotificationEmail_FullMethodName = "/apollo.Account/RemoveNotificationEmail"
+	Account_DeleteAccount_FullMethodName           = "/apollo.Account/DeleteAccount"
 )
 
 // AccountClient is the client API for Account service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// ================= 服务定义 =================
+// Apollo 完整账户、凭据与授权协议。
+// 保持既有方法路径与字段号；新增能力先扩展协议再执行 gorpcgn。
 type AccountClient interface {
-	// 注册
-	// Registration 注册
 	Registration(ctx context.Context, in *RegistrationReq, opts ...grpc.CallOption) (*Empty, error)
-	// 登录
-	// Login 登陆
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
-	// 用户信息
-	// UserInfo 查询用户通知联系方式
 	UserInfo(ctx context.Context, in *UserInfoReq, opts ...grpc.CallOption) (*UserInfoResp, error)
-	// 用户安全信息
-	// UserSecurityInfo 查询用户通知联系方式
 	UserSecurityInfo(ctx context.Context, in *UserSecurityInfoReq, opts ...grpc.CallOption) (*UserSecurityInfoResp, error)
+	SessionVersion(ctx context.Context, in *SessionVersionReq, opts ...grpc.CallOption) (*SessionVersionResp, error)
+	UpdateName(ctx context.Context, in *UpdateNameReq, opts ...grpc.CallOption) (*Empty, error)
+	UpdateBirthday(ctx context.Context, in *UpdateBirthdayReq, opts ...grpc.CallOption) (*Empty, error)
+	UpdateLanguage(ctx context.Context, in *UpdateLanguageReq, opts ...grpc.CallOption) (*Empty, error)
+	AddContact(ctx context.Context, in *AddContactReq, opts ...grpc.CallOption) (*AddContactResp, error)
+	RemoveContact(ctx context.Context, in *RemoveContactReq, opts ...grpc.CallOption) (*Empty, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordReq, opts ...grpc.CallOption) (*Empty, error)
+	ChangeNotificationEmail(ctx context.Context, in *ChangeNotificationEmailReq, opts ...grpc.CallOption) (*Empty, error)
+	RemoveNotificationEmail(ctx context.Context, in *RemoveNotificationEmailReq, opts ...grpc.CallOption) (*Empty, error)
+	DeleteAccount(ctx context.Context, in *DeleteAccountReq, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type accountClient struct {
@@ -93,24 +106,127 @@ func (c *accountClient) UserSecurityInfo(ctx context.Context, in *UserSecurityIn
 	return out, nil
 }
 
+func (c *accountClient) SessionVersion(ctx context.Context, in *SessionVersionReq, opts ...grpc.CallOption) (*SessionVersionResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SessionVersionResp)
+	err := c.cc.Invoke(ctx, Account_SessionVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateName(ctx context.Context, in *UpdateNameReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_UpdateName_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateBirthday(ctx context.Context, in *UpdateBirthdayReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_UpdateBirthday_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) UpdateLanguage(ctx context.Context, in *UpdateLanguageReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_UpdateLanguage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) AddContact(ctx context.Context, in *AddContactReq, opts ...grpc.CallOption) (*AddContactResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddContactResp)
+	err := c.cc.Invoke(ctx, Account_AddContact_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) RemoveContact(ctx context.Context, in *RemoveContactReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_RemoveContact_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) ChangePassword(ctx context.Context, in *ChangePasswordReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) ChangeNotificationEmail(ctx context.Context, in *ChangeNotificationEmailReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_ChangeNotificationEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) RemoveNotificationEmail(ctx context.Context, in *RemoveNotificationEmailReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_RemoveNotificationEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountClient) DeleteAccount(ctx context.Context, in *DeleteAccountReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Account_DeleteAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility.
 //
-// ================= 服务定义 =================
+// Apollo 完整账户、凭据与授权协议。
+// 保持既有方法路径与字段号；新增能力先扩展协议再执行 gorpcgn。
 type AccountServer interface {
-	// 注册
-	// Registration 注册
 	Registration(context.Context, *RegistrationReq) (*Empty, error)
-	// 登录
-	// Login 登陆
 	Login(context.Context, *LoginReq) (*LoginResp, error)
-	// 用户信息
-	// UserInfo 查询用户通知联系方式
 	UserInfo(context.Context, *UserInfoReq) (*UserInfoResp, error)
-	// 用户安全信息
-	// UserSecurityInfo 查询用户通知联系方式
 	UserSecurityInfo(context.Context, *UserSecurityInfoReq) (*UserSecurityInfoResp, error)
+	SessionVersion(context.Context, *SessionVersionReq) (*SessionVersionResp, error)
+	UpdateName(context.Context, *UpdateNameReq) (*Empty, error)
+	UpdateBirthday(context.Context, *UpdateBirthdayReq) (*Empty, error)
+	UpdateLanguage(context.Context, *UpdateLanguageReq) (*Empty, error)
+	AddContact(context.Context, *AddContactReq) (*AddContactResp, error)
+	RemoveContact(context.Context, *RemoveContactReq) (*Empty, error)
+	ChangePassword(context.Context, *ChangePasswordReq) (*Empty, error)
+	ChangeNotificationEmail(context.Context, *ChangeNotificationEmailReq) (*Empty, error)
+	RemoveNotificationEmail(context.Context, *RemoveNotificationEmailReq) (*Empty, error)
+	DeleteAccount(context.Context, *DeleteAccountReq) (*Empty, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -132,6 +248,36 @@ func (UnimplementedAccountServer) UserInfo(context.Context, *UserInfoReq) (*User
 }
 func (UnimplementedAccountServer) UserSecurityInfo(context.Context, *UserSecurityInfoReq) (*UserSecurityInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserSecurityInfo not implemented")
+}
+func (UnimplementedAccountServer) SessionVersion(context.Context, *SessionVersionReq) (*SessionVersionResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SessionVersion not implemented")
+}
+func (UnimplementedAccountServer) UpdateName(context.Context, *UpdateNameReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateName not implemented")
+}
+func (UnimplementedAccountServer) UpdateBirthday(context.Context, *UpdateBirthdayReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBirthday not implemented")
+}
+func (UnimplementedAccountServer) UpdateLanguage(context.Context, *UpdateLanguageReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLanguage not implemented")
+}
+func (UnimplementedAccountServer) AddContact(context.Context, *AddContactReq) (*AddContactResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddContact not implemented")
+}
+func (UnimplementedAccountServer) RemoveContact(context.Context, *RemoveContactReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveContact not implemented")
+}
+func (UnimplementedAccountServer) ChangePassword(context.Context, *ChangePasswordReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
+}
+func (UnimplementedAccountServer) ChangeNotificationEmail(context.Context, *ChangeNotificationEmailReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeNotificationEmail not implemented")
+}
+func (UnimplementedAccountServer) RemoveNotificationEmail(context.Context, *RemoveNotificationEmailReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveNotificationEmail not implemented")
+}
+func (UnimplementedAccountServer) DeleteAccount(context.Context, *DeleteAccountReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 func (UnimplementedAccountServer) testEmbeddedByValue()                 {}
@@ -226,6 +372,186 @@ func _Account_UserSecurityInfo_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_SessionVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SessionVersionReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).SessionVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_SessionVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).SessionVersion(ctx, req.(*SessionVersionReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNameReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_UpdateName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateName(ctx, req.(*UpdateNameReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateBirthday_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBirthdayReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateBirthday(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_UpdateBirthday_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateBirthday(ctx, req.(*UpdateBirthdayReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_UpdateLanguage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLanguageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).UpdateLanguage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_UpdateLanguage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).UpdateLanguage(ctx, req.(*UpdateLanguageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_AddContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddContactReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).AddContact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_AddContact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).AddContact(ctx, req.(*AddContactReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_RemoveContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveContactReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).RemoveContact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_RemoveContact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).RemoveContact(ctx, req.(*RemoveContactReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).ChangePassword(ctx, req.(*ChangePasswordReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_ChangeNotificationEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeNotificationEmailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).ChangeNotificationEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_ChangeNotificationEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).ChangeNotificationEmail(ctx, req.(*ChangeNotificationEmailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_RemoveNotificationEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveNotificationEmailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).RemoveNotificationEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_RemoveNotificationEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).RemoveNotificationEmail(ctx, req.(*RemoveNotificationEmailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Account_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccountReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).DeleteAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Account_DeleteAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).DeleteAccount(ctx, req.(*DeleteAccountReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -249,6 +575,46 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "UserSecurityInfo",
 			Handler:    _Account_UserSecurityInfo_Handler,
 		},
+		{
+			MethodName: "SessionVersion",
+			Handler:    _Account_SessionVersion_Handler,
+		},
+		{
+			MethodName: "UpdateName",
+			Handler:    _Account_UpdateName_Handler,
+		},
+		{
+			MethodName: "UpdateBirthday",
+			Handler:    _Account_UpdateBirthday_Handler,
+		},
+		{
+			MethodName: "UpdateLanguage",
+			Handler:    _Account_UpdateLanguage_Handler,
+		},
+		{
+			MethodName: "AddContact",
+			Handler:    _Account_AddContact_Handler,
+		},
+		{
+			MethodName: "RemoveContact",
+			Handler:    _Account_RemoveContact_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _Account_ChangePassword_Handler,
+		},
+		{
+			MethodName: "ChangeNotificationEmail",
+			Handler:    _Account_ChangeNotificationEmail_Handler,
+		},
+		{
+			MethodName: "RemoveNotificationEmail",
+			Handler:    _Account_RemoveNotificationEmail_Handler,
+		},
+		{
+			MethodName: "DeleteAccount",
+			Handler:    _Account_DeleteAccount_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "apollo-rpc.proto",
@@ -266,22 +632,12 @@ const (
 // PasskeysClient is the client API for Passkeys service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// ================= 服务定义 =================
 type PasskeysClient interface {
-	// 注册
-	// StartRegistration 注册第一步 - 开始
 	StartRegistration(ctx context.Context, in *PasskeysStartRegistrationReq, opts ...grpc.CallOption) (*PasskeysStartRegistrationResp, error)
-	// FinishRegistration 注册第二步 - 完成
 	FinishRegistration(ctx context.Context, in *PasskeysFinishRegistrationReq, opts ...grpc.CallOption) (*PasskeysFinishRegistrationResp, error)
-	// 登录
-	// StartLogin 登陆第一步 - 开始
 	StartLogin(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PasskeysStartLoginResp, error)
-	// FinishLogin 登陆第二步 - 完成 返回用户id
 	FinishLogin(ctx context.Context, in *PasskeysFinishLoginReq, opts ...grpc.CallOption) (*PasskeysFinishLoginResp, error)
-	// FindTenPasskeys 查询 10 个Passkeys
 	FindTenPasskeys(ctx context.Context, in *FindTenPasskeysReq, opts ...grpc.CallOption) (*FindTenPasskeysResp, error)
-	// RemovePasskey 移除 Passkey
 	RemovePasskey(ctx context.Context, in *RemovePasskeyReq, opts ...grpc.CallOption) (*RemovePasskeyResp, error)
 }
 
@@ -356,22 +712,12 @@ func (c *passkeysClient) RemovePasskey(ctx context.Context, in *RemovePasskeyReq
 // PasskeysServer is the server API for Passkeys service.
 // All implementations must embed UnimplementedPasskeysServer
 // for forward compatibility.
-//
-// ================= 服务定义 =================
 type PasskeysServer interface {
-	// 注册
-	// StartRegistration 注册第一步 - 开始
 	StartRegistration(context.Context, *PasskeysStartRegistrationReq) (*PasskeysStartRegistrationResp, error)
-	// FinishRegistration 注册第二步 - 完成
 	FinishRegistration(context.Context, *PasskeysFinishRegistrationReq) (*PasskeysFinishRegistrationResp, error)
-	// 登录
-	// StartLogin 登陆第一步 - 开始
 	StartLogin(context.Context, *Empty) (*PasskeysStartLoginResp, error)
-	// FinishLogin 登陆第二步 - 完成 返回用户id
 	FinishLogin(context.Context, *PasskeysFinishLoginReq) (*PasskeysFinishLoginResp, error)
-	// FindTenPasskeys 查询 10 个Passkeys
 	FindTenPasskeys(context.Context, *FindTenPasskeysReq) (*FindTenPasskeysResp, error)
-	// RemovePasskey 移除 Passkey
 	RemovePasskey(context.Context, *RemovePasskeyReq) (*RemovePasskeyResp, error)
 	mustEmbedUnimplementedPasskeysServer()
 }
@@ -567,276 +913,6 @@ var Passkeys_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ThirdParty_GetInfo_FullMethodName        = "/apollo.ThirdParty/GetInfo"
-	ThirdParty_Bind_FullMethodName           = "/apollo.ThirdParty/Bind"
-	ThirdParty_Continue_FullMethodName       = "/apollo.ThirdParty/Continue"
-	ThirdParty_HandleCallback_FullMethodName = "/apollo.ThirdParty/HandleCallback"
-	ThirdParty_Remove_FullMethodName         = "/apollo.ThirdParty/Remove"
-)
-
-// ThirdPartyClient is the client API for ThirdParty service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// ================= 服务定义 =================
-type ThirdPartyClient interface {
-	// GetInfo 获取第三方账号绑定信息
-	GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error)
-	// Bind 绑定第三方账号
-	Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
-	// 继续 - 登录或注册
-	// Continue 使用第三方账号继续 - 登录或注册 返回用户id
-	Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
-	// HandleCallback 处理第三方回调数据
-	HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
-	// Remove 移除第三方账号
-	Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error)
-}
-
-type thirdPartyClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewThirdPartyClient(cc grpc.ClientConnInterface) ThirdPartyClient {
-	return &thirdPartyClient{cc}
-}
-
-func (c *thirdPartyClient) GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ThirdPartyGetInfoResp)
-	err := c.cc.Invoke(ctx, ThirdParty_GetInfo_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *thirdPartyClient) Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, ThirdParty_Bind_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *thirdPartyClient) Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ThirdPartyContinueResp)
-	err := c.cc.Invoke(ctx, ThirdParty_Continue_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *thirdPartyClient) HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ThirdPartyContinueResp)
-	err := c.cc.Invoke(ctx, ThirdParty_HandleCallback_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *thirdPartyClient) Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, ThirdParty_Remove_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ThirdPartyServer is the server API for ThirdParty service.
-// All implementations must embed UnimplementedThirdPartyServer
-// for forward compatibility.
-//
-// ================= 服务定义 =================
-type ThirdPartyServer interface {
-	// GetInfo 获取第三方账号绑定信息
-	GetInfo(context.Context, *ThirdPartyGetInfoReq) (*ThirdPartyGetInfoResp, error)
-	// Bind 绑定第三方账号
-	Bind(context.Context, *ThirdPartyBindReq) (*Empty, error)
-	// 继续 - 登录或注册
-	// Continue 使用第三方账号继续 - 登录或注册 返回用户id
-	Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
-	// HandleCallback 处理第三方回调数据
-	HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
-	// Remove 移除第三方账号
-	Remove(context.Context, *ThirdPartyRemoveReq) (*Empty, error)
-	mustEmbedUnimplementedThirdPartyServer()
-}
-
-// UnimplementedThirdPartyServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedThirdPartyServer struct{}
-
-func (UnimplementedThirdPartyServer) GetInfo(context.Context, *ThirdPartyGetInfoReq) (*ThirdPartyGetInfoResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInfo not implemented")
-}
-func (UnimplementedThirdPartyServer) Bind(context.Context, *ThirdPartyBindReq) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
-}
-func (UnimplementedThirdPartyServer) Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Continue not implemented")
-}
-func (UnimplementedThirdPartyServer) HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HandleCallback not implemented")
-}
-func (UnimplementedThirdPartyServer) Remove(context.Context, *ThirdPartyRemoveReq) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
-}
-func (UnimplementedThirdPartyServer) mustEmbedUnimplementedThirdPartyServer() {}
-func (UnimplementedThirdPartyServer) testEmbeddedByValue()                    {}
-
-// UnsafeThirdPartyServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ThirdPartyServer will
-// result in compilation errors.
-type UnsafeThirdPartyServer interface {
-	mustEmbedUnimplementedThirdPartyServer()
-}
-
-func RegisterThirdPartyServer(s grpc.ServiceRegistrar, srv ThirdPartyServer) {
-	// If the following call pancis, it indicates UnimplementedThirdPartyServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&ThirdParty_ServiceDesc, srv)
-}
-
-func _ThirdParty_GetInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThirdPartyGetInfoReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThirdPartyServer).GetInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThirdParty_GetInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThirdPartyServer).GetInfo(ctx, req.(*ThirdPartyGetInfoReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ThirdParty_Bind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThirdPartyBindReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThirdPartyServer).Bind(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThirdParty_Bind_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThirdPartyServer).Bind(ctx, req.(*ThirdPartyBindReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ThirdParty_Continue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThirdPartyContinueReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThirdPartyServer).Continue(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThirdParty_Continue_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThirdPartyServer).Continue(ctx, req.(*ThirdPartyContinueReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ThirdParty_HandleCallback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThirdPartyContinueReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThirdPartyServer).HandleCallback(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThirdParty_HandleCallback_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThirdPartyServer).HandleCallback(ctx, req.(*ThirdPartyContinueReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ThirdParty_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ThirdPartyRemoveReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThirdPartyServer).Remove(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThirdParty_Remove_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThirdPartyServer).Remove(ctx, req.(*ThirdPartyRemoveReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// ThirdParty_ServiceDesc is the grpc.ServiceDesc for ThirdParty service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var ThirdParty_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "apollo.ThirdParty",
-	HandlerType: (*ThirdPartyServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetInfo",
-			Handler:    _ThirdParty_GetInfo_Handler,
-		},
-		{
-			MethodName: "Bind",
-			Handler:    _ThirdParty_Bind_Handler,
-		},
-		{
-			MethodName: "Continue",
-			Handler:    _ThirdParty_Continue_Handler,
-		},
-		{
-			MethodName: "HandleCallback",
-			Handler:    _ThirdParty_HandleCallback_Handler,
-		},
-		{
-			MethodName: "Remove",
-			Handler:    _ThirdParty_Remove_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "apollo-rpc.proto",
-}
-
-const (
 	Security_GenerateSubsystemToken_FullMethodName = "/apollo.Security/GenerateSubsystemToken"
 	Security_ValidateSubsystemToken_FullMethodName = "/apollo.Security/ValidateSubsystemToken"
 	Security_RemoveSubsystemToken_FullMethodName   = "/apollo.Security/RemoveSubsystemToken"
@@ -847,16 +923,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SecurityClient interface {
-	// GenerateSubsystemToken 生成子系统令牌
-	// GenerateSubsystemToken 生成可调用子系统的令牌
 	GenerateSubsystemToken(ctx context.Context, in *GenerateSubsystemTokenReq, opts ...grpc.CallOption) (*GenerateSubsystemTokenResp, error)
-	// ValidateSubsystemToken 验证子系统令牌
-	// ValidateToken 验证可调用子系统的令牌
 	ValidateSubsystemToken(ctx context.Context, in *ValidateSubsystemTokenReq, opts ...grpc.CallOption) (*ValidateSubsystemTokenResp, error)
-	// RemoveSubsystemToken 移除子系统令牌
-	// RemoveSubsystemToken 验证可调用子系统的令牌
 	RemoveSubsystemToken(ctx context.Context, in *RemoveSubsystemTokenReq, opts ...grpc.CallOption) (*RemoveSubsystemTokenResp, error)
-	// FindTenSubsystemTokens 查询 10 个子系统令牌
 	FindTenSubsystemTokens(ctx context.Context, in *FindTenSubsystemTokensReq, opts ...grpc.CallOption) (*FindTenSubsystemTokensResp, error)
 }
 
@@ -912,16 +981,9 @@ func (c *securityClient) FindTenSubsystemTokens(ctx context.Context, in *FindTen
 // All implementations must embed UnimplementedSecurityServer
 // for forward compatibility.
 type SecurityServer interface {
-	// GenerateSubsystemToken 生成子系统令牌
-	// GenerateSubsystemToken 生成可调用子系统的令牌
 	GenerateSubsystemToken(context.Context, *GenerateSubsystemTokenReq) (*GenerateSubsystemTokenResp, error)
-	// ValidateSubsystemToken 验证子系统令牌
-	// ValidateToken 验证可调用子系统的令牌
 	ValidateSubsystemToken(context.Context, *ValidateSubsystemTokenReq) (*ValidateSubsystemTokenResp, error)
-	// RemoveSubsystemToken 移除子系统令牌
-	// RemoveSubsystemToken 验证可调用子系统的令牌
 	RemoveSubsystemToken(context.Context, *RemoveSubsystemTokenReq) (*RemoveSubsystemTokenResp, error)
-	// FindTenSubsystemTokens 查询 10 个子系统令牌
 	FindTenSubsystemTokens(context.Context, *FindTenSubsystemTokensReq) (*FindTenSubsystemTokensResp, error)
 	mustEmbedUnimplementedSecurityServer()
 }
@@ -1060,6 +1122,592 @@ var Security_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindTenSubsystemTokens",
 			Handler:    _Security_FindTenSubsystemTokens_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "apollo-rpc.proto",
+}
+
+const (
+	ThirdParty_StartAuthorization_FullMethodName = "/apollo.ThirdParty/StartAuthorization"
+	ThirdParty_GetInfo_FullMethodName            = "/apollo.ThirdParty/GetInfo"
+	ThirdParty_Bind_FullMethodName               = "/apollo.ThirdParty/Bind"
+	ThirdParty_Continue_FullMethodName           = "/apollo.ThirdParty/Continue"
+	ThirdParty_HandleCallback_FullMethodName     = "/apollo.ThirdParty/HandleCallback"
+	ThirdParty_Remove_FullMethodName             = "/apollo.ThirdParty/Remove"
+)
+
+// ThirdPartyClient is the client API for ThirdParty service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ThirdPartyClient interface {
+	StartAuthorization(ctx context.Context, in *StartAuthorizationReq, opts ...grpc.CallOption) (*StartAuthorizationResp, error)
+	GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error)
+	Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error)
+	Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+	HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error)
+	Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error)
+}
+
+type thirdPartyClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewThirdPartyClient(cc grpc.ClientConnInterface) ThirdPartyClient {
+	return &thirdPartyClient{cc}
+}
+
+func (c *thirdPartyClient) StartAuthorization(ctx context.Context, in *StartAuthorizationReq, opts ...grpc.CallOption) (*StartAuthorizationResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartAuthorizationResp)
+	err := c.cc.Invoke(ctx, ThirdParty_StartAuthorization_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thirdPartyClient) GetInfo(ctx context.Context, in *ThirdPartyGetInfoReq, opts ...grpc.CallOption) (*ThirdPartyGetInfoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ThirdPartyGetInfoResp)
+	err := c.cc.Invoke(ctx, ThirdParty_GetInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thirdPartyClient) Bind(ctx context.Context, in *ThirdPartyBindReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, ThirdParty_Bind_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thirdPartyClient) Continue(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ThirdPartyContinueResp)
+	err := c.cc.Invoke(ctx, ThirdParty_Continue_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thirdPartyClient) HandleCallback(ctx context.Context, in *ThirdPartyContinueReq, opts ...grpc.CallOption) (*ThirdPartyContinueResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ThirdPartyContinueResp)
+	err := c.cc.Invoke(ctx, ThirdParty_HandleCallback_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thirdPartyClient) Remove(ctx context.Context, in *ThirdPartyRemoveReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, ThirdParty_Remove_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ThirdPartyServer is the server API for ThirdParty service.
+// All implementations must embed UnimplementedThirdPartyServer
+// for forward compatibility.
+type ThirdPartyServer interface {
+	StartAuthorization(context.Context, *StartAuthorizationReq) (*StartAuthorizationResp, error)
+	GetInfo(context.Context, *ThirdPartyGetInfoReq) (*ThirdPartyGetInfoResp, error)
+	Bind(context.Context, *ThirdPartyBindReq) (*Empty, error)
+	Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
+	HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error)
+	Remove(context.Context, *ThirdPartyRemoveReq) (*Empty, error)
+	mustEmbedUnimplementedThirdPartyServer()
+}
+
+// UnimplementedThirdPartyServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedThirdPartyServer struct{}
+
+func (UnimplementedThirdPartyServer) StartAuthorization(context.Context, *StartAuthorizationReq) (*StartAuthorizationResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartAuthorization not implemented")
+}
+func (UnimplementedThirdPartyServer) GetInfo(context.Context, *ThirdPartyGetInfoReq) (*ThirdPartyGetInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInfo not implemented")
+}
+func (UnimplementedThirdPartyServer) Bind(context.Context, *ThirdPartyBindReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Bind not implemented")
+}
+func (UnimplementedThirdPartyServer) Continue(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Continue not implemented")
+}
+func (UnimplementedThirdPartyServer) HandleCallback(context.Context, *ThirdPartyContinueReq) (*ThirdPartyContinueResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HandleCallback not implemented")
+}
+func (UnimplementedThirdPartyServer) Remove(context.Context, *ThirdPartyRemoveReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
+}
+func (UnimplementedThirdPartyServer) mustEmbedUnimplementedThirdPartyServer() {}
+func (UnimplementedThirdPartyServer) testEmbeddedByValue()                    {}
+
+// UnsafeThirdPartyServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ThirdPartyServer will
+// result in compilation errors.
+type UnsafeThirdPartyServer interface {
+	mustEmbedUnimplementedThirdPartyServer()
+}
+
+func RegisterThirdPartyServer(s grpc.ServiceRegistrar, srv ThirdPartyServer) {
+	// If the following call pancis, it indicates UnimplementedThirdPartyServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ThirdParty_ServiceDesc, srv)
+}
+
+func _ThirdParty_StartAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartAuthorizationReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).StartAuthorization(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_StartAuthorization_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).StartAuthorization(ctx, req.(*StartAuthorizationReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThirdParty_GetInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyGetInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).GetInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_GetInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).GetInfo(ctx, req.(*ThirdPartyGetInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThirdParty_Bind_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyBindReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).Bind(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_Bind_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).Bind(ctx, req.(*ThirdPartyBindReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThirdParty_Continue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyContinueReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).Continue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_Continue_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).Continue(ctx, req.(*ThirdPartyContinueReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThirdParty_HandleCallback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyContinueReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).HandleCallback(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_HandleCallback_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).HandleCallback(ctx, req.(*ThirdPartyContinueReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThirdParty_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ThirdPartyRemoveReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThirdPartyServer).Remove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThirdParty_Remove_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThirdPartyServer).Remove(ctx, req.(*ThirdPartyRemoveReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ThirdParty_ServiceDesc is the grpc.ServiceDesc for ThirdParty service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ThirdParty_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "apollo.ThirdParty",
+	HandlerType: (*ThirdPartyServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "StartAuthorization",
+			Handler:    _ThirdParty_StartAuthorization_Handler,
+		},
+		{
+			MethodName: "GetInfo",
+			Handler:    _ThirdParty_GetInfo_Handler,
+		},
+		{
+			MethodName: "Bind",
+			Handler:    _ThirdParty_Bind_Handler,
+		},
+		{
+			MethodName: "Continue",
+			Handler:    _ThirdParty_Continue_Handler,
+		},
+		{
+			MethodName: "HandleCallback",
+			Handler:    _ThirdParty_HandleCallback_Handler,
+		},
+		{
+			MethodName: "Remove",
+			Handler:    _ThirdParty_Remove_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "apollo-rpc.proto",
+}
+
+const (
+	Sso_GoogleSheets_FullMethodName = "/apollo.Sso/GoogleSheets"
+	Sso_Logout_FullMethodName       = "/apollo.Sso/Logout"
+	Sso_Authorize_FullMethodName    = "/apollo.Sso/Authorize"
+	Sso_Exchange_FullMethodName     = "/apollo.Sso/Exchange"
+	Sso_Introspect_FullMethodName   = "/apollo.Sso/Introspect"
+	Sso_Revoke_FullMethodName       = "/apollo.Sso/Revoke"
+)
+
+// SsoClient is the client API for Sso service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type SsoClient interface {
+	// Authenticated server-to-server Sheets broker; Google credentials never leave Apollo.
+	GoogleSheets(ctx context.Context, in *GoogleSheetsReq, opts ...grpc.CallOption) (*GoogleSheetsResp, error)
+	Logout(ctx context.Context, in *SSOLogoutReq, opts ...grpc.CallOption) (*Empty, error)
+	Authorize(ctx context.Context, in *SSOAuthorizeReq, opts ...grpc.CallOption) (*SSOCodeResp, error)
+	Exchange(ctx context.Context, in *SSOExchangeReq, opts ...grpc.CallOption) (*SSOSessionResp, error)
+	Introspect(ctx context.Context, in *SSOTokenReq, opts ...grpc.CallOption) (*SSOSessionResp, error)
+	Revoke(ctx context.Context, in *SSOTokenReq, opts ...grpc.CallOption) (*Empty, error)
+}
+
+type ssoClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewSsoClient(cc grpc.ClientConnInterface) SsoClient {
+	return &ssoClient{cc}
+}
+
+func (c *ssoClient) GoogleSheets(ctx context.Context, in *GoogleSheetsReq, opts ...grpc.CallOption) (*GoogleSheetsResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoogleSheetsResp)
+	err := c.cc.Invoke(ctx, Sso_GoogleSheets_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ssoClient) Logout(ctx context.Context, in *SSOLogoutReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Sso_Logout_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ssoClient) Authorize(ctx context.Context, in *SSOAuthorizeReq, opts ...grpc.CallOption) (*SSOCodeResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SSOCodeResp)
+	err := c.cc.Invoke(ctx, Sso_Authorize_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ssoClient) Exchange(ctx context.Context, in *SSOExchangeReq, opts ...grpc.CallOption) (*SSOSessionResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SSOSessionResp)
+	err := c.cc.Invoke(ctx, Sso_Exchange_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ssoClient) Introspect(ctx context.Context, in *SSOTokenReq, opts ...grpc.CallOption) (*SSOSessionResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SSOSessionResp)
+	err := c.cc.Invoke(ctx, Sso_Introspect_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ssoClient) Revoke(ctx context.Context, in *SSOTokenReq, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Sso_Revoke_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// SsoServer is the server API for Sso service.
+// All implementations must embed UnimplementedSsoServer
+// for forward compatibility.
+type SsoServer interface {
+	// Authenticated server-to-server Sheets broker; Google credentials never leave Apollo.
+	GoogleSheets(context.Context, *GoogleSheetsReq) (*GoogleSheetsResp, error)
+	Logout(context.Context, *SSOLogoutReq) (*Empty, error)
+	Authorize(context.Context, *SSOAuthorizeReq) (*SSOCodeResp, error)
+	Exchange(context.Context, *SSOExchangeReq) (*SSOSessionResp, error)
+	Introspect(context.Context, *SSOTokenReq) (*SSOSessionResp, error)
+	Revoke(context.Context, *SSOTokenReq) (*Empty, error)
+	mustEmbedUnimplementedSsoServer()
+}
+
+// UnimplementedSsoServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedSsoServer struct{}
+
+func (UnimplementedSsoServer) GoogleSheets(context.Context, *GoogleSheetsReq) (*GoogleSheetsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GoogleSheets not implemented")
+}
+func (UnimplementedSsoServer) Logout(context.Context, *SSOLogoutReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedSsoServer) Authorize(context.Context, *SSOAuthorizeReq) (*SSOCodeResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authorize not implemented")
+}
+func (UnimplementedSsoServer) Exchange(context.Context, *SSOExchangeReq) (*SSOSessionResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Exchange not implemented")
+}
+func (UnimplementedSsoServer) Introspect(context.Context, *SSOTokenReq) (*SSOSessionResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Introspect not implemented")
+}
+func (UnimplementedSsoServer) Revoke(context.Context, *SSOTokenReq) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Revoke not implemented")
+}
+func (UnimplementedSsoServer) mustEmbedUnimplementedSsoServer() {}
+func (UnimplementedSsoServer) testEmbeddedByValue()             {}
+
+// UnsafeSsoServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SsoServer will
+// result in compilation errors.
+type UnsafeSsoServer interface {
+	mustEmbedUnimplementedSsoServer()
+}
+
+func RegisterSsoServer(s grpc.ServiceRegistrar, srv SsoServer) {
+	// If the following call pancis, it indicates UnimplementedSsoServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Sso_ServiceDesc, srv)
+}
+
+func _Sso_GoogleSheets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoogleSheetsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SsoServer).GoogleSheets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sso_GoogleSheets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SsoServer).GoogleSheets(ctx, req.(*GoogleSheetsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sso_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSOLogoutReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SsoServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sso_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SsoServer).Logout(ctx, req.(*SSOLogoutReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sso_Authorize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSOAuthorizeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SsoServer).Authorize(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sso_Authorize_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SsoServer).Authorize(ctx, req.(*SSOAuthorizeReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sso_Exchange_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSOExchangeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SsoServer).Exchange(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sso_Exchange_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SsoServer).Exchange(ctx, req.(*SSOExchangeReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sso_Introspect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSOTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SsoServer).Introspect(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sso_Introspect_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SsoServer).Introspect(ctx, req.(*SSOTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sso_Revoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSOTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SsoServer).Revoke(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Sso_Revoke_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SsoServer).Revoke(ctx, req.(*SSOTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Sso_ServiceDesc is the grpc.ServiceDesc for Sso service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Sso_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "apollo.Sso",
+	HandlerType: (*SsoServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GoogleSheets",
+			Handler:    _Sso_GoogleSheets_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _Sso_Logout_Handler,
+		},
+		{
+			MethodName: "Authorize",
+			Handler:    _Sso_Authorize_Handler,
+		},
+		{
+			MethodName: "Exchange",
+			Handler:    _Sso_Exchange_Handler,
+		},
+		{
+			MethodName: "Introspect",
+			Handler:    _Sso_Introspect_Handler,
+		},
+		{
+			MethodName: "Revoke",
+			Handler:    _Sso_Revoke_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

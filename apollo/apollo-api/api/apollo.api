@@ -1,487 +1,494 @@
 syntax = "v1"
 
+type GoogleSheetsReq {
+	ClientId     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	Token        string `json:"token"`
+	Action       string `json:"action"`
+	State        string `json:"state,optional"`
+	Code         string `json:"code,optional"`
+	Spreadsheet  string `json:"spreadsheet,optional"`
+	Range        string `json:"range,optional"`
+}
+
+type GoogleSheetsResp {
+	Url       string     `json:"url"`
+	Bound     bool       `json:"bound"`
+	Connected bool       `json:"connected"`
+	Rows      [][]string `json:"rows"`
+}
+
+@server (
+	prefix: /v1/sso
+	group:  sso
+)
+service apollo-api {
+	@handler GoogleSheets
+	post /google-sheets (GoogleSheetsReq) returns (GoogleSheetsResp)
+}
+
 info (
-	title:   "Apollo-API"
-	desc:    "Accounts-API"
-	author:  "Jian Qi"
-	email:   "e.jianqi@gmail.com"
-	version: "v0.0.1"
+	title:   "Apollo Account API"
+	desc:    "邮箱账户注册与登录；先维护本协议，再执行 goapign"
+	version: "v1"
 )
 
 type (
-	// 空
-	Empty  {}
-	// 通用响应
 	BaseResponse {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 	}
-	RespnseDate {
-		Year  int64 `json:"year"`
-		Month int64 `json:"month"`
-		Day   int64 `json:"day"`
+	RegReq {
+		Email           string `json:"email"`
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirm_password"`
+		Language        string `json:"language"`
+	}
+	RegData {
+		Token string `json:"token"`
+	}
+	RegResp {
+		BaseResponse
+		Data RegData `json:"data"`
+	}
+	LoginReq {
+		Email           string `json:"email"`
+		Password        string `json:"password"`
+		CloudflareToken string `json:"cloudflareToken"`
 	}
 	UserName {
 		GivenName  string `json:"givenName"`
 		MiddleName string `json:"middleName"`
 		FamilyName string `json:"familyName"`
 	}
-)
-
-// Account
-type (
-	// 注册
-	RegReq {
-		Email           string `json:"email" validate:"required"`
-		Password        string `json:"password" validate:"required"`
-		ConfirmPassword string `json:"confirm_password" validate:"required"`
-		Language        string `json:"language" validate:"required"`
+	Birthday {
+		Year  int64 `json:"year"`
+		Month int64 `json:"month"`
+		Day   int64 `json:"day"`
 	}
-	RegResp {
-		BaseResponse
-		RegRespData {
-			Token string `json:"token"`
-		} `json:"data"`
-	}
-	// 登录
-	LoginReq {
-		Email           string `json:"email" validate:"required"`
-		Password        string `json:"password" validate:"required"`
-		CloudflareToken string `json:"cloudflareToken" validate:"required"`
+	LoginData {
+		Token    string   `json:"token"`
+		Id       string   `json:"id"`
+		Name     UserName `json:"name"`
+		Avatar   string   `json:"avatar"`
+		Locale   string   `json:"locale"`
+		Language string   `json:"language"`
+		Birthday Birthday `json:"birthday"`
 	}
 	LoginResp {
 		BaseResponse
-		LoginData {
-			Token    string      `json:"token"`
-			Id       string      `json:"id"`
-			Name     UserName    `json:"name"`
-			Avatar   string      `json:"avatar"`
-			Locale   string      `json:"locale"`
-			Language string      `json:"language"`
-			Birthday RespnseDate `json:"birthday"`
-		} `json:"data"`
+		Data LoginData `json:"data"`
 	}
 )
 
-// Account
 @server (
 	prefix: /v1/account
 	group:  account
 )
 service apollo-api {
-	// 注册流程
 	@handler Reg
-	// 返回: Token
 	post /registration (RegReq) returns (RegResp)
 
-	// 登录流程
 	@handler Login
-	// 返回: Token
 	post /login (LoginReq) returns (LoginResp)
 }
 
-// Passkeys
+// 公开资料和安全查询只使用已认证主体，不接收客户端指定 user_id。
 type (
-	// 注册-阶段1 请求
-	RegStartReq {
-		UserName    string `json:"user_name" validate:"required"`
-		DisplayName string `json:"display_name"`
+	Empty  {}
+	OkData {
+		Ok bool `json:"ok"`
 	}
-	// Data {
-	//  OptionsJson string `json:"options_json"` // WebAuthn注册选项
-	//  SessionID   string `json:"session_id"` // 会话标识
-	// }
-	// 注册-阶段1 响应
-	RegStartResp {
+	OkResp {
 		BaseResponse
-		RegStartRespData {
-			OptionsJson string `json:"options_json"` // WebAuthn注册选项
-			SessionID   string `json:"session_id"` // 会话标识
-		} `json:"data"`
+		Data OkData `json:"data"`
 	}
-	// 注册-阶段2 请求
-	RegFinishReq {
-		SessionID  string `json:"session_id" validate:"required"`
-		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
-		Language   string `json:"language" validate:"required"`
+	UserInfoData {
+		Id                string `json:"id"`
+		GivenName         string `json:"given_name"`
+		MiddleName        string `json:"middle_name"`
+		FamilyName        string `json:"family_name"`
+		Avatar            string `json:"avatar"`
+		BirthdayYear      int64  `json:"birthday_year"`
+		BirthdayMonth     int64  `json:"birthday_month"`
+		BirthdayDay       int64  `json:"birthday_day"`
+		NotificationEmail string `json:"notification_email"`
+		Locate            string `json:"locate"`
+		Language          string `json:"language"`
+		CreateTime        string `json:"create_time"`
+		LastLoginTime     string `json:"last_login_time"`
 	}
-	// 注册-阶段2 响应
-	RegFinishResp {
-		BaseResponse
-		RegFinishRespData {
-			Token string `json:"token"`
-		} `json:"data"`
-	}
-	// 登录-阶段1 请求
-	// LoginStartReq  {}
-	// 登录-阶段1 响应
-	LoginStartResp {
-		BaseResponse
-		LoginStartRespData {
-			OptionsJson string `json:"options_json"` // WebAuthn注册选项
-			SessionID   string `json:"session_id"` // 会话标识
-		} `json:"data"`
-	}
-	// 登录-阶段2 请求
-	LoginFinishReq {
-		SessionID string `json:"session_id" validate:"required"`
-		Assertion string `json:"assertion" validate:"required"` // 前端返回的断言数据
-	}
-	// 登录-阶段2 响应
-	LoginFinishResp {
-		BaseResponse
-		LoginFinishRespData {
-			Token    string      `json:"token"`
-			Id       string      `json:"id"`
-			Name     UserName    `json:"name"`
-			Avatar   string      `json:"avatar"`
-			Locale   string      `json:"locale"`
-			Language string      `json:"language"`
-			Birthday RespnseDate `json:"birthday"`
-		} `json:"data"`
-	}
-)
-
-// 注册路由
-@server (
-	prefix: /v1/passkeys
-	group:  passkeys
-)
-service apollo-api {
-	// 注册流程
-	@handler RegStart
-	// 返回:
-	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
-	//   2. 会话标识 - SessionID   string `json:"session_id"`
-	post /registration/start (RegStartReq) returns (RegStartResp)
-
-	@handler RegFinish
-	// 返回: Token
-	post /registration/finish (RegFinishReq) returns (RegFinishResp)
-
-	// 登录流程
-	@handler LoginStart
-	// 返回:
-	//   1. WebAuthn注册选项 - OptionsJson string `json:"options_json"`
-	//   2. 会话标识 - SessionID   string `json:"session_id"`
-	post /login/start (Empty) returns (LoginStartResp)
-
-	@handler LoginFinish
-	// 返回: Token
-	post /login/finish (LoginFinishReq) returns (LoginFinishResp)
-}
-
-type (
-	// 绑定-阶段1 请求
-	BindStartReq {
-		Name string `json:"name" validate:"required"`
-	}
-	// 绑定-阶段1 响应
-	BindStartResp {
-		BaseResponse
-		BindStartRespData {
-			OptionsJson string `json:"options_json"` // WebAuthn注册选项
-			SessionID   string `json:"session_id"` // 会话标识
-		} `json:"data"`
-	}
-	// 绑定-阶段2 请求
-	BindFinishReq {
-		Name       string `json:"name"`
-		SessionID  string `json:"session_id" validate:"required"`
-		Credential string `json:"credential" validate:"required"` // 前端返回的认证数据
-	}
-	// 绑定-阶段2 响应
-	BindFinishResp {
-		BaseResponse
-		BindFinishRespData {
-			id   string      `json:"id"`
-			Name string      `json:"name"`
-			Date RespnseDate `json:"date"`
-		} `json:"data"`
-	}
-)
-
-// 注册路由
-@server (
-	prefix: /v1/passkeys
-	group:  passkeys
-	jwt:    Auth
-)
-service apollo-api {
-	// BindStart 绑定通行密钥 - 第一步
-	@handler BindStart
-	// 返回:
-	//   1. WebAuthn 绑定选项 - OptionsJson string `json:"options_json"`
-	//   2. 会话标识 - SessionID   string `json:"session_id"`
-	post /bind/start (BindStartReq) returns (BindStartResp)
-
-	// BindFinish 绑定通行密钥 - 第二步
-	@handler BindFinish
-	// 返回: Passkeys Info
-	post /bind/finish (BindFinishReq) returns (BindFinishResp)
-}
-
-type (
-	// 获取用户信息
-	GetUserInfoReq  {}
 	GetUserInfoResp {
 		BaseResponse
-		GetUserInfoData {
-			Id                string `json:"id"`
-			GivenName         string `json:"given_name"`
-			MiddleName        string `json:"middle_name"`
-			FamilyName        string `json:"family_name"`
-			Avatar            string `json:"avatar"`
-			BirthdayYear      int64  `json:"birthday_year"`
-			BirthdayMonth     int64  `json:"birthday_month"`
-			BirthdayDay       int64  `json:"birthday_day"`
-			NotificationEmail string `json:"notification_email"`
-			Locate            string `json:"locate"`
-			Language          string `json:"language"`
-			CreateTime        string `json:"create_time"`
-			LastLoginTime     string `json:"last_login_time"`
-		} `json:"data"`
+		Data UserInfoData `json:"data"`
 	}
-	// 获取用户安全信息
-	GetUserSecurityInfoReq  {}
 	UserContact {
 		Id          string `json:"id"`
 		Value       string `json:"value"`
 		Type        int64  `json:"type"`
 		PhoneRegion string `json:"phoneRegion"`
+		Primary     bool   `json:"primary"`
+	}
+	ThirdPartyAccounts {
+		Github bool `json:"github"`
+		Google bool `json:"google"`
+	}
+	SecurityData {
+		Contacts                []UserContact      `json:"contacts"`
+		PasswordUpdatedDate     Birthday           `json:"passwordUpdatedDate"`
+		AccountSecurityTokenNum int64              `json:"accountSecurityTokenNum"`
+		PasskeysNum             int64              `json:"passkeysNum"`
+		ThirdPartyAccounts      ThirdPartyAccounts `json:"thirdPartyAccounts"`
 	}
 	GetUserSecurityInfoResp {
 		BaseResponse
-		GetUserSecurityInfoData {
-			Contacts []UserContact `json:"contacts"`
-			PasswordUpdatedDate {
-				Year  int64 `json:"year"`
-				Month int64 `json:"month"`
-				Day   int64 `json:"day"`
-			} `json:"passwordUpdatedDate"`
-			AccountSecurityTokenNum int64 `json:"accountSecurityTokenNum"`
-			PasskeysNum             int64 `json:"passkeysNum"`
-			ThirdPartyAccounts {
-				github bool `json:"github"`
-				google bool `json:"google"`
-			} `json:"thirdPartyAccounts"`
-		} `json:"data"`
+		Data SecurityData `json:"data"`
 	}
-	VerifyTokenReq  {}
-	VerifyTokenResp {
+	RegStartReq {
+		UserName    string `json:"user_name,optional"`
+		DisplayName string `json:"display_name,optional"`
+	}
+	CeremonyData {
+		OptionsJson string `json:"options_json"`
+		SessionID   string `json:"session_id"`
+	}
+	CeremonyResp {
 		BaseResponse
-		Data {
-			Ok bool `json:"ok"`
-		} `json:"data"`
+		Data CeremonyData `json:"data"`
 	}
-)
-
-@server (
-	prefix: /v1/account
-	group:  account
-	jwt:    Auth
-// middleware: JWTVerifyAgentMiddleware
-)
-service apollo-api {
-	// Get User Info
-	@handler GetUserInfo
-	// 返回: UserInfo
-	post /GetUserInfo (GetUserInfoReq) returns (GetUserInfoResp)
-
-	// Get User Security Info
-	@handler GetUserSecurityInfo
-	// 返回: UserInfo
-	post /GetUserSecurityInfo (GetUserSecurityInfoReq) returns (GetUserSecurityInfoResp)
-
-	// Verify Account Token
-	@handler verifyToken
-	post /VerifyToken (VerifyTokenReq) returns (VerifyTokenResp)
-}
-
-// User Account Security
-type (
-	SubsystemToken {
-		Id    string      `json:"id"`
-		Value string      `json:"value"`
-		Name  string      `json:"name"`
-		Date  RespnseDate `json:"date"`
+	RegFinishReq {
+		SessionID  string `json:"session_id"`
+		Credential string `json:"credential"`
+		Language   string `json:"language"`
 	}
-	// 生成令牌
-	GenerateSubsystemTokenReq {
-		Name  string  `json:"name"`
-		Scope []int64 `json:"scope" validate:"required"`
+	LoginFinishReq {
+		SessionID string `json:"session_id"`
+		Assertion string `json:"assertion"`
 	}
-	GenerateSubsystemTokenResp {
+	BindStartReq {
+		Name string `json:"name"`
+	}
+	BindFinishReq {
+		SessionID  string `json:"session_id"`
+		Credential string `json:"credential"`
+		Name       string `json:"name,optional"`
+	}
+	PasskeyData {
+		Id   string   `json:"id"`
+		Name string   `json:"name"`
+		Date Birthday `json:"date"`
+	}
+	BindFinishResp {
 		BaseResponse
-		GenerateSubsystemTokenData {
-			Token SubsystemToken `json:"token"`
-		} `json:"data"`
-	}
-	// 查询 10 个子系统令牌
-	GetTenSubsystemTokensReq {
-		Page int64 `json:"page"`
-	}
-	GetTenSubsystemTokensResp {
-		BaseResponse
-		GetAllSubsystemTokensData {
-			Tokens []SubsystemToken `json:"tokens"`
-		} `json:"data"`
-	}
-	// 移除令牌
-	RemoveSubsystemTokenReq {
-		id string `json:"id" validate:"required`
-	}
-	RemoveSubsystemTokenResp {
-		BaseResponse
-		RemoveSubsystemTokenData {
-			Ok bool `json:"ok"`
-		} `json:"data"`
+		Data PasskeyData `json:"data"`
 	}
 	Passkey {
-		Id        string      `json:"id"`
-		Name      string      `json:"name"`
-		Date      RespnseDate `json:"date"`
-		IsEnabled bool        `json:"isEnabled"`
+		Id        string   `json:"id"`
+		Name      string   `json:"name"`
+		Date      Birthday `json:"date"`
+		IsEnabled bool     `json:"isEnabled"`
 	}
-	// 查询 10 个 Passkeys
-	GetTenPasskeysReq {
+	PasskeysData {
+		Passkeys []Passkey `json:"passkeys"`
+	}
+	PasskeysResp {
+		BaseResponse
+		Data PasskeysData `json:"data"`
+	}
+	PageReq {
 		Page int64 `json:"page"`
 	}
-	GetTenPasskeysResp {
+	RemoveCredentialReq {
+		Id string `json:"id"`
+	}
+	GenerateSubsystemTokenReq {
+		// Scope items: 1=JQuantum, 2=Argus (reserved), 4=Hephaestus (reserved).
+		// Omitted or blank names default to the first five uppercase UUID characters.
+		Name  string  `json:"name,optional"`
+		Scope []int64 `json:"scope"`
+	}
+	SubsystemToken {
+		Id    string   `json:"id"`
+		Value string   `json:"value"`
+		Name  string   `json:"name"`
+		Date  Birthday `json:"date"`
+	}
+	SubsystemTokenData {
+		Token SubsystemToken `json:"token"`
+	}
+	SubsystemTokenResp {
 		BaseResponse
-		GetTenPasskeysData {
-			Passkeys []Passkey `json:"passkeys"`
-		} `json:"data"`
+		Data SubsystemTokenData `json:"data"`
 	}
-	// 移除 Passkey
-	RemovePasskeyReq {
-		id string `json:"id" validate:"required`
+	SubsystemTokensData {
+		Tokens []SubsystemToken `json:"tokens"`
 	}
-	RemovePasskeyResp {
+	SubsystemTokensResp {
 		BaseResponse
-		RemovePasskeyData {
-			Ok bool `json:"ok"`
-		} `json:"data"`
+		Data SubsystemTokensData `json:"data"`
 	}
-)
-
-@server (
-	prefix: /v1/account/security
-	group:  account/security
-	jwt:    Auth
-)
-service apollo-api {
-	@handler GenerateSubsystemToken
-	// 返回: Token
-	post /GenerateSubsystemToken (GenerateSubsystemTokenReq) returns (GenerateSubsystemTokenResp)
-
-	// Remove Subsystem Token
-	@handler RemoveSubsystemToken
-	// 返回: ok
-	post /RemoveSubsystemToken (RemoveSubsystemTokenReq) returns (RemoveSubsystemTokenResp)
-
-	// Get 10 Subsystem Tokens
-	@handler GetTenSubsystemTokens
-	// 返回: tokens
-	post /GetTenSubsystemTokens (GetTenSubsystemTokensReq) returns (GetTenSubsystemTokensResp)
-
-	// Remove Passkey
-	@handler RemovePasskey
-	// 返回: ok
-	post /RemovePasskey (RemovePasskeyReq) returns (RemovePasskeyResp)
-
-	// Get 10 Subsystem Tokens
-	@handler GetTenPasskeys
-	// 返回: Passkeys
-	post /GetTenPasskeys (GetTenPasskeysReq) returns (GetTenPasskeysResp)
-}
-
-// Third Party
-type (
+	ProviderReq {
+		Provider string `json:"provider"`
+	}
+	AuthorizationData {
+		Url string `json:"url"`
+	}
+	AuthorizationResp {
+		BaseResponse
+		Data AuthorizationData `json:"data"`
+	}
+	CallbackReq {
+		Provider string `path:"provider"`
+		State    string `form:"state"`
+		Code     string `form:"code,optional"`
+		Error    string `form:"error,optional"`
+	}
 	ThirdPartyAccount {
 		Id       int64  `json:"id"`
 		Provider string `json:"provider"`
 		Content  string `json:"content"`
 	}
-	GetInfoReq  {}
-	GetInfoResp {
+	ThirdPartyData {
+		Accounts []ThirdPartyAccount `json:"accounts"`
+	}
+	ThirdPartyResp {
 		BaseResponse
-		GetInfoRespData {
-			Accounts []ThirdPartyAccount `json:"accounts"`
-		} `json:"data"`
+		Data ThirdPartyData `json:"data"`
 	}
-	ContinueReq {
-		Provider string `json:"provider" validate:"required"`
+	RemoveThirdPartyReq {
+		ThirdPartyId int64 `json:"thirdPartyId"`
 	}
-	ContinueResp {
+	UpdateNameReq {
+		GivenName  string `json:"given_name"`
+		MiddleName string `json:"middle_name,optional"`
+		FamilyName string `json:"family_name"`
+	}
+	UpdateBirthdayReq {
+		Year  int64 `json:"year"`
+		Month int64 `json:"month"`
+		Day   int64 `json:"day"`
+	}
+	UpdateLanguageReq {
+		Language string `json:"language"`
+	}
+	AddContactReq {
+		Value       string `json:"value"`
+		Type        int64  `json:"type"`
+		PhoneRegion string `json:"phone_region,optional"`
+	}
+	ContactData {
+		Contact UserContact `json:"contact"`
+	}
+	AddContactResp {
 		BaseResponse
-		ContinueRespData {
-			Url string `json:"url"`
-		} `json:"data"`
+		Data ContactData `json:"data"`
 	}
-	BindReq {
-		Provider string `json:"provider" validate:"required"`
+	RemoveContactReq {
+		Id string `json:"id"`
 	}
-	BindResp {
-		BaseResponse
-		BindRespData {
-			Url string `json:"url"`
-		} `json:"data"`
+	ChangePasswordReq {
+		CurrentPassword    string `json:"current_password"`
+		NewPassword        string `json:"new_password"`
+		ConfirmNewPassword string `json:"confirm_new_password"`
+		SignOutEverywhere  bool   `json:"sign_out_everywhere,optional"`
 	}
-	CallbackReq {
-		Provider string `path:"provider" validate:"required"`
-		State    string `form:"state" validate:"required"`
-		Code     string `form:"code" validate:"required"`
+	ChangeNotificationEmailReq {
+		Email string `json:"email"`
 	}
-	CallbackResp {
-		BaseResponse
-		CallbackRespData {
-			Token string `json:"token"`
-		} `json:"data"`
-	}
-	RemoveReq {
-		ThirdPartyId int64 `json:"thirdPartyId" validate:"required`
-	}
-	RemoveResp {
-		BaseResponse
-		RemoveRespData {
-			Ok bool `json:"ok"`
-		} `json:"data"`
+	DeleteAccountReq {
+		CurrentPassword string `json:"current_password,optional"`
+		Confirmation    string `json:"confirmation"`
 	}
 )
 
 @server (
-	prefix: /v1/thirdParty
-	group:  thirdParty
+	prefix:     /v1/account
+	group:      account
+	jwt:        Auth
+	middleware: AccountAuthorization
 )
 service apollo-api {
-	// Request Continue via Third-Party
-	@handler Continue
-	// Return: Redirect URL
-	post /Continue (ContinueReq) returns (ContinueResp)
+	@handler GetUserInfo
+	post /GetUserInfo (Empty) returns (GetUserInfoResp)
 
-	// CallBack
-	@handler Callback
-	// Return: Token
-	get /Callback/:provider (CallbackReq) returns (CallbackResp)
+	@handler GetUserSecurityInfo
+	post /GetUserSecurityInfo (Empty) returns (GetUserSecurityInfoResp)
+
+	@handler VerifyToken
+	post /VerifyToken (Empty) returns (OkResp)
+
+	@handler UpdateName
+	post /UpdateName (UpdateNameReq) returns (OkResp)
+
+	@handler UpdateBirthday
+	post /UpdateBirthday (UpdateBirthdayReq) returns (OkResp)
+
+	@handler UpdateLanguage
+	post /UpdateLanguage (UpdateLanguageReq) returns (OkResp)
+
+	@handler AddContact
+	post /AddContact (AddContactReq) returns (AddContactResp)
+
+	@handler RemoveContact
+	post /RemoveContact (RemoveContactReq) returns (OkResp)
+
+	@handler ChangePassword
+	post /ChangePassword (ChangePasswordReq) returns (OkResp)
+
+	@handler ChangeNotificationEmail
+	post /ChangeNotificationEmail (ChangeNotificationEmailReq) returns (OkResp)
+
+	@handler RemoveNotificationEmail
+	post /RemoveNotificationEmail (Empty) returns (OkResp)
+
+	@handler DeleteAccount
+	post /DeleteAccount (DeleteAccountReq) returns (OkResp)
+}
+
+@server (
+	prefix: /v1/passkeys
+	group:  passkeys
+)
+service apollo-api {
+	@handler RegStart
+	post /registration/start (RegStartReq) returns (CeremonyResp)
+
+	@handler RegFinish
+	post /registration/finish (RegFinishReq) returns (RegResp)
+
+	@handler LoginStart
+	post /login/start (Empty) returns (CeremonyResp)
+
+	@handler LoginFinish
+	post /login/finish (LoginFinishReq) returns (LoginResp)
+}
+
+@server (
+	prefix:     /v1/passkeys
+	group:      passkeys
+	jwt:        Auth
+	middleware: AccountAuthorization
+)
+service apollo-api {
+	@handler BindStart
+	post /bind/start (BindStartReq) returns (CeremonyResp)
+
+	@handler BindFinish
+	post /bind/finish (BindFinishReq) returns (BindFinishResp)
+}
+
+@server (
+	prefix:     /v1/account/security
+	group:      account/security
+	jwt:        Auth
+	middleware: AccountAuthorization
+)
+service apollo-api {
+	@handler GenerateSubsystemToken
+	post /GenerateSubsystemToken (GenerateSubsystemTokenReq) returns (SubsystemTokenResp)
+
+	@handler GetTenSubsystemTokens
+	post /GetTenSubsystemTokens (PageReq) returns (SubsystemTokensResp)
+
+	@handler RemoveSubsystemToken
+	post /RemoveSubsystemToken (RemoveCredentialReq) returns (OkResp)
+
+	@handler GetTenPasskeys
+	post /GetTenPasskeys (PageReq) returns (PasskeysResp)
+
+	@handler RemovePasskey
+	post /RemovePasskey (RemoveCredentialReq) returns (OkResp)
 }
 
 @server (
 	prefix: /v1/thirdParty
 	group:  thirdParty
-	jwt:    Auth
 )
 service apollo-api {
-	@handler GetInfo
-	// Return: []ThirdPartyAccount
-	post /GetInfo (Empty) returns (GetInfoResp)
+	@handler Continue
+	post /Continue (ProviderReq) returns (AuthorizationResp)
 
+	@handler Callback
+	get /Callback/:provider (CallbackReq) returns (RegResp)
+}
+
+@server (
+	prefix:     /v1/thirdParty
+	group:      thirdParty
+	jwt:        Auth
+	middleware: AccountAuthorization
+)
+service apollo-api {
 	@handler Bind
-	// Return: Redirect URL
-	post /Bind (BindReq) returns (BindResp)
+	post /Bind (ProviderReq) returns (AuthorizationResp)
+
+	@handler GetInfo
+	post /GetInfo (Empty) returns (ThirdPartyResp)
 
 	@handler Remove
-	// Return: status
-	post /Remove (RemoveReq) returns (RemoveResp)
+	post /Remove (RemoveThirdPartyReq) returns (OkResp)
+}
+
+// Exact registered callbacks and S256 PKCE are mandatory.
+type SSOAuthorizeReq {
+	ClientId      string `json:"client_id"`
+	RedirectUri   string `json:"redirect_uri"`
+	CodeChallenge string `json:"code_challenge"`
+}
+
+type SSOCodeResp {
+	Code string `json:"code"`
+}
+
+type SSOExchangeReq {
+	ClientId     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	Code         string `json:"code"`
+	RedirectUri  string `json:"redirect_uri"`
+	CodeVerifier string `json:"code_verifier"`
+}
+
+type SSOTokenReq {
+	ClientId     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	Token        string `json:"token"`
+}
+
+type SSOSessionResp {
+	Token       string `json:"token,optional"`
+	Subject     string `json:"subject"`
+	DisplayName string `json:"display_name"`
+	CsrfToken   string `json:"csrf_token"`
+	ExpiresAt   string `json:"expires_at"`
+	Scope       int64  `json:"scope"`
+}
+
+@server (
+	prefix:     /v1/sso
+	group:      sso
+	jwt:        Auth
+	middleware: AccountAuthorization
+)
+service apollo-api {
+	@handler SSOLogout
+	post /logout (Empty) returns (OkResp)
+
+	@handler SSOAuthorize
+	post /authorize (SSOAuthorizeReq) returns (SSOCodeResp)
+}
+
+@server (
+	prefix: /v1/sso
+	group:  sso
+)
+service apollo-api {
+	@handler SSOExchange
+	post /exchange (SSOExchangeReq) returns (SSOSessionResp)
+
+	@handler SSOIntrospect
+	post /introspect (SSOTokenReq) returns (SSOSessionResp)
+
+	@handler SSORevoke
+	post /revoke (SSOTokenReq) returns (OkResp)
 }
 

@@ -1,12 +1,13 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package passkeys
 
 import (
 	"context"
-	"encoding/hex"
-	"encoding/json"
-	"fmt"
+	"jian-unified-system/apollo/apollo-api/internal/infrastructure/geo"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
-	"jian-unified-system/jus-core/util"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
@@ -28,42 +29,14 @@ func NewRegStartLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegStart
 	}
 }
 
-func (l *RegStartLogic) RegStart() (resp *types.RegStartResp, err error) {
-	// 1. user UUID
-	uuid := l.svcCtx.Snowflake.Generate()
-	userID := uuid.Int64()
-
-	// 2. Call gRPC service
-	regResp, err := l.svcCtx.ApolloPasskeys.StartRegistration(l.ctx, &apollo.PasskeysStartRegistrationReq{
-		UserId:      userID,
-		UserName:    "Apollo System",
-		DisplayName: "Apollo System",
-	})
+func (l *RegStartLogic) RegStart(req *types.RegStartReq, locale ...string) (resp *types.CeremonyResp, err error) {
+	resolved := geo.UnknownCountry
+	if len(locale) > 0 && locale[0] != "" {
+		resolved = locale[0]
+	}
+	r, err := l.svcCtx.Passkeys.StartRegistration(l.ctx, &apollo.PasskeysStartRegistrationReq{UserId: l.svcCtx.Sessions.NextID(), UserName: req.UserName, DisplayName: req.DisplayName, Locale: resolved, Language: l.svcCtx.Config.DefaultLanguage})
 	if err != nil {
-		return nil, fmt.Errorf("gRPC调用失败: %v", err)
+		return nil, err
 	}
-
-	// 3. save SessionData -> Redis (base64)
-	sessionKey := fmt.Sprintf("webauthn:reg:%s", hex.EncodeToString(util.Int64ToBytes(userID)))
-	dataJson, err := json.Marshal(regResp.SessionData)
-	if err != nil {
-		return nil, fmt.Errorf("SessionData解析失败: %v", err)
-	}
-	if err := l.svcCtx.Redis.SetexCtx(l.ctx, sessionKey, string(dataJson), 300); err != nil {
-		return nil, fmt.Errorf("Redis存储失败: %v", err)
-	}
-
-	return &types.RegStartResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		RegStartRespData: struct {
-			OptionsJson string `json:"options_json"`
-			SessionID   string `json:"session_id"`
-		}{
-			OptionsJson: string(regResp.OptionsJson),
-			SessionID:   sessionKey,
-		},
-	}, nil
+	return &types.CeremonyResp{BaseResponse: response.OK(), Data: types.CeremonyData{OptionsJson: string(r.OptionsJson), SessionID: string(r.SessionData)}}, nil
 }

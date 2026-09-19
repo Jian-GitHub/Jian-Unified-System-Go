@@ -45,6 +45,14 @@ spec:
           volumeMounts:
             - name: timezone
               mountPath: /etc/localtime
+          env:
+            # 与 etc/apollo-api.yaml 中 Snowflake.NodeID: 0 配合使用。
+            # Downward API 为同一节点上的每个 Pod 注入各自的 Pod IP。
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
       volumes:
         - name: timezone
           hostPath:

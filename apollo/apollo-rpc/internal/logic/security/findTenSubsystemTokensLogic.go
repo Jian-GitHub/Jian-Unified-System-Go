@@ -2,8 +2,8 @@ package securitylogic
 
 import (
 	"context"
-	ap "jian-unified-system/jus-core/data/mysql/apollo"
-	"strconv"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -25,33 +25,17 @@ func NewFindTenSubsystemTokensLogic(ctx context.Context, svcCtx *svc.ServiceCont
 	}
 }
 
-// FindTenSubsystemTokens 查询 10 个子系统令牌
 func (l *FindTenSubsystemTokensLogic) FindTenSubsystemTokens(in *apollo.FindTenSubsystemTokensReq) (*apollo.FindTenSubsystemTokensResp, error) {
-	var tokens *[]ap.Token
-	tokens, err := l.svcCtx.TokenModel.FindBatch(l.ctx, in.UserId, in.Page)
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
+	}
+	items, err := l.svcCtx.Grant.List(l.ctx, in.UserId, in.Page)
 	if err != nil {
-		return nil, err
+		return nil, response.Error(err)
 	}
-
-	// 整理 tokens
-	var subsystemTokens []*apollo.SubsystemToken
-	if tokens != nil {
-		subsystemTokens = make([]*apollo.SubsystemToken, 0, len(*tokens))
-		for _, token := range *tokens {
-			subsystemTokens = append(subsystemTokens, &apollo.SubsystemToken{
-				Id:    strconv.FormatInt(token.Id, 10),
-				Value: token.Value,
-				Name:  token.Name.String,
-				Year:  int64(token.CreateTime.Year()),
-				Month: int64(token.CreateTime.Month()),
-				Day:   int64(token.CreateTime.Day()),
-			})
-		}
-	} else {
-		subsystemTokens = make([]*apollo.SubsystemToken, 0)
+	out := make([]*apollo.SubsystemToken, 0, len(items))
+	for _, g := range items {
+		out = append(out, response.Grant(g))
 	}
-
-	return &apollo.FindTenSubsystemTokensResp{
-		Tokens: subsystemTokens,
-	}, nil
+	return &apollo.FindTenSubsystemTokensResp{Tokens: out}, nil
 }

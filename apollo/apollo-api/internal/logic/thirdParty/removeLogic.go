@@ -1,12 +1,15 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package thirdParty
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/zeromicro/go-zero/core/errorx"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
+
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
-	"jian-unified-system/apollo/apollo-rpc/apollo"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,39 +28,14 @@ func NewRemoveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RemoveLogi
 	}
 }
 
-func (l *RemoveLogic) Remove(req *types.RemoveReq) (resp *types.RemoveResp, err error) {
-	id, err := l.ctx.Value("id").(json.Number).Int64()
+func (l *RemoveLogic) Remove(req *types.RemoveThirdPartyReq) (resp *types.OkResp, err error) {
+	id, err := response.Subject(l.ctx)
 	if err != nil {
-		return &types.RemoveResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "id err",
-			},
-		}, errorx.Wrap(err, "token err")
+		return nil, err
 	}
-
-	_, err = l.svcCtx.ApolloThirdParty.Remove(l.ctx, &apollo.ThirdPartyRemoveReq{
-		UserId:       id,
-		ThirdPartyId: req.ThirdPartyId,
-	})
+	_, err = l.svcCtx.ThirdParty.Remove(l.ctx, &apollo.ThirdPartyRemoveReq{UserId: id, ThirdPartyId: req.ThirdPartyId})
 	if err != nil {
-		return &types.RemoveResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -3,
-				Message: "rpc err",
-			},
-		}, errorx.Wrap(err, "rpc err")
+		return nil, err
 	}
-
-	return &types.RemoveResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		RemoveRespData: struct {
-			Ok bool `json:"ok"`
-		}{
-			true,
-		},
-	}, nil
+	return &types.OkResp{BaseResponse: response.OK(), Data: types.OkData{Ok: true}}, nil
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	ssoServer "jian-unified-system/apollo/apollo-rpc/internal/server/sso"
+	"log"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/config"
@@ -26,13 +28,18 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
-	ctx := svc.NewServiceContext(c)
+	ctx, err := svc.NewServiceContext(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ctx.Close()
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
+		apollo.RegisterSsoServer(grpcServer, ssoServer.NewSsoServer(ctx))
 		apollo.RegisterAccountServer(grpcServer, accountServer.NewAccountServer(ctx))
 		apollo.RegisterPasskeysServer(grpcServer, passkeysServer.NewPasskeysServer(ctx))
-		apollo.RegisterThirdPartyServer(grpcServer, thirdpartyServer.NewThirdPartyServer(ctx))
 		apollo.RegisterSecurityServer(grpcServer, securityServer.NewSecurityServer(ctx))
+		apollo.RegisterThirdPartyServer(grpcServer, thirdpartyServer.NewThirdPartyServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

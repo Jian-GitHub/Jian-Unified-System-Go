@@ -1,14 +1,12 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package thirdParty
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"github.com/zeromicro/go-zero/core/errorx"
-	apolloUtil "jian-unified-system/apollo/apollo-api/util"
-	redisUtil "jian-unified-system/jus-core/util/oauth2/redis"
-	"strconv"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
+	"jian-unified-system/apollo/apollo-rpc/apollo"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
 	"jian-unified-system/apollo/apollo-api/internal/types"
@@ -30,50 +28,14 @@ func NewBindLogic(ctx context.Context, svcCtx *svc.ServiceContext) *BindLogic {
 	}
 }
 
-func (l *BindLogic) Bind(req *types.BindReq) (resp *types.BindResp, err error) {
-	// todo: add your logic here and delete this line
-	if len(req.Provider) == 0 {
-		return &types.BindResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "no provider",
-			},
-		}, errorx.Wrap(errors.New("no provider"), "ThirdParty Continue Err")
-	}
-	id, err := l.ctx.Value("id").(json.Number).Int64()
-	if err != nil {
-		return &types.BindResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -1,
-				Message: "no provider",
-			},
-		}, errorx.Wrap(err, "token err")
-	}
-	fmt.Println(id)
-
-	idStr := strconv.FormatInt(id, 10)
-	redis := redisUtil.NewBindRedis(idStr)
-	//redisKey := "apollo:thirdParty:bind:" + hex.EncodeToString([]byte(strconv.FormatInt(id, 10)))
-
-	err = l.svcCtx.Redis.SetexCtx(l.ctx, redis.Key, redis.Data.String(), 300)
+func (l *BindLogic) Bind(req *types.ProviderReq) (resp *types.AuthorizationResp, err error) {
+	id, err := response.Subject(l.ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	url, err := apolloUtil.RedirectToOAuth2(l.svcCtx, req.Provider, redis.Key)
+	r, err := l.svcCtx.ThirdParty.StartAuthorization(l.ctx, &apollo.StartAuthorizationReq{Provider: req.Provider, UserId: id, Bind: true, Locale: l.svcCtx.Config.DefaultLocale, Language: l.svcCtx.Config.DefaultLanguage})
 	if err != nil {
 		return nil, err
 	}
-
-	return &types.BindResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		BindRespData: struct {
-			Url string `json:"url"`
-		}{
-			Url: url,
-		},
-	}, nil
+	return &types.AuthorizationResp{BaseResponse: response.OK(), Data: types.AuthorizationData{Url: r.Url}}, nil
 }

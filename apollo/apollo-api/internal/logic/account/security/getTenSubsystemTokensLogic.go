@@ -1,10 +1,11 @@
+// Code scaffolded by goctl. Safe to edit.
+// goctl 1.9.2
+
 package security
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"github.com/zeromicro/go-zero/core/errorx"
+	"jian-unified-system/apollo/apollo-api/internal/logic/response"
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 
 	"jian-unified-system/apollo/apollo-api/internal/svc"
@@ -27,50 +28,18 @@ func NewGetTenSubsystemTokensLogic(ctx context.Context, svcCtx *svc.ServiceConte
 	}
 }
 
-func (l *GetTenSubsystemTokensLogic) GetTenSubsystemTokens(req *types.GetTenSubsystemTokensReq) (resp *types.GetTenSubsystemTokensResp, err error) {
-	id, err := l.ctx.Value("id").(json.Number).Int64()
-	if err != nil {
-		return &types.GetTenSubsystemTokensResp{
-			BaseResponse: types.BaseResponse{
-				Code:    -2,
-				Message: "Id err",
-			},
-		}, errorx.Wrap(errors.New("id"), "caller err")
-	}
-
-	tokensResp, err := l.svcCtx.ApolloSecurity.FindTenSubsystemTokens(l.ctx, &apollo.FindTenSubsystemTokensReq{
-		UserId: id,
-		Page:   req.Page,
-	})
+func (l *GetTenSubsystemTokensLogic) GetTenSubsystemTokens(req *types.PageReq) (resp *types.SubsystemTokensResp, err error) {
+	id, err := response.Subject(l.ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	tokens := make([]types.SubsystemToken, 0)
-	if len(tokensResp.Tokens) != 0 {
-		for _, token := range tokensResp.Tokens {
-			tokens = append(tokens, types.SubsystemToken{
-				Id:    token.Id,
-				Value: token.Value,
-				Name:  token.Name,
-				Date: types.RespnseDate{
-					Year:  token.Year,
-					Month: token.Month,
-					Day:   token.Day,
-				},
-			})
-		}
+	r, err := l.svcCtx.Security.FindTenSubsystemTokens(l.ctx, &apollo.FindTenSubsystemTokensReq{UserId: id, Page: req.Page})
+	if err != nil {
+		return nil, err
 	}
-
-	return &types.GetTenSubsystemTokensResp{
-		BaseResponse: types.BaseResponse{
-			Code:    200,
-			Message: "success",
-		},
-		GetAllSubsystemTokensData: struct {
-			Tokens []types.SubsystemToken `json:"tokens"`
-		}{
-			Tokens: tokens,
-		},
-	}, nil
+	items := make([]types.SubsystemToken, 0, len(r.Tokens))
+	for _, g := range r.Tokens {
+		items = append(items, response.Grant(g))
+	}
+	return &types.SubsystemTokensResp{BaseResponse: response.OK(), Data: types.SubsystemTokensData{Tokens: items}}, nil
 }

@@ -2,14 +2,9 @@ package passkeyslogic
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/zeromicro/go-zero/core/errorx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"jian-unified-system/apollo/apollo-rpc/internal/types"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/account"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
 
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
@@ -31,41 +26,28 @@ func NewStartRegistrationLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 	}
 }
 
-// StartRegistration Passkeys Registration (RPC) - Step 1
 func (l *StartRegistrationLogic) StartRegistration(in *apollo.PasskeysStartRegistrationReq) (*apollo.PasskeysStartRegistrationResp, error) {
-	// todo: add your logic here and delete this line
-	// 1. new WebAuthn webauthnUser
-	webauthnUser := &types.WebauthnUser{
-		ID:          in.UserId,
-		Name:        in.UserName,
-		DisplayName: in.DisplayName,
-		Credentials: []webauthn.Credential{},
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
 	}
-
-	// 2. Generate creation
-	creation, session, err := l.svcCtx.WebAuthn.BeginRegistration(
-		webauthnUser,
-		webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired),
-	)
+	name := in.DisplayName
+	if name == "" {
+		name = in.UserName
+	}
+	if name == "" {
+		name = "Apollo"
+	}
+	locale, language := account.NormalizeLocale(in.Locale), in.Language
+	if language == "" {
+		language = "en"
+	}
+	profile, err := account.NewMinimalProfile(in.UserId, locale, language)
 	if err != nil {
-		l.Logger.Error("WebAuthn.BeginRegistration failed: ", err)
-		return nil, status.Error(codes.Internal, "failed to generate challenge")
+		return nil, response.Error(err)
 	}
-
-	// 3. CredentialCreation JSON
-	creationJson, err := json.Marshal(creation)
+	options, session, err := l.svcCtx.Passkey.StartRegistration(l.ctx, profile, name, in.Bind)
 	if err != nil {
-		return nil, errorx.Wrap(errors.New("can not Marshal creation JSON"), "failed to marshal options")
+		return nil, response.Error(err)
 	}
-
-	// Serialize SessionData
-	sessionData, err := json.Marshal(session)
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to marshal session")
-	}
-
-	return &apollo.PasskeysStartRegistrationResp{
-		OptionsJson: creationJson,
-		SessionData: sessionData,
-	}, nil
+	return &apollo.PasskeysStartRegistrationResp{OptionsJson: options, SessionData: []byte(session)}, nil
 }

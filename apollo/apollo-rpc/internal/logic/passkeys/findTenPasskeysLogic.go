@@ -2,9 +2,11 @@ package passkeyslogic
 
 import (
 	"context"
+	"jian-unified-system/apollo/apollo-rpc/internal/domain/identity"
+	"jian-unified-system/apollo/apollo-rpc/internal/logic/response"
+
 	"jian-unified-system/apollo/apollo-rpc/apollo"
 	"jian-unified-system/apollo/apollo-rpc/internal/svc"
-	ap "jian-unified-system/jus-core/data/mysql/apollo"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,33 +25,17 @@ func NewFindTenPasskeysLogic(ctx context.Context, svcCtx *svc.ServiceContext) *F
 	}
 }
 
-// FindTenPasskeys 查询 10 个Passkeys
 func (l *FindTenPasskeysLogic) FindTenPasskeys(in *apollo.FindTenPasskeysReq) (*apollo.FindTenPasskeysResp, error) {
-	var passkeys *[]ap.Passkey
-	passkeys, err := l.svcCtx.PasskeyModel.FindBatch(l.ctx, in.UserId, in.Page)
+	if in == nil {
+		return nil, response.Error(identity.ErrInvalid)
+	}
+	items, err := l.svcCtx.Passkey.List(l.ctx, in.UserId, in.Page)
 	if err != nil {
-		return nil, err
+		return nil, response.Error(err)
 	}
-
-	// 整理 Passkeys
-	var apolloPasskeys []*apollo.Passkey
-	if passkeys != nil {
-		apolloPasskeys = make([]*apollo.Passkey, 0, len(*passkeys))
-		for _, passkey := range *passkeys {
-			apolloPasskeys = append(apolloPasskeys, &apollo.Passkey{
-				Id:        passkey.CredentialId,
-				Name:      passkey.DisplayName,
-				Year:      int64(passkey.CreatedAt.Year()),
-				Month:     int64(passkey.CreatedAt.Month()),
-				Day:       int64(passkey.CreatedAt.Day()),
-				IsEnabled: passkey.IsEnabled == 1,
-			})
-		}
-	} else {
-		apolloPasskeys = make([]*apollo.Passkey, 0)
+	out := make([]*apollo.Passkey, 0, len(items))
+	for _, p := range items {
+		out = append(out, response.Passkey(p))
 	}
-
-	return &apollo.FindTenPasskeysResp{
-		Passkeys: apolloPasskeys,
-	}, nil
+	return &apollo.FindTenPasskeysResp{Passkeys: out}, nil
 }
