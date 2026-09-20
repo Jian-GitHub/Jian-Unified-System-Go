@@ -1,0 +1,34 @@
+Name: hephaestus-api
+Host: 0.0.0.0
+Port: 20200
+Mode: dev
+Timeout: 35000
+MaxBytes: 11534336
+Middlewares:
+  Log: false
+Log:
+  Level: error
+IncomeRPC:
+  Endpoints:
+    - 127.0.0.1:19101
+  Timeout: 30000
+  Middlewares:
+    Duration:
+ServiceKey:
+Storage:
+  Root:
+Browser:
+  AllowedOrigins:
+    - http://localhost:15173
+  CookieSecure:
+  CookieName:
+
+Apollo:
+  BaseURL: http://127.0.0.1:21100
+  ClientID:
+  ClientSecret:
+
+SSO:
+  AuthorizeURL: http://localhost/authorize
+  PublicURL: http://localhost
+  StateSecret:
