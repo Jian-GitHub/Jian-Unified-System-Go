@@ -6,16 +6,17 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	driver "github.com/go-sql-driver/mysql"
-	"github.com/zeromicro/go-zero/core/conf"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	driver "github.com/go-sql-driver/mysql"
+	"github.com/zeromicro/go-zero/core/conf"
 )
 
 func main() {
-	config := flag.String("f", "hephaestus-rpc/etc/hephaestus.yaml", "database configuration")
+	config := flag.String("f", "hephaestus-rpc/etc/hephaestusrpc.yaml", "database configuration")
 	schema := flag.String("schema-dir", "schema", "schema directory")
 	flag.Parse()
 	var c struct{ DB struct{ DataSource string } }

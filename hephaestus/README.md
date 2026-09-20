@@ -2,7 +2,7 @@
 
 Google Sheets 手动快照导入已接入 Apollo 统一授权：[配置与使用说明](docs/google-sheets.md)。真实 Google 使用前需完成 Cloud 凭据与回调配置。
 
-目录保持 `hephaestus-api` / `hephaestus-rpc`，启动入口均为 `hephaestus.go`。
+目录保持 `hephaestus-api` / `hephaestus-rpc`，启动入口均为 `hephaestusrpc.go`。
 独立 Go module 和数据库承载收入记录、汇总、CSV/XLSX 导入；Invoice 后端不在本次范围。
 
 ## 统一身份与权限
@@ -31,7 +31,7 @@ Google Sheets 手动快照导入已接入 Apollo 统一授权：[配置与使用
 各项目使用本地 MySQL **3306**，连接串直接读取各自 `etc/*.yaml`；不使用旧的
 13316 Docker 开发库作为运行配置，不把收入和 Apollo 数据放入同一业务库。
 
-- 收入 RPC：`hephaestus-rpc/etc/hephaestus.yaml` 的 `DB.DataSource`、`Apollo`。
+- 收入 RPC：`hephaestus-rpc/etc/hephaestusrpc.yaml` 的 `DB.DataSource`、`Apollo`。
 - 收入 API：`hephaestus-api/etc/hephaestus-api.yaml` 的 `Apollo`、`SSO`、`Browser`。
 - Apollo DDD RPC：`apollo/apollo-rpc-ddd/etc/apollorpc.yaml` 的 `DB`、`SSO.Clients`。
 - Apollo DDD API：`apollo/apollo-api-ddd/etc/apollo-api.yaml` 的 `SSO.RPCSecret`。
@@ -72,7 +72,7 @@ go run ./cmd/sso-migrate
 ```sh
 bash scripts/local-db.sh
 bash scripts/build.sh
-./bin/hephaestus-rpc -f hephaestus-rpc/etc/hephaestus.yaml
+./bin/hephaestus-rpc -f hephaestus-rpc/etc/hephaestusrpc.yaml
 # 另一个终端：
 ./bin/hephaestus-api -f hephaestus-api/etc/hephaestus-api.yaml
 ```

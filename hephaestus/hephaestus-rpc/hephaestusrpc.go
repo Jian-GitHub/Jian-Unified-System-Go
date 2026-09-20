@@ -13,13 +13,14 @@ import (
 	reportingServer "jian-unified-system/hephaestus/hephaestus-rpc/internal/server/reporting"
 	"jian-unified-system/hephaestus/hephaestus-rpc/internal/svc"
 
+	"jian-unified-system/hephaestus/internal/rpcauth"
+
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
-	"jian-unified-system/hephaestus/internal/rpcauth"
 )
 
-var configFile = flag.String("f", "etc/hephaestus.yaml", "the config file")
+var configFile = flag.String("f", "etc/hephaestusrpc.yaml", "the config file")
 
 func main() {
 	flag.Parse()
