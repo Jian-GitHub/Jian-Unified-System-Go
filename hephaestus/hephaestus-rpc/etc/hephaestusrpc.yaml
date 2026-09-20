@@ -1,0 +1,19 @@
+Name: hephaestus-rpc
+ListenOn: 127.0.0.1:36000
+Mode: dev
+Timeout: 30000
+Health:
+Middlewares:
+  Stat:
+Log:
+  Level: error
+ServiceKey:
+DB:
+  DataSource:
+Storage:
+  Root:
+
+Apollo:
+  BaseURL:
+  ClientID:
+  ClientSecret:
