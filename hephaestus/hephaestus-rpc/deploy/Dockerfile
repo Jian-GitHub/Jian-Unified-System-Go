@@ -14,7 +14,7 @@ ADD go.sum .
 RUN go mod download
 COPY . .
 
-RUN go build -ldflags="-s -w" -o /app/hephaestusrpc hephaestus/hephaestus-rpc/hephaestusrpc.go
+RUN go build -ldflags="-s -w" -o /app/hephaestusrpc ./hephaestus/hephaestus-rpc/hephaestusrpc.go
 
 
 FROM scratch
