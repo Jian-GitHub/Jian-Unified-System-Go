@@ -1,0 +1,422 @@
+syntax = "v1"
+
+type GoogleConnection {
+	Url       string `json:"url"`
+	Bound     bool   `json:"bound"`
+	Connected bool   `json:"connected"`
+}
+
+type GoogleCallbackReq {
+	State string `form:"state,optional"`
+	Code  string `form:"code,optional"`
+	Error string `form:"error,optional"`
+}
+
+type GoogleStageReq {
+	SourceId    string `json:"source_id"`
+	Spreadsheet string `json:"spreadsheet"`
+	Range       string `json:"range"`
+}
+
+@server (
+	prefix: /api/v1/google
+	group:  google
+)
+service hephaestus-api {
+	@handler GoogleStatus
+	get /status (Empty) returns (GoogleConnection)
+
+	@handler GoogleConnect
+	post /connect (Empty) returns (GoogleConnection)
+
+	@handler GoogleDisconnect
+	post /disconnect (Empty) returns (GoogleConnection)
+
+	@handler GoogleCallback
+	get /callback (GoogleCallbackReq) returns (Empty)
+
+	@handler GoogleStage
+	post /imports (GoogleStageReq) returns (Batch)
+}
+
+info (
+	title: "Hephaestus Income API"
+	desc:  "Independent income records, reporting and reviewed file imports"
+)
+
+type Empty {}
+
+type HealthResp {
+	Status string `json:"status,optional"`
+}
+
+type AuthStartReq {
+	ReturnTo string `form:"return_to,optional"`
+}
+
+type AuthCallbackReq {
+	Code  string `form:"code,optional"`
+	State string `form:"state,optional"`
+	Error string `form:"error,optional"`
+}
+
+type SessionResp {
+	OwnerId     string `json:"owner_id,optional"`
+	DisplayName string `json:"display_name,optional"`
+	CsrfToken   string `json:"csrf_token,optional"`
+	ExpiresAt   string `json:"expires_at,optional"`
+}
+
+type RecordData {
+	WageBasis       string   `json:"wage_basis,optional"`
+	Participants    []string `json:"participants,optional"`
+	PaymentStatus   string   `json:"payment_status,optional"`
+	ServiceDate     string   `json:"service_date,optional"`
+	Customer        string   `json:"customer,optional"`
+	JobType         string   `json:"job_type,optional"`
+	Detail          string   `json:"detail,optional"`
+	Note            string   `json:"note,optional"`
+	PricingCategory string   `json:"pricing_category,optional"`
+	DurationMinutes int64    `json:"duration_minutes,optional"`
+	TeamSize        int64    `json:"team_size,optional"`
+	GrossCents      *string  `json:"gross_cents,optional"`
+	ExpenseCents    *string  `json:"expense_cents,optional"`
+}
+
+type Change {
+	Field string `json:"field,optional"`
+	Value string `json:"value,optional"`
+	Clear bool   `json:"clear,optional"`
+}
+
+type Record {
+	Id         string     `json:"id,optional"`
+	Version    string     `json:"version,optional"`
+	Data       RecordData `json:"data,optional"`
+	Base       RecordData `json:"base,optional"`
+	Overrides  []Change   `json:"overrides,optional"`
+	SourceId   string     `json:"source_id,optional"`
+	SourceKey  string     `json:"source_key,optional"`
+	Archived   bool       `json:"archived,optional"`
+	WageStatus string     `json:"wage_status,optional"`
+}
+
+type RecordList {
+	Items      []Record `json:"items,optional"`
+	NextCursor string   `json:"next_cursor,optional"`
+}
+
+type CreateRecordReq {
+	Data RecordData `json:"data,optional"`
+}
+
+type IDReq {
+	Id string `path:"id" json:"id,optional"`
+}
+
+type UpdateRecordReq {
+	Id      string   `path:"id" json:"id,optional"`
+	Changes []Change `json:"changes,optional"`
+	Reason  string   `json:"reason,optional"`
+}
+
+type ClearOverrideReq {
+	Id     string `path:"id" json:"id,optional"`
+	Field  string `path:"field" json:"field,optional"`
+	Reason string `json:"reason,optional"`
+}
+
+type QueryReq {
+	From     string `form:"from,optional" json:"from,optional"`
+	To       string `form:"to,optional" json:"to,optional"`
+	Type     string `form:"type,optional" json:"type,optional"`
+	Team     string `form:"team,optional" json:"team,optional"`
+	Search   string `form:"search,optional" json:"search,optional"`
+	Sort     string `form:"sort,optional" json:"sort,optional"`
+	Archived string `form:"archived,optional" json:"archived,optional"`
+	Cursor   string `form:"cursor,optional" json:"cursor,optional"`
+	GroupBy  string `form:"group_by,optional" json:"group_by,optional"`
+	Limit    int64  `form:"limit,optional" json:"limit,optional"`
+	RateBps  int64  `form:"rate_bps,optional" json:"rate_bps,optional"`
+}
+
+type Summary {
+	GrossCents               string `json:"gross_cents,optional"`
+	TaxEstimateCents         string `json:"tax_estimate_cents,optional"`
+	NetEstimateCents         string `json:"net_estimate_cents,optional"`
+	KnownExpenseCents        string `json:"known_expense_cents,optional"`
+	KnownCashEstimateCents   string `json:"known_cash_estimate_cents,optional"`
+	RecordCount              int64  `json:"record_count,optional"`
+	PendingWageCount         int64  `json:"pending_wage_count,optional"`
+	UnknownExpenseCount      int64  `json:"unknown_expense_count,optional"`
+	DurationMinutes          int64  `json:"duration_minutes,optional"`
+	ConfirmedDurationMinutes int64  `json:"confirmed_duration_minutes,optional"`
+	IsComplete               bool   `json:"is_complete,optional"`
+	CalculationVersion       string `json:"calculation_version,optional"`
+}
+
+type Period {
+	Start   string  `json:"start,optional"`
+	End     string  `json:"end,optional"`
+	Summary Summary `json:"summary,optional"`
+}
+
+type PeriodList {
+	Items []Period `json:"items,optional"`
+}
+
+type Revision {
+	Version   string  `json:"version,optional"`
+	Action    string  `json:"action,optional"`
+	Reason    string  `json:"reason,optional"`
+	Before    *Record `json:"before,optional"`
+	After     Record  `json:"after,optional"`
+	CreatedAt string  `json:"created_at,optional"`
+}
+
+type RevisionList {
+	Items []Revision `json:"items,optional"`
+}
+
+type Source {
+	Id    string `json:"id,optional"`
+	Label string `json:"label,optional"`
+	Kind  string `json:"kind,optional"`
+}
+
+type SourceList {
+	Items []Source `json:"items,optional"`
+}
+
+type CreateSourceReq {
+	Label string `json:"label,optional"`
+}
+
+type StageReq {
+	SourceId string `json:"source_id,optional"`
+}
+
+type ColumnMapping {
+	Field  string `json:"field,optional"`
+	Column int64  `json:"column,optional"`
+}
+
+type RowDecision {
+	Row             int64  `json:"row,optional"`
+	Action          string `json:"action,optional"`
+	RecordId        string `json:"record_id,optional"`
+	ExpectedVersion string `json:"expected_version,optional"`
+	KeepOverrides   bool   `json:"keep_overrides,optional"`
+}
+
+type MappingReq {
+	RuleProfile         string          `json:"rule_profile,optional"`
+	WageColumnConfirmed bool            `json:"wage_column_confirmed,optional"`
+	Id                  string          `path:"id" json:"id,optional"`
+	Sheet               string          `json:"sheet,optional"`
+	HeaderRow           int64           `json:"header_row,optional"`
+	DateFormat          string          `json:"date_format,optional"`
+	DurationFormat      string          `json:"duration_format,optional"`
+	EmptyExpenseZero    bool            `json:"empty_expense_zero,optional"`
+	DefaultTeamSize     int64           `json:"default_team_size,optional"`
+	Columns             []ColumnMapping `json:"columns,optional"`
+	Decisions           []RowDecision   `json:"decisions,optional"`
+}
+
+type ImportRow {
+	Row             int64      `json:"row,optional"`
+	Data            RecordData `json:"data,optional"`
+	SourceKey       string     `json:"source_key,optional"`
+	Fingerprint     string     `json:"fingerprint,optional"`
+	Action          string     `json:"action,optional"`
+	RecordId        string     `json:"record_id,optional"`
+	ExpectedVersion string     `json:"expected_version,optional"`
+	KeepOverrides   bool       `json:"keep_overrides,optional"`
+	Errors          []string   `json:"errors,optional"`
+}
+
+type Batch {
+	Deleted       bool        `json:"deleted,optional"`
+	Filename      string      `json:"filename,optional"`
+	Spreadsheet   string      `json:"spreadsheet,optional"`
+	Range         string      `json:"range,optional"`
+	Mapping       *MappingReq `json:"mapping,optional"`
+	Id            string      `json:"id,optional"`
+	SourceId      string      `json:"source_id,optional"`
+	Status        string      `json:"status,optional"`
+	Version       string      `json:"version,optional"`
+	SelectionHash string      `json:"selection_hash,optional"`
+	RowCount      int64       `json:"row_count,optional"`
+	ErrorCount    int64       `json:"error_count,optional"`
+	Inserted      int64       `json:"inserted,optional"`
+	Updated       int64       `json:"updated,optional"`
+	Unchanged     int64       `json:"unchanged,optional"`
+	Excluded      int64       `json:"excluded,optional"`
+	Sheets        []string    `json:"sheets,optional"`
+	CreatedAt     string      `json:"created_at,optional"`
+}
+
+type BatchList {
+	Items []Batch `json:"items,optional"`
+}
+
+type TrashBatchReq {
+	Id      string `path:"id" json:"id,optional"`
+	Deleted bool   `json:"deleted"`
+}
+
+type SheetReq {
+	Id     string `path:"id" json:"id,optional"`
+	Sheet  string `form:"sheet,optional" json:"sheet,optional"`
+	Cursor string `form:"cursor,optional" json:"cursor,optional"`
+}
+
+type SheetRow {
+	Row   int64    `json:"row"`
+	Cells []string `json:"cells"`
+}
+
+type SheetData {
+	Sheet      string     `json:"sheet"`
+	Items      []SheetRow `json:"items"`
+	NextCursor string     `json:"next_cursor"`
+	Total      int64      `json:"total"`
+}
+
+type BatchRowsReq {
+	Id     string `path:"id" json:"id,optional"`
+	Cursor string `form:"cursor,optional" json:"cursor,optional"`
+	Limit  int64  `form:"limit,optional" json:"limit,optional"`
+}
+
+type BatchRows {
+	Items      []ImportRow `json:"items,optional"`
+	NextCursor string      `json:"next_cursor,optional"`
+}
+
+type CommitReq {
+	Id            string `path:"id" json:"id,optional"`
+	SelectionHash string `json:"selection_hash,optional"`
+}
+
+@server (
+	prefix: /api/v1
+	group:  auth
+)
+service hephaestus-api {
+	@handler AuthStart
+	get /auth/start (AuthStartReq)
+
+	@handler AuthCallback
+	get /auth/callback (AuthCallbackReq)
+
+	@handler Session
+	get /session (Empty) returns (SessionResp)
+
+	@handler Logout
+	delete /session (Empty) returns (Empty)
+}
+
+@server (
+	prefix: /api/v1
+	group:  records
+)
+service hephaestus-api {
+	@handler CreateRecord
+	post /work-records (CreateRecordReq) returns (Record)
+
+	@handler ListRecords
+	get /work-records (QueryReq) returns (RecordList)
+
+	@handler GetRecord
+	get /work-records/:id (IDReq) returns (Record)
+
+	@handler UpdateRecord
+	patch /work-records/:id (UpdateRecordReq) returns (Record)
+
+	@handler ArchiveRecord
+	post /work-records/:id/archive (IDReq) returns (Record)
+
+	@handler RestoreRecord
+	post /work-records/:id/restore (IDReq) returns (Record)
+
+	@handler ClearOverride
+	delete /work-records/:id/overrides/:field (ClearOverrideReq) returns (Record)
+
+	@handler ListRevisions
+	get /work-records/:id/revisions (IDReq) returns (RevisionList)
+}
+
+@server (
+	prefix: /api/v1
+	group:  reporting
+)
+service hephaestus-api {
+	@handler Summary
+	get /income-summary (QueryReq) returns (Summary)
+
+	@handler Calendar
+	get /income-calendar (QueryReq) returns (PeriodList)
+
+	@handler Series
+	get /income-series (QueryReq) returns (PeriodList)
+
+	@handler Export
+	get /income-export.csv (QueryReq) returns (ExportResp)
+}
+
+@server (
+	prefix: /api/v1
+	group:  imports
+)
+service hephaestus-api {
+	@handler CreateSource
+	post /sources (CreateSourceReq) returns (Source)
+
+	@handler ListSources
+	get /sources (Empty) returns (SourceList)
+
+	@handler DeleteSource
+	delete /sources/:id (IDReq) returns (Empty)
+
+	@handler Stage
+	post /imports (StageReq) returns (Batch)
+
+	@handler ListBatches
+	get /imports (Empty) returns (BatchList)
+
+	@handler GetBatch
+	get /imports/:id (IDReq) returns (Batch)
+
+	@handler TrashBatch
+	post /imports/:id/trash (TrashBatchReq) returns (Batch)
+
+	@handler ReadSheet
+	get /imports/:id/sheet (SheetReq) returns (SheetData)
+
+	@handler Preview
+	put /imports/:id/mapping (MappingReq) returns (Batch)
+
+	@handler ListRows
+	get /imports/:id/rows (BatchRowsReq) returns (BatchRows)
+
+	@handler Commit
+	post /imports/:id/commit (CommitReq) returns (Batch)
+
+	@handler Cancel
+	post /imports/:id/cancel (IDReq) returns (Batch)
+}
+
+@server (
+	prefix: /api/v1
+	group:  health
+)
+service hephaestus-api {
+	@handler Health
+	get /health/ready (Empty) returns (HealthResp)
+}
+
+type ExportResp {
+	Content string `json:"content"`
+}
+

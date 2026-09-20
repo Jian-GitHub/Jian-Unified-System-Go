@@ -1,0 +1,496 @@
+syntax = "proto3";
+package income;
+option go_package = "./income";
+
+message GoogleStageReq { string source_id = 1; string spreadsheet = 2; string range = 3; }
+message GoogleStageRequest {
+ int64 owner_id = 1; string idempotency_key = 2; int64 expected_version = 3;
+ GoogleStageReq input = 4; string session_token = 5; string csrf_token = 6;
+}
+
+message Empty {
+}
+
+message HealthResp {
+  string status = 1;
+}
+
+
+message SessionResp {
+  string owner_id = 1;
+  string display_name = 2;
+  string csrf_token = 3;
+  string expires_at = 4;
+}
+
+message RecordData {
+  string service_date = 1;
+  string customer = 2;
+  string job_type = 3;
+  string detail = 4;
+  string note = 5;
+  string pricing_category = 6;
+  int64 duration_minutes = 7;
+  int64 team_size = 8;
+  optional string gross_cents = 9;
+  optional string expense_cents = 10;
+  string wage_basis = 11;
+  repeated string participants = 12;
+  string payment_status = 13;
+}
+
+message Change {
+  string field = 1;
+  string value = 2;
+  bool clear = 3;
+}
+
+message Record {
+  string id = 1;
+  string version = 2;
+  RecordData data = 3;
+  RecordData base = 4;
+  repeated Change overrides = 5;
+  string source_id = 6;
+  string source_key = 7;
+  bool archived = 8;
+  string wage_status = 9;
+}
+
+message RecordList {
+  repeated Record items = 1;
+  string next_cursor = 2;
+}
+
+message CreateRecordReq {
+  RecordData data = 1;
+}
+
+message IDReq {
+  string id = 1;
+}
+
+message UpdateRecordReq {
+  string id = 1;
+  repeated Change changes = 2;
+  string reason = 3;
+}
+
+message ClearOverrideReq {
+  string id = 1;
+  string field = 2;
+  string reason = 3;
+}
+
+message QueryReq {
+  string from = 1;
+  string to = 2;
+  string type = 3;
+  string team = 4;
+  string search = 5;
+  string sort = 6;
+  string archived = 7;
+  string cursor = 8;
+  string group_by = 9;
+  int64 limit = 10;
+  int64 rate_bps = 11;
+}
+
+message IncomeSummary {
+  string gross_cents = 1;
+  string tax_estimate_cents = 2;
+  string net_estimate_cents = 3;
+  string known_expense_cents = 4;
+  string known_cash_estimate_cents = 5;
+  int64 record_count = 6;
+  int64 pending_wage_count = 7;
+  int64 unknown_expense_count = 8;
+  int64 duration_minutes = 9;
+  int64 confirmed_duration_minutes = 10;
+  bool is_complete = 11;
+  string calculation_version = 12;
+}
+
+message Period {
+  string start = 1;
+  string end = 2;
+  IncomeSummary summary = 3;
+}
+
+message PeriodList {
+  repeated Period items = 1;
+}
+
+message Revision {
+  string version = 1;
+  string action = 2;
+  string reason = 3;
+  optional Record before = 4;
+  Record after = 5;
+  string created_at = 6;
+}
+
+message RevisionList {
+  repeated Revision items = 1;
+}
+
+message Source {
+  string id = 1;
+  string label = 2;
+  string kind = 3;
+}
+
+message SourceList {
+  repeated Source items = 1;
+}
+
+message CreateSourceReq {
+  string label = 1;
+}
+
+message StageReq {
+  string source_id = 1;
+}
+
+message ColumnMapping {
+  string field = 1;
+  int64 column = 2;
+}
+
+message RowDecision {
+  int64 row = 1;
+  string action = 2;
+  string record_id = 3;
+  string expected_version = 4;
+  bool keep_overrides = 5;
+}
+
+message MappingReq {
+  string id = 1;
+  string sheet = 2;
+  int64 header_row = 3;
+  string date_format = 4;
+  string duration_format = 5;
+  bool empty_expense_zero = 6;
+  int64 default_team_size = 7;
+  repeated ColumnMapping columns = 8;
+  repeated RowDecision decisions = 9;
+  string rule_profile = 10;
+  bool wage_column_confirmed = 11;
+}
+
+message ImportRow {
+  int64 row = 1;
+  RecordData data = 2;
+  string source_key = 3;
+  string fingerprint = 4;
+  string action = 5;
+  string record_id = 6;
+  string expected_version = 7;
+  bool keep_overrides = 8;
+  repeated string errors = 9;
+}
+
+message Batch {
+  bool deleted = 15;
+  string filename = 16;
+  string spreadsheet = 17;
+  string range = 18;
+  MappingReq mapping = 14;
+  string id = 1;
+  string source_id = 2;
+  string status = 3;
+  string version = 4;
+  string selection_hash = 5;
+  int64 row_count = 6;
+  int64 error_count = 7;
+  int64 inserted = 8;
+  int64 updated = 9;
+  int64 unchanged = 10;
+  int64 excluded = 11;
+  repeated string sheets = 12;
+  string created_at = 13;
+}
+
+message BatchList {
+  repeated Batch items = 1;
+}
+message TrashBatchReq { string id = 1; bool deleted = 2; }
+message SheetReq { string id = 1; string sheet = 2; string cursor = 3; }
+message SheetRow { int64 row = 1; repeated string cells = 2; }
+message SheetData { string sheet = 1; repeated SheetRow items = 2; string next_cursor = 3; int64 total = 4; }
+message TrashBatchRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  TrashBatchReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ReadSheetRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  SheetReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+
+message BatchRowsReq {
+  string id = 1;
+  string cursor = 2;
+  int64 limit = 3;
+}
+
+message BatchRows {
+  repeated ImportRow items = 1;
+  string next_cursor = 2;
+}
+
+message CommitReq {
+  string id = 1;
+  string selection_hash = 2;
+}
+
+message SessionRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  Empty input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message LogoutRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  Empty input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message CreateRecordRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  CreateRecordReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ListRecordsRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  QueryReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message GetRecordRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message UpdateRecordRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  UpdateRecordReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ArchiveRecordRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message RestoreRecordRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ClearOverrideRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  ClearOverrideReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ListRevisionsRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message SummaryRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  QueryReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message CalendarRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  QueryReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message SeriesRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  QueryReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ExportRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  QueryReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message CreateSourceRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  CreateSourceReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ListSourcesRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  Empty input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message DeleteSourceRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message StageRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  StageReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+  string upload_id = 7;
+  string filename = 8;
+}
+message ListBatchesRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  Empty input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message GetBatchRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message PreviewRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  MappingReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message ListRowsRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  BatchRowsReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message CommitRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  CommitReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message CancelRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  IDReq input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+message HealthRequest {
+  int64 owner_id = 1;
+  string idempotency_key = 2;
+  int64 expected_version = 3;
+  Empty input = 4;
+  string session_token = 5;
+  string csrf_token = 6;
+}
+service Auth {
+  rpc Session (SessionRequest) returns (SessionResp);
+  rpc Logout (LogoutRequest) returns (Empty);
+}
+service Records {
+  rpc CreateRecord (CreateRecordRequest) returns (Record);
+  rpc ListRecords (ListRecordsRequest) returns (RecordList);
+  rpc GetRecord (GetRecordRequest) returns (Record);
+  rpc UpdateRecord (UpdateRecordRequest) returns (Record);
+  rpc ArchiveRecord (ArchiveRecordRequest) returns (Record);
+  rpc RestoreRecord (RestoreRecordRequest) returns (Record);
+  rpc ClearOverride (ClearOverrideRequest) returns (Record);
+  rpc ListRevisions (ListRevisionsRequest) returns (RevisionList);
+}
+service Reporting {
+  rpc Summary (SummaryRequest) returns (IncomeSummary);
+  rpc Calendar (CalendarRequest) returns (PeriodList);
+  rpc Series (SeriesRequest) returns (PeriodList);
+  rpc Export (ExportRequest) returns (ExportResp);
+}
+service Imports {
+  rpc TrashBatch (TrashBatchRequest) returns (Batch);
+  rpc ReadSheet (ReadSheetRequest) returns (SheetData);
+  rpc GoogleStage (GoogleStageRequest) returns (Batch);
+  rpc CreateSource (CreateSourceRequest) returns (Source);
+  rpc ListSources (ListSourcesRequest) returns (SourceList);
+  rpc DeleteSource (DeleteSourceRequest) returns (Empty);
+  rpc Stage (StageRequest) returns (Batch);
+  rpc ListBatches (ListBatchesRequest) returns (BatchList);
+  rpc GetBatch (GetBatchRequest) returns (Batch);
+  rpc Preview (PreviewRequest) returns (Batch);
+  rpc ListRows (ListRowsRequest) returns (BatchRows);
+  rpc Commit (CommitRequest) returns (Batch);
+  rpc Cancel (CancelRequest) returns (Batch);
+}
+service Health {
+  rpc Health (HealthRequest) returns (HealthResp);
+}
+
+message ExportResp { string content = 1; }
